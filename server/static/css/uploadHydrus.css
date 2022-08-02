@@ -1,0 +1,27 @@
+.step.modflow, .bar-hp4m.modflow,
+.step.hydrus, .bar-hp4m.hydrus {
+	background-color: #007bff;
+}
+
+.step .label.modflow,
+.step .label.hydrus {
+	color: white;
+}
+
+.slice-column {
+	width: 50%
+}
+
+.left {
+	float: left;
+}
+
+.right {
+	float: right;
+}
+
+.model-line {
+    inline-size: 100px;
+    overflow-wrap: break-word;
+    hyphens: manual;
+}

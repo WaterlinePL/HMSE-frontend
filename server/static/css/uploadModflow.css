@@ -1,0 +1,19 @@
+.step.modflow, .bar-hp4m.modflow {
+	background-color: #007bff;
+}
+
+.step .label.modflow {
+	color: white;
+}
+
+.slice-column {
+	width: 50%
+}
+
+.left {
+	float: left;
+}
+
+.right {
+	float: right;
+}

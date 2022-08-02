@@ -1,0 +1,9 @@
+[submodule "hmse_simulations"]
+	path = hmse_simulations
+	url = git@github.com:WaterlinePL/hmse_simulations.git
+[submodule "hmse_projects"]
+	path = hmse_projects
+	url = git@github.com:WaterlinePL/hmse_projects.git
+[submodule "hmse_hydrological_models"]
+	path = hmse_hydrological_models
+	url = git@github.com:WaterlinePL/hmse_hydrological_models.git
