@@ -9,7 +9,7 @@
             success: function (content) {
                 if(content["status"] === "OK")
                 {
-                    $("#download").removeAttr('hidden');
+                    $("#downloadReadyProject").removeAttr('hidden');
                 }
             }
         });

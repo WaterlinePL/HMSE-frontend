@@ -4,9 +4,9 @@ from flask import request, render_template, jsonify
 from flask_paginate import get_page_args, Pagination
 from werkzeug.utils import redirect, send_file
 
-from hmse_projects.project_dao import project_dao
-from hmse_projects.project_exceptions import ProjectNotSelected, ProjectNotFound
-from hmse_projects.project_metadata import ProjectMetadata
+from hmse_simulations.hmse_projects.project_dao import project_dao
+from hmse_simulations.hmse_projects.project_exceptions import ProjectNotSelected, ProjectNotFound
+from hmse_simulations.hmse_projects.project_metadata import ProjectMetadata
 from metadata import project_metadata_loader
 from server import cookie_utils, endpoints, template
 

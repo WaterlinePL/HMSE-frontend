@@ -20,13 +20,12 @@
     </div>
     <div class="row justify-content-md-center">
         <div class="col-auto">
-            <a type="button" class="btn btn-primary btn-lg" href="{{ url_for('create_project') }}"
+            <a type="button" class="btn btn-primary btn-lg" href="{{ url_for('projects.create_project') }}"
                style="margin: 0 0 75px;">
                 Create Project
             </a>
         </div>
     </div>
-    {% include "homeLocalVersion.html" %}
 
     <div class="row justify-content-md-center">
         <div class="col-lg-9 text-left">
@@ -44,7 +43,7 @@
                 </p>
                 <div class="button-text-box">
                   <span class="right">
-                      <a class="btn btn-secondary" href="{{ url_for('create_project') }}"
+                      <a class="btn btn-secondary" href="{{ url_for('projects.create_project') }}"
                          type="button">
                           Create Project
                       </a>
@@ -60,7 +59,7 @@
                 </p>
                 <div class="button-text-box">
                   <span class="right">
-                      <a class="btn btn-secondary" href="{{ url_for('project_list') }}"
+                      <a class="btn btn-secondary" href="{{ url_for('projects.project_list') }}"
                          type="button">
                           Choose Project
                       </a>

@@ -20,7 +20,7 @@
     </div>
     <div class="row justify-content-md-center">
         <div class="col-auto">
-            <a type="button" id="download" hidden class="btn btn-success btn-lg"
+            <a type="button" id="downloadReadyProject" hidden class="btn btn-success btn-lg"
                href="Test data"> Results
             </a>
         </div>
@@ -274,8 +274,7 @@
                         you will be able to link Hydrus models to the detected zones.</p>
                 </div>
                 <div class="card-footer">
-                    <a href="{{ url_for('rch_shapes', rch_shape_index='0') }}"
-                       class="btn btn-primary right">Choose</a>
+                    <button type="button" class="btn btn-primary right" onclick="rchShapes({{ project_id }})">Choose</button>
                 </div>
             </div>
         </div>
@@ -287,7 +286,7 @@
                         shapes.</p>
                 </div>
                 <div class="card-footer">
-                    <a href="{{ url_for('manual_shapes', hydrus_model_index='0') }}" class="btn btn-primary right">Choose</a>
+                    <button type="button" class="btn btn-primary right" onclick="manualShape({{ project_id }}, null, null)">Choose</button>
                 </div>
             </div>
         </div>
@@ -420,7 +419,7 @@
     </div>
     <div class="row justify-content-center">
         <a type="button" id="download" hidden class="btn btn-success mx-5 my-2"
-           href="{{ url_for('project_download') }}">Download Results</a>
+           href="{{ url_for('project.project_download') }}">Download Results</a>
     </div>
 
 </div>
@@ -436,4 +435,5 @@
 <script src="/static/js/defineMethod.js"></script>
 <script src="/static/js/defineShapes.js"></script>
 <script src="/static/js/simulation.js"></script>
+<script src="/static/js/shapes.js"></script>
 {% endblock %}

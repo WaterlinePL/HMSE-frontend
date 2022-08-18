@@ -2,14 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional, Dict, List
 
-import os
-
 import numpy as np
 from datapassing.shape_data import ShapeMetadata
 
 if TYPE_CHECKING:
     from simulation.simulation_service import SimulationService
-    from hmse_projects.project_metadata import ProjectMetadata
+    from hmse_simulations.hmse_projects.project_metadata import ProjectMetadata
 
 
 #############

@@ -1,10 +1,9 @@
 var Config = {
-    "configuration": "/configuration",
-    "createProject": "/create-project",
+    "createProject": "/new-project",    // Usable
     "manualShapes": "/manual-shapes/",
     "defineMethod": "/define-method",
     "editProject": "/edit-project/",
-    "currentProject": "/project",
+    "project": "/project",  // Usable
     "projectList": '/project-list',
     "projectDownload": '/project-download',
     "projectFinished": '/project-finished',
@@ -15,5 +14,4 @@ var Config = {
     "uploadHydrus": "/upload-hydrus",
     "uploadModflow": "/upload-modflow",
     "uploadWeatherFile": "/upload-weather-file",
-
 }

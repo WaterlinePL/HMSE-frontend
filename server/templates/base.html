@@ -12,7 +12,7 @@
 <div style="min-height:100vh">
     <nav class="navbar navbar-expand-md navbar-dark bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{{ url_for('home') }}">HM Synergy Engine</a>
+            <a class="navbar-brand" href="{{ url_for('base.home') }}">HM Synergy Engine 2.0 alpha</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler"
                     aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -20,16 +20,10 @@
             <div class="collapse navbar-collapse" id="navbarToggler">
                 <ul class="navbar-nav ml-auto">
                     <li class='nav-item {% block home_active %} {% endblock %}'>
-                        <a class="nav-link" href="{{ url_for('home') }}">Home <span class="sr-only">(current)</span></a>
-                    </li>
-                    <li class="nav-item {% block simulation_active %} {% endblock %}">
-                        <a class="nav-link" href="{{ url_for('upload_modflow') }}">Simulate</a>
+                        <a class="nav-link" href="{{ url_for('base.home') }}">Home <span class="sr-only">(current)</span></a>
                     </li>
                     <li class="nav-item {% block project_list_active %} {% endblock %}">
-                        <a class="nav-link" href="{{ url_for('project_list') }}">List of projects</a>
-                    </li>
-                    <li class="nav-item {% block current_project_active %} {% endblock %}">
-                        <a class="nav-link" href="{{ url_for('project') }}">Current project</a>
+                        <a class="nav-link" href="{{ url_for('projects.project_list') }}">List of projects</a>
                     </li>
                 </ul>
             </div>
@@ -50,7 +44,9 @@
         <div class="row justify-content-md-center">
             <div class="col-lg-9">
                 <div class="text-center">
-                    <h6>@ 2021 All rights reserved @ AGH University of Science and Technology</h6>
+                    <h6>@ 2021-2022 All rights reserved @ AGH University of Science and Technology</h6>
+<!--                    test it-->
+                    <p>This application uses cookies to identify users</p>
                 </div>
             </div>
         </div>

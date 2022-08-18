@@ -1,9 +1,6 @@
-import os
-
-
 from hmse_hydrological_models import modflow_utils
-from hmse_projects import mask_dao
-from hmse_projects.project_metadata import ProjectMetadata
+from hmse_simulations.hmse_projects import mask_dao
+from hmse_simulations.hmse_projects.project_metadata import ProjectMetadata
 from server.user_state import UserState
 
 

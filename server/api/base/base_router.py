@@ -1,19 +1,20 @@
 import uuid
 
-from flask import make_response, render_template, request
+from flask import make_response, render_template, request, Blueprint
 from werkzeug.utils import redirect
 
 from server import endpoints, cookie_utils, template
-from server.main import app
+
+base = Blueprint('base', __name__)
 
 
-@app.route('/')
+@base.route('/')
 def start():
     return redirect(endpoints.HOME)
-    # return render_template('test_merged.html')
+    # return render_template('editProjectAlpha.html')
 
 
-@app.route(endpoints.HOME, methods=['GET'])
+@base.route(endpoints.HOME, methods=['GET'])
 def home():
     res = make_response(render_template(template.HOME))
     if not request.cookies.get(cookie_utils.COOKIE_NAME):

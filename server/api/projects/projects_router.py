@@ -1,178 +1,221 @@
-from flask import request, render_template
+from http import HTTPStatus
 
-from server import endpoints, cookie_utils, path_checker, template
-from server.api.projects import project_handlers
-from server.main import app
+import flask
+from flask import request, render_template, jsonify, Blueprint
+from flask_paginate import get_page_args, Pagination
+from werkzeug.exceptions import abort
+from werkzeug.utils import redirect
 
+from hmse_simulations.hmse_projects import project_service
+from hmse_simulations.hmse_projects.project_metadata import ProjectMetadata
+from server import endpoints, cookie_utils, path_checker, template, naming_utils
 
-# TODO: maybe initiate new project and redirect to edit endpoint?
-@app.route(endpoints.CREATE_PROJECT, methods=['POST'])
-def create_project():
-    check_previous_steps = path_checker.path_check_cookie(request.cookies.get(cookie_utils.COOKIE_NAME))
-
-    if check_previous_steps:
-        return check_previous_steps
-
-    if request.method == 'POST':
-        return project_handlers.create_project_handler()
-    else:
-        return render_template(template.CREATE_PROJECT)
+projects = Blueprint('projects', __name__)
 
 
-@app.route(endpoints.EDIT_PROJECT, methods=['GET', 'POST'])
+@projects.route(endpoints.EDIT_PROJECT, methods=['GET'])
 def edit_project(project_id: str):
-    check_previous_steps = path_checker.path_check_cookie(request.cookies.get(cookie_utils.COOKIE_NAME))
-
+    check_previous_steps = path_checker.path_check_simulate_access(request.cookies.get(cookie_utils.COOKIE_NAME))
     if check_previous_steps:
         return check_previous_steps
-
-    if request.method == 'POST':
-        return project_handlers.update_project_settings()
-    else:
-        return project_handlers.edit_project_handler(project_name)
+    return render_template(template.EDIT_PROJECT, metadata=project_service.get(project_id))
 
 
-@app.route(endpoints.PROJECT_LIST, methods=['GET', 'DELETE'], defaults={'search': None})
-@app.route(endpoints.PROJECT_LIST_SEARCH)
+@projects.route(endpoints.PROJECT_LIST, methods=['GET'], defaults={'search': None})
+@projects.route(endpoints.PROJECT_LIST_SEARCH)
 def project_list(search):
     check_previous_steps = path_checker.path_check_cookie(request.cookies.get(cookie_utils.COOKIE_NAME))
-
     if check_previous_steps:
         return check_previous_steps
 
-    if request.method == 'POST':
-        return project_handlers.remove_project_handler()
-    else:
-        return project_handlers.project_list_handler(search)
+    project_names = project_service.get_all_project_names()
+    if search:
+        project_names = [name for name in project_names if search.lower() in name.lower()]
+
+    page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
+    pagination_projects = project_names[offset:offset + per_page]
+    pagination = Pagination(page=page,
+                            per_page=per_page,
+                            total=len(project_names),
+                            record_name="projects",
+                            css_framework='bootstrap4')
+
+    return render_template(template.PROJECT_LIST,
+                           search_value=search,
+                           projects=pagination_projects,
+                           page=page,
+                           per_page=per_page,
+                           pagination=pagination)
 
 
-@app.route(endpoints.PROJECT, methods=['GET'])
+@projects.route(endpoints.PROJECT, methods=['GET', 'DELETE'])
 def project(project_id: str):
     check_previous_steps = path_checker.path_check_cookie(request.cookies.get(cookie_utils.COOKIE_NAME))
-
     if check_previous_steps:
         return check_previous_steps
 
-    return project_handlers.project_handler(project_name)
+    if request.method == 'GET':
+        return render_template(template.PROJECT, metadata=project_service.get(project_id))
+    else:
+        project_service.delete(project_id)
+        return flask.Response(status=HTTPStatus.OK)
 
 
-@app.route(endpoints.PROJECT_FINISHED, methods=['GET'])
+@projects.route(endpoints.CREATE_PROJECT, methods=['POST'])
+def create_project():
+    check_previous_steps = path_checker.path_check_simulate_access(request.cookies.get(cookie_utils.COOKIE_NAME))
+    if check_previous_steps:
+        return check_previous_steps
+
+    project_id = naming_utils.validate_id(request.json['projectId'])
+    project_service.save_or_update(ProjectMetadata(project_id))
+    return redirect(endpoints.EDIT_PROJECT.replace('<project_id>', project_id))
+
+
+# API
+@projects.route(endpoints.PROJECT_FINISHED, methods=['GET'])
 def project_is_finished(project_id: str):
     check_previous_steps = path_checker.path_check_cookie(request.cookies.get(cookie_utils.COOKIE_NAME))
-
     if check_previous_steps:
         return check_previous_steps
+    return jsonify(finished=project_service.is_finished(project_id))
 
-    return project_handlers.project_is_finished_handler(project_name)
+
+@projects.route(endpoints.PROJECT_IN_USE, methods=['GET'])
+def project_in_use(project_id: str):
+    check_previous_steps = path_checker.path_check_cookie(request.cookies.get(cookie_utils.COOKIE_NAME))
+    if check_previous_steps:
+        return check_previous_steps
+    return jsonify(finished=cookie_utils.is_project_in_use(project_id))
 
 
-@app.route(endpoints.PROJECT_DOWNLOAD, methods=['GET'])
+@projects.route(endpoints.PROJECT_DOWNLOAD, methods=['GET'])
 def project_download(project_id: str):
     check_previous_steps = path_checker.path_check_cookie(request.cookies.get(cookie_utils.COOKIE_NAME))
-
     if check_previous_steps:
         return check_previous_steps
+    return project_service.download_project(project_id)  # TODO: check how does that one work in previous version
 
-    return project_handlers.project_download_handler(project_name)
 
-@app.route(endpoints.UPLOAD_MODFLOW, methods=['POST', 'DELETE'])
+@projects.route(endpoints.UPLOAD_MODFLOW, methods=['PUT', 'DELETE'])
 def upload_modflow(project_id: str):
-    check_previous_steps = path_checker.path_check_cookie(request.cookies.get(cookie_utils.COOKIE_NAME))
-
+    cookie = request.cookies.get(cookie_utils.COOKIE_NAME)
+    check_previous_steps = path_checker.path_check_for_accessing_selected_project(cookie, project_id)
     if check_previous_steps:
         return check_previous_steps
 
-    if request.method == 'POST' and request.files:
-        return endpoint_handlers.upload_modflow_handler()
+    if request.method == 'PUT' and request.files:
+        model = request.files['modelArchive']
+        return project_service.set_modflow_model(project_id, model)
     elif request.method == 'DELETE':
-        return endpoint_handlers.remove_modflow_handler()
+        return project_service.delete_modflow_model(project_id)
     else:
-        if state.loaded_project is None:
-            state.activate_error_flag()
-            return redirect(endpoints.PROJECT_LIST)
-        else:
-            check_previous_steps = path_checker.path_check_simulate_access(state)
-            if check_previous_steps:
-                return check_previous_steps
-
-            return render_template(
-                template.UPLOAD_MODFLOW,
-                model_name=state.loaded_project.modflow_model,
-                upload_error=state.get_error_flag()
-            )
+        abort(400)
 
 
-@app.route(endpoints.UPLOAD_WEATHER_FILE, methods=['POST', 'DELETE'])
+@projects.route(endpoints.UPLOAD_WEATHER_FILE, methods=['PUT', 'DELETE'])
 def upload_weather_file(project_id: str):
-    check_previous_steps = path_checker.path_check_cookie(state)
-
+    cookie = request.cookies.get(cookie_utils.COOKIE_NAME)
+    check_previous_steps = path_checker.path_check_for_accessing_selected_project(cookie, project_id)
     if check_previous_steps:
         return check_previous_steps
 
-    if request.method == 'POST' and request.files:
-        return endpoint_handlers.upload_weather_file_handler()
-    else:  # GET
-        if state.loaded_project is not None:
-            return render_template(
-                template.UPLOAD_WEATHER_FILE,
-                hydrus_models=state.loaded_project.hydrus_models,
-                upload_error=False
-            )
-        else:
-            state.activate_error_flag()
-            return redirect(endpoints.PROJECT_LIST)
+    if request.method == 'PUT' and request.files:
+        weather_file = request.files['weatherFile']
+        return project_service.add_weather_file(project_id, weather_file)
+    elif request.method == 'DELETE':
+        weather_id = request.json['weatherId']
+        return project_service.delete_weather_file(project_id, weather_id)
+    else:
+        abort(400)
 
 
-@app.route(endpoints.UPLOAD_HYDRUS, methods=['POST', 'DELETE'])
+@projects.route(endpoints.UPLOAD_HYDRUS, methods=['PUT', 'DELETE'])
 def upload_hydrus(project_id: str):
-    check_previous_steps = path_checker.path_check_modflow_step(state)
-
+    cookie = request.cookies.get(cookie_utils.COOKIE_NAME)
+    check_previous_steps = path_checker.path_check_for_accessing_selected_project(cookie, project_id)
     if check_previous_steps:
         return check_previous_steps
 
-    if request.method == 'POST' and request.files:
-        return endpoint_handlers.upload_hydrus_handler()
+    if request.method == 'PUT' and request.files:
+        archive = request.files['modelArchive']
+        return project_service.add_hydrus_model(project_id, archive)
     elif request.method == 'DELETE':
-        return endpoint_handlers.remove_hydrus_handler()
+        hydrus_id = request.json['hydrusId']
+        return project_service.delete_hydrus_model(project_id, hydrus_id)
     else:
-        return render_template(template.UPLOAD_HYDRUS,
-                               model_names=state.loaded_project.hydrus_models,
-                               upload_error=state.get_error_flag())
+        abort(400)
 
 
-@app.route(endpoints.MANUAL_SHAPES, methods=['PUT', 'DELETE'])
+@projects.route(endpoints.MANUAL_SHAPE, methods=['PUT', 'DELETE'])
 def manual_shapes(project_id: str):
-    check_previous_steps = path_checker.path_check_for_modflow_model(state)
-
+    cookie = request.cookies.get(cookie_utils.COOKIE_NAME)
+    check_previous_steps = path_checker.path_check_for_modflow_model(cookie, project_id)
     if check_previous_steps:
         return check_previous_steps
 
-    if request.method == 'POST':
-        return endpoint_handlers.upload_shape_handler()
-    else:
-        return endpoint_handlers.next_model_redirect_handler(state.get_error_flag())
-
-
-@app.route(endpoints.RCH_SHAPES, methods=['PUT', 'DELETE'])
-def rch_shapes(project_id: str):
+    shape_id = request.json['shapeId']
     if request.method == 'PUT':
-        pass
-    elif request.method == 'DELETE':
-        pass
-    # return 404
+        shape_mask = request.json['mask']
+        return project_service.save_or_update_shape(project_id, shape_id, shape_mask)
+    else:
+        return project_service.delete_shape(project_id, shape_id)
 
-    state = cookie_utils.get_user_by_cookie(request.cookies.get(cookie_utils.COOKIE_NAME))
-    check_previous_steps = path_checker.path_check_for_modflow_model(state)
 
+@projects.route(endpoints.RCH_SHAPES, methods=['PUT', 'DELETE'])
+def rch_shapes(project_id: str):
+    cookie = request.cookies.get(cookie_utils.COOKIE_NAME)
+    check_previous_steps = path_checker.path_check_for_modflow_model(cookie, project_id)
     if check_previous_steps:
         return check_previous_steps
 
-    state.set_method(endpoints.RCH_SHAPES)
-
-    if request.method == 'POST':
-        return endpoint_handlers.assign_model_to_shape(request, int(rch_shape_index))
+    if request.method == 'PUT':
+        rch_shapes = {}  # TODO: create shapes
+        for shape_id, shape_mask in rch_shapes:
+            project_service.save_or_update_shape(project_id, shape_id, shape_mask)
     else:
-        return endpoint_handlers.next_shape_redirect_handler(int(rch_shape_index))
+        for shape_id in project_service.get_all_shapes(project_id):
+            is_rch = False  # FIXME: distingush shape types
+            if is_rch:
+                # TODO: Logging
+                project_service.delete_shape(project_id, shape_id)
+        return flask.Response(status=HTTPStatus.OK)
 
-# TODO: Mapping endpoints
 
+@projects.route(endpoints.MAP_SHAPE_RECHARGE, methods=['PUT', 'DELETE'])
+def map_shape_to_hydrus(project_id: str):
+    cookie = request.cookies.get(cookie_utils.COOKIE_NAME)
+    check_previous_steps = path_checker.path_check_for_modflow_model(cookie, project_id)
+    if check_previous_steps:
+        return check_previous_steps
+
+    shape_id = request.json['shapeId']
+    if request.method == 'PUT':
+        hydrus_id = request.json.get('hydrusId')
+        if hydrus_id is not None:
+            project_service.map_shape_to_hydrus(project_id, shape_id, hydrus_id)
+            return flask.Response(status=HTTPStatus.OK)
+        elif request.json.get('rechargeValue') is not None:
+            project_service.map_shape_to_manual_value(project_id, shape_id, request.json.get('rechargeValue'))
+            return flask.Response(status=HTTPStatus.OK)
+        abort(400)
+    else:
+        project_service.remove_shape_mprojectsing(project_id, shape_id)
+        return flask.Response(status=HTTPStatus.OK)
+
+
+@projects.route(endpoints.MAP_WEATHER_FILE_TO_HYDRUS, methods=['PUT', 'DELETE'])
+def map_weather_to_hydrus(project_id: str):
+    cookie = request.cookies.get(cookie_utils.COOKIE_NAME)
+    check_previous_steps = path_checker.path_check_for_modflow_model(cookie, project_id)
+    if check_previous_steps:
+        return check_previous_steps
+
+    hydrus_id = request.json['hydrusId']
+    if request.method == 'PUT':
+        weather_id = request.json['weatherId']
+        project_service.map_hydrus_to_weather_file(project_id, hydrus_id, weather_id)
+        return flask.Response(status=HTTPStatus.OK)
+    else:
+        project_service.remove_weather_hydrus_mapping(project_id, hydrus_id)
+        return flask.Response(status=HTTPStatus.OK)

@@ -13,8 +13,8 @@ from werkzeug.utils import redirect
 from hmse_hydrological_models import model_utils
 from hmse_hydrological_models.modflow import modflow_utils
 from hmse_hydrological_models.modflow.modflow_dao import modflow_model_dao
-from hmse_projects.mask_dao import mask_dao
-from hmse_projects.project_dao import project_dao
+from hmse_simulations.hmse_projects import mask_dao
+from hmse_simulations.hmse_projects.project_dao import project_dao
 from server import cookie_utils, endpoints, template, path_formatter
 
 
