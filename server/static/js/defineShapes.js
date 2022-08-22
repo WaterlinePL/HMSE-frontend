@@ -69,12 +69,34 @@ function onMouseOver(id, isHighlighted) {
     const row = grid.row;
     const col = grid.col;
 
+    prevCells.forEach(cellId => document.getElementById(cellId).classList.toggle("bg-light", false));
     for (let i = row - addCellInDirection; i <= row + addCellInDirection; i++) {
         for (let j = col - addCellInDirection; j <= col + addCellInDirection; j++) {
             if (i < 0 || i >= rows_total || j < 0 || j >= columns_total) {
                 continue;
             }
             document.getElementById(`cell_${i}_${j}`).classList.toggle("bg-primary", isHighlighted);
+        }
+    }
+}
+
+
+let prevCells = []
+
+function previewPaintedCells(id) {
+    const grid = getRowColFromId(id);
+    const row = grid.row;
+    const col = grid.col;
+
+    prevCells.forEach(cellId => document.getElementById(cellId).classList.toggle("bg-light", false));
+    for (let i = row - addCellInDirection; i <= row + addCellInDirection; i++) {
+        for (let j = col - addCellInDirection; j <= col + addCellInDirection; j++) {
+            if (i < 0 || i >= rows_total || j < 0 || j >= columns_total) {
+                continue;
+            }
+            const cellId = `cell_${i}_${j}`;
+            document.getElementById(cellId).classList.toggle("bg-light", true);
+            prevCells.push(cellId);
         }
     }
 }
@@ -92,6 +114,8 @@ $(function () {
         .mouseover(function () {
             if (isMouseDown) {
                 onMouseOver(this.id, isHighlighted);
+            } else {
+                previewPaintedCells(this.id);
             }
         })
         .bind("selectstart", function () {

@@ -33,27 +33,27 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item ">
                             <span class="slice-column left">Project Name</span>
-                            <span class="slice-column right">Test data</span>
+                            <span class="slice-column right">{{ metadata.project_id }}</span>
                         </li>
                         <li class="list-group-item">
                             <span class="slice-column left">Start Date</span>
-                            <span class="slice-column right">Test data</span>
+                            <span class="slice-column right">{{ metadata.start_date }}</span>
                         </li>
                         <li class="list-group-item ">
                             <span class="slice-column left">End Date</span>
-                            <span class="slice-column right">Test data</span>
+                            <span class="slice-column right">{{ metadata.end_date }}</span>
                         </li>
                         <li class="list-group-item ">
                             <span class="slice-column left">Latitude</span>
-                            <span class="slice-column right">Test data</span>
+                            <span class="slice-column right">{{ metadata.lat }}</span>
                         </li>
                         <li class="list-group-item ">
                             <span class="slice-column left">Longitude</span>
-                            <span class="slice-column right">Test data</span>
+                            <span class="slice-column right">{{ metadata.long }}</span>
                         </li>
                         <li class="list-group-item ">
                             <span class="slice-column left">Spin Up </span>
-                            <span class="slice-column right">Test data</span>
+                            <span class="slice-column right">{{ metadata.spin_up }}</span>
                         </li>
                     </ul>
                     <div class="button-edit">
@@ -223,7 +223,7 @@
 
                             <!-- Drop Zone -->
                             <h6>Drag and drop files below</h6>
-                            <div class="upload-drop-zone" id="drop-zone-modflow">
+                            <div class="upload-drop-zone" id="drop-zone-weather">
                                 Just drag and drop files here
                             </div>
                         </div>
@@ -326,12 +326,12 @@
         <div class="col-2-auto mx-2">
             <table class="table tab-manual table-sm" id="model-mesh" style="width: 500px">
                 <tbody>
-                {% for row in range(10) %}
+                {% for row in range(metadata.rows) %}
                 <tr class="cell-row"
-                    style="height: 50px !important; padding:0 !important;">
-                    {% for col in range(10) %}
+                    style="height: {{ metadata.row_cells[row] }}px !important; padding:0 !important;">
+                    {% for col in range(metadata.cols) %}
                     <td class="cell border border-1" id="{{ 'cell_' + row|string + '_' + col|string }}"
-                        style="width: 20px !important; padding:0 !important;">
+                        style="width: {{ metadata.col_cells[col] }}px !important; padding:0 !important;">
                     </td>
                     {% endfor %}
                 </tr>
@@ -419,7 +419,7 @@
     </div>
     <div class="row justify-content-center">
         <a type="button" id="download" hidden class="btn btn-success mx-5 my-2"
-           href="{{ url_for('project.project_download') }}">Download Results</a>
+           href="{{ url_for('projects.project_download', project_id=project_id) }}">Download Results</a>
     </div>
 
 </div>
