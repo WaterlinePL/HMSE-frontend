@@ -69,33 +69,72 @@ function onMouseOver(id, isHighlighted) {
     const row = grid.row;
     const col = grid.col;
 
-    prevCells.forEach(cellId => document.getElementById(cellId).classList.toggle("bg-light", false));
+    prevCellsCleanup();
     for (let i = row - addCellInDirection; i <= row + addCellInDirection; i++) {
         for (let j = col - addCellInDirection; j <= col + addCellInDirection; j++) {
             if (i < 0 || i >= rows_total || j < 0 || j >= columns_total) {
                 continue;
             }
-            document.getElementById(`cell_${i}_${j}`).classList.toggle("bg-primary", isHighlighted);
+//            document.getElementById(`cell_${i}_${j}`).classList.toggle("bg-primary", isHighlighted);
+            document.getElementById(`cell_${i}_${j}`).classList.toggle("bg-warning", true);
         }
     }
 }
 
 
-let prevCells = []
+let prevCells = [];
+let isHighlighted = false;
+
+function removePreviousTrail(id) {
+    console.log(id);
+    const grid = getRowColFromId(id);
+    const row = grid.row;
+    const col = grid.col;
+
+    prevCellsCleanup();
+    for (let i = row - addCellInDirection; i <= row + addCellInDirection; i++) {
+        for (let j = col - addCellInDirection; j <= col + addCellInDirection; j++) {
+            if (i < 0 || i >= rows_total || j < 0 || j >= columns_total) {
+                continue;
+            }
+            document.getElementById(`cell_${i}_${j}`).classList.toggle("bg-warning", false);
+        }
+    }
+}
+
+function prevCellsCleanup() {
+    prevCells.forEach(cellId => {
+
+        var classes = document.getElementById(cellId).classList;
+        classes.toggle("bg-light", false);
+        classes.toggle("bg-secondary", false);
+
+        if (classes.contains("bg-warning")) {
+            classes.toggle("bg-warning", false);
+            classes.toggle("bg-primary", isHighlighted);
+        }
+    });
+}
 
 function previewPaintedCells(id) {
     const grid = getRowColFromId(id);
     const row = grid.row;
     const col = grid.col;
+    const willErase = document.getElementById(`cell_${row}_${col}`).classList.contains("bg-primary");
 
-    prevCells.forEach(cellId => document.getElementById(cellId).classList.toggle("bg-light", false));
+    prevCellsCleanup();
     for (let i = row - addCellInDirection; i <= row + addCellInDirection; i++) {
         for (let j = col - addCellInDirection; j <= col + addCellInDirection; j++) {
             if (i < 0 || i >= rows_total || j < 0 || j >= columns_total) {
                 continue;
             }
             const cellId = `cell_${i}_${j}`;
-            document.getElementById(cellId).classList.toggle("bg-light", true);
+            let elem = document.getElementById(cellId);
+            if (willErase && elem.classList.contains("bg-primary")) {
+                elem.classList.toggle("bg-secondary", true);
+            } else if (!willErase && !elem.classList.contains("bg-primary")) {
+                elem.classList.toggle("bg-light", true);
+            }
             prevCells.push(cellId);
         }
     }
@@ -103,21 +142,27 @@ function previewPaintedCells(id) {
 
 $(function () {
 
-    let isMouseDown = false, isHighlighted;
+    let isMouseDown = false;
     $("#model-mesh td")
         .mousedown(function () {
+            console.log(this.id);
             isMouseDown = true;
             isHighlighted = !$(this).hasClass("bg-primary");
             onMouseOver(this.id, isHighlighted);
             return false; // prevent text selection
         })
         .mouseover(function () {
+            console.log(this.id);
             if (isMouseDown) {
                 onMouseOver(this.id, isHighlighted);
             } else {
                 previewPaintedCells(this.id);
             }
         })
+        .mouseup(function () {
+            removePreviousTrail(this.id);
+        })
+        .mouseleave(() => prevCellsCleanup())
         .bind("selectstart", function () {
             return false;
         })

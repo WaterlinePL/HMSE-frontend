@@ -1,0 +1,19 @@
+.text-old {
+    transition: color 1.1s;
+    color: gray;
+}
+
+.text-standard {
+    transition: color 1.1s;
+    color: black;
+}
+
+.text-updated {
+    transition: color 1.1s;
+    color: green;
+}
+
+.text-edited {
+    transition: color 1.1s;
+    color: blue;
+}

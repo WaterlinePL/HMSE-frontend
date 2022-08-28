@@ -1,14 +1,15 @@
 // project removal
 async function doDelete(projectId, wasWarned) {
     if (wasWarned) {
-        var url = Config.project;
+        var url = getEndpointForProjectId(Config.project, projectId);
         await fetch(url, {
             method: "DELETE",
-            body: JSON.stringify({projectId: projectId})
         }).then(response => {
             if (response.status === 200) {
                 // TODO: Is this needed?
                 location.replace(response.url)
+            } else {
+                // Alert toast
             }
         });
     } else {
@@ -24,7 +25,10 @@ const createNewProject = async function() {
     await fetch(Config.createProject, {
         method: "POST",
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({projectId: projectId})
+        body: JSON.stringify({
+            projectId: projectId,
+            projectName: projectId
+        })
     }).then(response => {
         console.log(response);
         if (response.status === 200) {
@@ -53,19 +57,23 @@ const createNewProject = async function() {
 
     $(document).ready(function () {
         $(".download").each(function (i, obj) {
-            const url = `${Config.projectFinished}/${obj.id}`;
-            ($).ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                context: this,
-                success: function (content) {
-                    if(content["status"] === "OK")
-                    {
-                        $(this).removeAttr('hidden')
-                    }
-                }
-            });
+            isProjectFinished(obj.id, obj);
+//            const url = getEndpointForProjectId(Config.projectFinished, obj.id);
+//            console.log(obj.id);
+//            ($).ajax({
+//                url: url,
+//                type: "GET",
+////                dataType: "json",
+//                context: this,
+//                success: function (data, textStatus, jqXHR) {
+//                    if (textStatus === "success") {
+//                        $(this).removeAttr('hidden');
+//                    }
+//                },
+//                error: function(data, textStatus, jqXHR) {
+//                    // TODO: Alert in toast
+//                }
+//            });
         });
     });
 

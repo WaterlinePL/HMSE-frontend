@@ -7,6 +7,7 @@ from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
 
 from hmse_simulations.hmse_projects import project_service
+from hmse_simulations.hmse_projects.hmse_hydrological_models.modflow.modflow_metadata import ModflowMetadata
 from hmse_simulations.hmse_projects.project_metadata import ProjectMetadata
 from server import endpoints, cookie_utils, path_checker, template, naming_utils
 
@@ -48,7 +49,7 @@ def project_list(search):
                            pagination=pagination)
 
 
-@projects.route(endpoints.PROJECT, methods=['GET', 'DELETE'])
+@projects.route(endpoints.PROJECT, methods=['GET', 'DELETE', 'PATCH'])
 def project(project_id: str):
     check_previous_steps = path_checker.path_check_cookie(request.cookies.get(cookie_utils.COOKIE_NAME))
     if check_previous_steps:
@@ -56,6 +57,17 @@ def project(project_id: str):
 
     if request.method == 'GET':
         return render_template(template.PROJECT, metadata=project_service.get(project_id))
+    elif request.method == 'PATCH':
+        metadata = project_service.get(project_id)
+        patch = request.json
+        metadata.project_name = patch['projectName']
+        metadata.start_date = patch['startDate']
+        metadata.end_date = patch['endDate']
+        metadata.lat = patch['lat']
+        metadata.long = patch['long']
+        metadata.spin_up = patch['spinUp']
+        project_service.save_or_update_metadata(metadata)
+        return flask.Response(status=HTTPStatus.OK)
     else:
         project_service.delete(project_id)
         return flask.Response(status=HTTPStatus.OK)
@@ -67,8 +79,10 @@ def create_project():
     if check_previous_steps:
         return check_previous_steps
 
+    # TODO: Is this needed
     project_id = naming_utils.validate_id(request.json['projectId'])
-    project_service.save_or_update(ProjectMetadata(project_id))
+    project_name = request.json['projectName']
+    project_service.save_or_update_metadata(ProjectMetadata(project_id, project_name))
     return redirect(endpoints.EDIT_PROJECT.replace('<project_id>', project_id))
 
 
@@ -78,7 +92,10 @@ def project_is_finished(project_id: str):
     check_previous_steps = path_checker.path_check_cookie(request.cookies.get(cookie_utils.COOKIE_NAME))
     if check_previous_steps:
         return check_previous_steps
-    return jsonify(finished=project_service.is_finished(project_id))
+
+    if project_service.is_finished(project_id):
+        return flask.Response(status=HTTPStatus.OK)
+    return flask.Response(status=HTTPStatus.NO_CONTENT)
 
 
 @projects.route(endpoints.PROJECT_IN_USE, methods=['GET'])
@@ -97,7 +114,7 @@ def project_download(project_id: str):
     return project_service.download_project(project_id)  # TODO: check how does that one work in previous version
 
 
-@projects.route(endpoints.UPLOAD_MODFLOW, methods=['PUT', 'DELETE'])
+@projects.route(endpoints.PROJECT_MANAGE_MODFLOW, methods=['PUT', 'DELETE'])
 def upload_modflow(project_id: str):
     cookie = request.cookies.get(cookie_utils.COOKIE_NAME)
     check_previous_steps = path_checker.path_check_for_accessing_selected_project(cookie, project_id)
@@ -106,14 +123,22 @@ def upload_modflow(project_id: str):
 
     if request.method == 'PUT' and request.files:
         model = request.files['modelArchive']
-        return project_service.set_modflow_model(project_id, model)
+        modflow_metadata = project_service.set_modflow_model(project_id, model)
+        modflow_metadata = ModflowMetadata(modflow_id="sampleModel",
+                                           rows=10,
+                                           cols=10,
+                                           grid_unit='meter',
+                                           row_cells=[20] * 10,
+                                           col_cells=[40] * 10) # TODO: remove - testing only
+        return jsonify(modflow_metadata)
     elif request.method == 'DELETE':
-        return project_service.delete_modflow_model(project_id)
+        project_service.delete_modflow_model(project_id)
+        return flask.Response(status=HTTPStatus.OK)
     else:
         abort(400)
 
 
-@projects.route(endpoints.UPLOAD_WEATHER_FILE, methods=['PUT', 'DELETE'])
+@projects.route(endpoints.PROJECT_MANAGE_WEATHER_FILE, methods=['PUT', 'DELETE'])
 def upload_weather_file(project_id: str):
     cookie = request.cookies.get(cookie_utils.COOKIE_NAME)
     check_previous_steps = path_checker.path_check_for_accessing_selected_project(cookie, project_id)
@@ -122,16 +147,18 @@ def upload_weather_file(project_id: str):
 
     if request.method == 'PUT' and request.files:
         weather_file = request.files['weatherFile']
-        return project_service.add_weather_file(project_id, weather_file)
+        project_service.add_weather_file(project_id, weather_file)
+        return flask.Response(status=HTTPStatus.OK)
     elif request.method == 'DELETE':
         weather_id = request.json['weatherId']
-        return project_service.delete_weather_file(project_id, weather_id)
+        project_service.delete_weather_file(project_id, weather_id)
+        return flask.Response(status=HTTPStatus.OK)
     else:
         abort(400)
 
 
-@projects.route(endpoints.UPLOAD_HYDRUS, methods=['PUT', 'DELETE'])
-def upload_hydrus(project_id: str):
+@projects.route(endpoints.PROJECT_MANAGE_HYDRUS, methods=['PUT', 'DELETE'])
+def manage_hydrus(project_id: str):
     cookie = request.cookies.get(cookie_utils.COOKIE_NAME)
     check_previous_steps = path_checker.path_check_for_accessing_selected_project(cookie, project_id)
     if check_previous_steps:
@@ -139,10 +166,12 @@ def upload_hydrus(project_id: str):
 
     if request.method == 'PUT' and request.files:
         archive = request.files['modelArchive']
-        return project_service.add_hydrus_model(project_id, archive)
+        project_service.add_hydrus_model(project_id, archive)
+        return flask.Response(status=HTTPStatus.OK)
     elif request.method == 'DELETE':
         hydrus_id = request.json['hydrusId']
-        return project_service.delete_hydrus_model(project_id, hydrus_id)
+        project_service.delete_hydrus_model(project_id, hydrus_id)
+        return flask.Response(status=HTTPStatus.OK)
     else:
         abort(400)
 
@@ -157,9 +186,11 @@ def manual_shapes(project_id: str):
     shape_id = request.json['shapeId']
     if request.method == 'PUT':
         shape_mask = request.json['mask']
-        return project_service.save_or_update_shape(project_id, shape_id, shape_mask)
+        project_service.save_or_update_shape(project_id, shape_id, shape_mask)
+        return flask.Response(status=HTTPStatus.OK)
     else:
-        return project_service.delete_shape(project_id, shape_id)
+        project_service.delete_shape(project_id, shape_id)
+        return flask.Response(status=HTTPStatus.OK)
 
 
 @projects.route(endpoints.RCH_SHAPES, methods=['PUT', 'DELETE'])

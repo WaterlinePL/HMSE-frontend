@@ -1,3 +1,29 @@
+async function openWeatherFileDialog() {
+    const input = document.getElementById('weatherFileUploadInput');
+    input.click();
+}
+
+async function sendWeatherFileAfterSelected(projectId) {
+    const elem = document.getElementById('weatherFileUploadInput');
+    if (!elem.files) {
+        return;
+    }
+
+    const url = getEndpointForProjectId(Config.projectManageWeatherFile, projectId);
+    const formData = new FormData();
+    const weatherFile = elem.files[0];
+    formData.append('weatherFile', weatherFile);
+    await fetch(url, {
+        method: "PUT",
+        body: formData
+    }).then(response => {
+        if (response.status === 200) {
+            // Reload?
+        } else {
+            // TODO: Show error toast
+        }
+    });
+}
 
 (function ($) {
     'use strict';

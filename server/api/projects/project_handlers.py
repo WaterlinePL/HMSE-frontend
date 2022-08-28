@@ -41,7 +41,7 @@ def create_project_handler():
     # "modflow_model": None,
     # "hydrus_models": []
 
-    project_dao.save_or_update(project)
+    project_dao.save_or_update_metadata(project)
     state.reset_project_data()
     state.loaded_project = project
     return json.dumps({'status': 'OK'})
@@ -187,7 +187,7 @@ def update_project_settings():
         project_metadata.end_date = request.json["end_date"]
         project_metadata.spin_up = request.json['spin_up']
 
-        project_dao.save_or_update(project_metadata)
+        project_dao.save_or_update_metadata(project_metadata)
         return json.dumps({'status': 'OK'})
 
     except ProjectNotFound:

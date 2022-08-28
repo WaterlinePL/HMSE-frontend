@@ -16,9 +16,7 @@
                 <p class="lead">Click "Open" to choose an existing project or click "Create a new project" to
                     prepare a
                     new one</p>
-                <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#modalCreateProject">
-                    Create a new project
-                </button>
+                {% include "createProject.html" %}
             </div>
         </div>
         <div class="col-lg-9">
@@ -65,12 +63,7 @@
                            href="{{ url_for('projects.edit_project', project_id=project_id) }}">
                         Edit
                         </a>
-                        <button id="{{ 'deleteProject' + project_id}}" data-toggle="modal"
-                        data-target="#modalDeleteProject"
-                        type="button" class="btn btn-danger btn-sm"
-                        onClick="doDelete('{{ project_id }}', false)">
-                        Delete
-                        </button>
+                        {% include 'deleteProject.html' %}
                     </td>
                 </tr>
                 {% endfor %}
@@ -85,57 +78,9 @@
     </div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="modalDeleteProject" tabindex="-1" role="dialog"
-     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="exampleModalCenterTitle">Confirmation</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Would you like to delete project <b id="projectNameModal"></b>?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-                <button id="confirmDelete" type="button" class="btn btn-danger">Delete</button>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="modalCreateProject" tabindex="-1" role="dialog"
-     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="exampleModalCenterTitle1">Enter new project name</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Project name should not have special symbols and underscores.
-                Preferably it should consist of words-split-with-hyphens (e.g project-name).
-
-                <form id="form-create-project" style="align: bottom">
-                    <div class="form-group" style="text-align: left">
-                        <label for="newProjectId"><strong>Enter project name</strong></label>
-                        <input type="text" class="right form-control form-control-sm" id="newProjectId"
-                               placeholder="New project name" style="width: 60%" pattern="[a-zA-Z0-9- ]{1,20}">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-                <button id="confirmCreateProject" type="button" class="btn btn-success" onclick="createNewProject()">Create new project</button>
-            </div>
-        </div>
-    </div>
-</div>
-
+<!-- Modals -->
+{% include 'deleteProjectModal.html' %}
+{% include 'createProjectModal.html' %}
 
 {% endblock %}
 
@@ -151,4 +96,5 @@
 
 {% block scripts %}
 <script src="/static/js/projectList.js"></script>
+<script src="/static/js/projectFinished.js"></script>
 {% endblock %}

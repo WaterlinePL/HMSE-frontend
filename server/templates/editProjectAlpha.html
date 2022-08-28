@@ -8,13 +8,16 @@
 <link rel="stylesheet" href="/static/css/uploadModflow.css">
 <link rel="stylesheet" href="/static/css/uploadHydrus.css">
 <link rel="stylesheet" href="/static/css/uploadWeatherFile.css">
+<link rel="stylesheet" href="/static/css/projectDetails.css">
 {% endblock %}
 {% block body %}
 <div class="container mt-5" id="configuration-content">
     <div class="row justify-content-md-center">
         <div class="col-lg-9">
             <div class="text-center">
-                <h1 class="display-4">Summary for project test project</h1>
+                <h1 class="display-4">Simulation for project: {{ metadata.project_name }}</h1>
+<!--                TODO: Not the smartest move-->
+                <div id="thisProjectId" hidden>{{ metadata.project_id }}</div>
             </div>
         </div>
     </div>
@@ -33,34 +36,45 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item ">
                             <span class="slice-column left">Project Name</span>
-                            <span class="slice-column right">{{ metadata.project_id }}</span>
+                            <span id="metadataProjectName" class="slice-column right text-standard"
+                            onkeydown="changeColorToUpdated('metadataProjectName')">{{ metadata.project_name }}</span>
                         </li>
                         <li class="list-group-item">
                             <span class="slice-column left">Start Date</span>
-                            <span class="slice-column right">{{ metadata.start_date }}</span>
+                            <span id="metadataStartDate" class="slice-column right text-standard"
+                                  onkeydown="changeColorToUpdated('metadataStartDate')">{{ metadata.start_date }}</span>
                         </li>
                         <li class="list-group-item ">
                             <span class="slice-column left">End Date</span>
-                            <span class="slice-column right">{{ metadata.end_date }}</span>
+                            <span id="metadataEndDate" class="slice-column right text-standard"
+                            onkeydown="changeColorToUpdated('metadataEndDate')">{{ metadata.end_date }}</span>
                         </li>
                         <li class="list-group-item ">
                             <span class="slice-column left">Latitude</span>
-                            <span class="slice-column right">{{ metadata.lat }}</span>
+                            <span id="metadataLat" class="slice-column right text-standard"
+                            onkeydown="changeColorToUpdated('metadataLat')">{{ metadata.lat }}</span>
                         </li>
                         <li class="list-group-item ">
                             <span class="slice-column left">Longitude</span>
-                            <span class="slice-column right">{{ metadata.long }}</span>
+                            <span id="metadataLong" class="slice-column right text-standard"
+                            onkeydown="changeColorToUpdated('metadataLong')">{{ metadata.long }}</span>
                         </li>
                         <li class="list-group-item ">
                             <span class="slice-column left">Spin Up </span>
-                            <span class="slice-column right">{{ metadata.spin_up }}</span>
+                            <span id="metadataSpinUp" class="slice-column right text-standard"
+                            onkeydown="changeColorToUpdated('metadataSpinUp')">{{ metadata.spin_up }}</span>
                         </li>
                     </ul>
                     <div class="button-edit">
                         <span class="right">
-                            <a type="button" class="btn btn-secondary"
-                               href="Test data">
+                            <a id="editConfigButton" type="button" class="btn btn-secondary" onclick="enterEditMode()">
                                 Edit Configuration
+                            </a>
+                            <a id="cancelEditConfigButton" hidden type="button" class="btn btn-danger" onclick="cancelConfigEdit()">
+                                Cancel
+                            </a>
+                            <a id="submitConfigButton" hidden type="button" class="btn btn-success" onclick="submitConfig('{{ metadata.project_id }}')">
+                                Submit
                             </a>
                         </span>
                     </div>
@@ -70,49 +84,84 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item ">
                             <span class="slice-column left">Modflow Model</span>
-                            <span class="slice-column right">Test data</span>
+                            <span id="modflowModelId" class="slice-column right">{{ metadata.modflow_metadata.modflow_id if metadata.modflow_metadata else 'None' }}</span>
                         </li>
-                        <li class="list-group-item">
+                        <li id="modflowModelGridSize" class="list-group-item" {{ 'hidden' if not metadata.modflow_metadata }}>
                             <span class="slice-column left">Grid Size</span>
-                            {% if True %}
-                            <span class="slice-column right">Test data cells</span>
-                            {% else %}
-                            <span class="slice-column right">-</span>
-                            {% endif %}
+                            <span id="modflowModelGridSizeContent" class="slice-column right">{{ metadata.modflow_metadata.rows if metadata.modflow_metadata }} cells x {{ metadata.modflow_metadata.cols if metadata.modflow_metadata }} cells</span>
                         </li>
-                        <li class="list-group-item ">
+                        <li id="modflowModelGridUnit" class="list-group-item" {{ 'hidden' if not metadata.modflow_metadata }}>
                             <span class="slice-column left">Grid Unit</span>
-                            <span class="slice-column right">Test data</span>
+                            <span id="modflowModelGridUnitContet" class="slice-column right">{{ metadata.modflow_metadata.grid_unit if metadata.modflow_metadata }}</span>
+                        </li>
+                        <li class="list-group-item" id="modflowUpload">
+                            <div class="button-spacing">
+                                <button id="modflowUploadBtn" type="button" class="btn btn-success left" onClick="openModflowDialog()">{{ 'Change' if metadata.modflow_metadata else 'Upload' }}</button>
+                                <button id="modflowRemoveBtn" type="button" class="btn btn-danger right"
+                                        {{ 'hidden' if not metadata.modflow_metadata }}
+                                onClick="deleteModflowModel('{{ metadata.project_id }}')">Remove</button>
+                            </div>
+
+                            <input type="file" id="modflowUploadInput" accept=".zip" hidden onchange="sendModflowModelAfterSelected('{{ metadata.project_id }}')">
                         </li>
                     </ul>
                 </div>
                 <div class="config-labels">
-                    <h3 style="text-align: center">Hydrus models</h3>
+                     <h3 style="text-align: center">Hydrus models</h3>
                     <ul class="list-group list-group-flush">
-                        {% if True %}
-                        <li class="list-group-item ">
-                            <span class="slice-column left">Hydrus Model Test data</span>
-                            <span class="slice-column right">Test data</span>
+                        {% for hydrus_id in metadata.hydrus_models %}
+                        <li class="list-group-item" id="{{ hydrus_id }}">
+                            <span class="slice-column left">{{ hydrus_id }}</span>
+                            <span class="slice-column right">
+                                <button type="button" class="btn btn-danger right" onClick="deleteHydrus('{{ metadata.project_id }}', '{{ hydrus_id }}')">Remove</button>
+                            </span>
                         </li>
-                        <li class="list-group-item ">
-                            <span class="slice-column left">Hydrus Model Test data</span>
-                            <span class="slice-column right">Test data</span>
+                        {% endfor %}
+                        <li class="list-group-item" id="hydrusUpload">
+                            <span class="d-flex justify-content-center">
+                                <button type="button" class="btn btn-success right" onClick="openHydrusDialog()">Upload</button>
+                            </span>
+                            <input type="file" id="hydrusUploadInput" accept=".zip" hidden onchange="sendHydrusModelAfterSelected('{{ metadata.project_id }}')">
                         </li>
-                        {% else %}
-                        <li class="list-group-item ">
-                            <span class="slice-column left">Hydrus models</span>
-                            <span class="slice-column right">-</span>
-                        </li>
-                        {% endif %}
                     </ul>
-                    <div class="button-edit">
-                        <span class="right">
-                            <a type="button" class="btn btn-secondary"
-                               href="Test data">
-                                Upload weather files
-                            </a>
-                        </span>
-                    </div>
+                </div>
+                <div class="config-labels">
+                    <h3 style="text-align: center">Weather files</h3>
+                    <ul class="list-group list-group-flush">
+                        {% for weather_id in metadata.weather_files %}
+                        <li class="list-group-item" id="{{ weather_id }}">
+                            <span class="slice-column left">{{ weather_id }}</span>
+                            <span class="slice-column right">
+                                <button type="button" class="btn btn-danger right" onClick="deleteWeatherFile('{{ metadata.project_id }}', '{{ weather_id }}')">Remove</button>
+                            </span>
+                        </li>
+                        {% endfor %}
+                        <li class="list-group-item" id="weatherUpload">
+                            <span class="d-flex justify-content-center">
+                                <button type="button" class="btn btn-success right" onClick="openWeatherFileDialog()">Upload</button>
+                            </span>
+                            <input type="file" id="weatherFileUploadInput" accept=".csv" hidden onchange="sendWeatherFileAfterSelected('{{ metadata.project_id }}')">
+                        </li>
+                    </ul>
+                </div>
+                <div class="config-labels">
+                    <h3 style="text-align: center">Shapes</h3>
+                    <ul class="list-group list-group-flush">
+                        {% for shape_id, color in metadata.shapes.items() %}
+                        <li class="list-group-item" id="{{ shape_id }}">
+                            <div class="slice-column left">
+                                <div class="slice-column left">{{ shape_id }}</div>
+                                <div class="slice-column left">
+                                    <div id="{{ shape_id }}Color" class="slice-column left" style="text-align:center;width:25px;height:25px;background-color:{{ color }};"></div>
+                                </div>
+                            </div>
+                            <span class="slice-column right">
+                                <button type="button" class="btn btn-danger right" onClick="deleteShape('{{ metadata.project_id }}', '{{ weather_id }}')">Remove</button>
+                                <button type="button" class="btn btn-secondary right" onClick="editShape('{{ metadata.project_id }}', '{{ weather_id }}')">Edit</button>
+                            </span>
+                        </li>
+                        {% endfor %}
+                    </ul>
                 </div>
             </div>
         </div>
@@ -123,11 +172,11 @@
         <div class="row justify-content-md-center">
 
             <div class="row-lg-9">
-                <div class="text-center">
-                    <h3 class="display-4">Modflow</h3>
-                    <p class="lead">Drag and drop</p>
-                </div>
                 <hr class="my-4">
+                <div class="text-center">
+                    <h3 class="display-4">Upload files</h3>
+                    <p class="lead">Drop here Hydrus and Modflow models as well as weather .csv files</p>
+                </div>
 
                 <div class="container" style="background: white; padding: 2em; border-radius: 5px;">
                     <div class="panel panel-default">
@@ -142,112 +191,6 @@
                         </div>
                     </div>
                 </div> <!-- /container -->
-                {% if True %}
-                <div class="container">
-                    <div class="row justify-content-md-center">
-                        <div class="col-lg-9">
-                            <div>
-                                <h5 style="text-align: center">Models uploaded:</h5>
-                                <ul id="models-list" class="list-group list-group-flush">
-                                    {% if True %}
-                                    <li class="list-group-item">
-                                        <span class="slice-column left" style="model-line">Model name</span>
-                                        <span class="slice-column right">
-                                            <button type="button" class="btn btn-danger right" onClick="doDelete('{{ name }}')">Remove</button>
-                                        </span>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <span class="slice-column left" style="model-line">Model name</span>
-                                        <span class="slice-column right">
-                                            <button type="button" class="btn btn-danger right" onClick="doDelete('{{ name }}')">Remove</button>
-                                        </span>
-                                    </li>
-                                    {% endif %}
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-
-            <div class="row-lg-9">
-                <div class="text-center">
-                    <h3 class="display-4">Hydrus</h3>
-                    <p class="lead">Drag and drop
-                    </p>
-                </div>
-                <hr class="my-4">
-
-                <div class="container" style="background: white; padding: 2em; border-radius: 5px;">
-                    <div class="panel panel-default">
-                        <div class="panel-heading"><strong>Upload Files</strong></div>
-                        <div class="panel-body">
-
-                            <!-- Drop Zone -->
-                            <h6>Drag and drop files below</b>.</h6>
-                            <div class="upload-drop-zone" id="drop-zone">
-                                Just drag and drop files here
-                            </div>
-                        </div>
-                    </div>
-                </div> <!-- /container -->
-                {% if True %}
-                <div class="row justify-content-md-center">
-                    <div class="col-lg-9">
-                        <div>
-                            <h5 style="text-align: center">Models uploaded:</h5>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">
-                                    <span class="slice-column left" style="model-line">Model name</span>
-                                    <span class="slice-column right">
-                                        <button type="button" class="btn btn-danger right" onClick="doDelete('{{ name }}')">Remove</button>
-                                    </span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-            <div class="row-lg-9">
-                <div class="text-center">
-                    <h1 class="display-4">Weather</h1>
-                    <p class="lead">Drag and drop</p>
-                </div>
-                <hr class="my-4">
-                <div class="container" style="background: white; padding: 2em; border-radius: 5px;">
-                    <div class="panel panel-default">
-                        <div class="panel-heading"><strong>Upload Files</strong></div>
-                        <div class="panel-body">
-
-                            <!-- Drop Zone -->
-                            <h6>Drag and drop files below</h6>
-                            <div class="upload-drop-zone" id="drop-zone-weather">
-                                Just drag and drop files here
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row" style="padding: 0 15px;">
-                    </div>
-                </div> <!-- /container -->
-                {% if True %}
-                <div class="row justify-content-md-center">
-                    <div class="col-lg-9">
-                        <div>
-                            <h5 style="text-align: center">Models uploaded:</h5>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">
-                                    <span class="slice-column left" style="model-line">Model name</span>
-                                    <span class="slice-column right">
-                                        <button type="button" class="btn btn-danger right" onClick="doDelete('{{ name }}')">Remove</button>
-                                    </span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
             </div>
         </div>
     </div>
@@ -274,7 +217,7 @@
                         you will be able to link Hydrus models to the detected zones.</p>
                 </div>
                 <div class="card-footer">
-                    <button type="button" class="btn btn-primary right" onclick="rchShapes({{ project_id }})">Choose</button>
+                    <button type="button" class="btn btn-primary right" onclick="rchShapes({{ project_id }})">Generate</button>
                 </div>
             </div>
         </div>
@@ -286,7 +229,7 @@
                         shapes.</p>
                 </div>
                 <div class="card-footer">
-                    <button type="button" class="btn btn-primary right" onclick="manualShape({{ project_id }}, null, null)">Choose</button>
+                    <button type="button" class="btn btn-primary right" onclick="manualShape({{ project_id }}, null, null)">Create new shape</button>
                 </div>
             </div>
         </div>
@@ -310,11 +253,11 @@
         <div class="col-2-auto mx-2"><h4>Brush Size</h4></div>
         <div class="col-2-auto">
             <select id="brush-size" class="form-control form-control-sm">
-                <option selected value="0"> 1 Cell</option>
-                <option value="1"> 9 Cells</option>
-                <option value="2"> 25 Cells</option>
-                <option value="3"> 49 Cells</option>
-                <option value="4"> 81 Cells</option>
+                <option selected value="0">1x1</option>
+                <option value="1">3x3</option>
+                <option value="2">5x5</option>
+                <option value="3">7x7</option>
+                <option value="4">9x9</option>
             </select>
         </div>
     </div>
@@ -326,16 +269,18 @@
         <div class="col-2-auto mx-2">
             <table class="table tab-manual table-sm" id="model-mesh" style="width: 500px">
                 <tbody>
-                {% for row in range(metadata.rows) %}
+                {% if metadata.modflow_metadata %}
+                {% for row in range(metadata.modflow_metadata.rows) %}
                 <tr class="cell-row"
-                    style="height: {{ metadata.row_cells[row] }}px !important; padding:0 !important;">
-                    {% for col in range(metadata.cols) %}
+                    style="height: {{ metadata.modflow_metadata.row_cells[row] }}px !important; padding:0 !important;">
+                    {% for col in range(metadata.modflow_metadata.cols) %}
                     <td class="cell border border-1" id="{{ 'cell_' + row|string + '_' + col|string }}"
-                        style="width: {{ metadata.col_cells[col] }}px !important; padding:0 !important;">
+                        style="width: {{ metadata.modflow_metadata.col_cells[col] }}px !important; padding:0 !important;">
                     </td>
                     {% endfor %}
                 </tr>
                 {% endfor %}
+                {% endif %}
                 </tbody>
             </table>
         </div>
@@ -428,12 +373,14 @@
 
 
 {% block scripts %}
+<script src="/static/js/projectFinished.js"></script>
 <script src="/static/js/currentProject.js"></script>
-<script src="/static/js/uploadHydrus.js"></script>
-<script src="/static/js/uploadModflow.js"></script>
-<script src="/static/js/uploadWeatherFile.js"></script>
+<script src="/static/js/projectManageHydrus.js"></script>
+<script src="/static/js/projectManageModflow.js"></script>
+<script src="/static/js/projectManageWeatherFiles.js"></script>
 <script src="/static/js/defineMethod.js"></script>
 <script src="/static/js/defineShapes.js"></script>
 <script src="/static/js/simulation.js"></script>
 <script src="/static/js/shapes.js"></script>
+<script src="/static/js/projectDetails.js"></script>
 {% endblock %}

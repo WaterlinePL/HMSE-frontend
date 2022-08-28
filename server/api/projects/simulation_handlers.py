@@ -61,10 +61,10 @@ def upload_modflow_handler():
         project_metadata.row_cells = model_data.row_cells
         project_metadata.col_cells = model_data.col_cells
 
-        project_dao.save_or_update(project_metadata)
+        project_dao.save_or_update_metadata(project_metadata)
 
         logging.log(logging.INFO, "Modflow model uploaded successfully")
-        return redirect(endpoints.UPLOAD_MODFLOW)
+        return redirect(endpoints.PROJECT_MANAGE_MODFLOW)
 
     else:
         logging.log(logging.WARN, f"Invalid archive format, must be a .zip file")
@@ -84,7 +84,7 @@ def remove_modflow_handler():
     model_name = request.json['modelName']
     if model_name:
         project_dao.delete_modflow_model(state.loaded_project.project_id, model_name)
-    return redirect(endpoints.UPLOAD_MODFLOW, code=303)
+    return redirect(endpoints.PROJECT_MANAGE_MODFLOW, code=303)
 
 
 # FIXME: Way too long, needs to be in submodule
@@ -104,7 +104,7 @@ def upload_hydrus_handler():
             pass
 
     logging.log(logging.INFO, "Hydrus model uploaded successfully")
-    return redirect(endpoints.UPLOAD_HYDRUS)
+    return redirect(endpoints.PROJECT_MANAGE_HYDRUS)
 
 
 def __separate_model_name(filename: str) -> Tuple[str, str]:
@@ -131,7 +131,7 @@ def remove_hydrus_handler():
             del state.loaded_shapes[hydrus_model_name]
         if hydrus_model_name in state.models_masks_ids.keys():
             del state.models_masks_ids[hydrus_model_name]
-    return redirect(endpoints.UPLOAD_HYDRUS, code=303)
+    return redirect(endpoints.PROJECT_MANAGE_HYDRUS, code=303)
 
 
 def upload_shape_handler(hydrus_model_index):

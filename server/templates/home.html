@@ -20,10 +20,7 @@
     </div>
     <div class="row justify-content-md-center">
         <div class="col-auto">
-            <a type="button" class="btn btn-primary btn-lg" href="{{ url_for('projects.create_project') }}"
-               style="margin: 0 0 75px;">
-                Create Project
-            </a>
+            {% include "createProject.html" %}
         </div>
     </div>
 
@@ -39,16 +36,8 @@
                     It is important to provide data in a correct format: <b>coordinates in Decimal Degrees, spin up time as an
                     integer and dates in YYYY-mm-dd format</b>.
                     <br>
-                    To create a new project, click "Create Project".
+                    To create a new project, click button "Create project".
                 </p>
-                <div class="button-text-box">
-                  <span class="right">
-                      <a class="btn btn-secondary" href="{{ url_for('projects.create_project') }}"
-                         type="button">
-                          Create Project
-                      </a>
-                  </span>
-                </div>
                 <h5>Choose an existing project</h5>
                 <p>
                     &emsp;<b>All existing projects can be found in the "List of projects" tab</b> in the navigation
@@ -175,4 +164,7 @@
         </div>
     </div>
 </div>
+
+<!--Modals-->
+{% include 'createProjectModal.html' %}
 {% endblock %}

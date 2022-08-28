@@ -14,9 +14,9 @@ PROJECT_FINISHED = '/project/<project_id>/is-finished'
 PROJECT_IN_USE = '/project/<project_id>/in-use'  # TODO
 
 EDIT_PROJECT = '/project/<project_id>/edit'
-UPLOAD_HYDRUS = '/project/<project_id>/hydrus'
-UPLOAD_MODFLOW = '/project/<project_id>/modflow'
-UPLOAD_WEATHER_FILE = '/project/<project_id>/weather'
+PROJECT_MANAGE_HYDRUS = '/project/<project_id>/hydrus'
+PROJECT_MANAGE_MODFLOW = '/project/<project_id>/modflow'
+PROJECT_MANAGE_WEATHER_FILE = '/project/<project_id>/weather'
 MANUAL_SHAPE = '/project/<project_id>/manual-shape'
 RCH_SHAPES = '/project/<project_id>/rch-shape'
 

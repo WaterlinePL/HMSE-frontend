@@ -104,7 +104,7 @@ class UserState:
 
             shape_metadata = ShapeMetadata(shape_mask, self.loaded_project.project_id, hydrus_model)
             self.loaded_shapes[hydrus_model] = shape_metadata
-            daos.mask_dao.save_or_update(shape_metadata)
+            daos.mask_dao.save_or_update_metadata(shape_metadata)
 
     # TODO: Probably move elsewhere
     def create_empty_mask(self) -> Optional[np.ndarray]:

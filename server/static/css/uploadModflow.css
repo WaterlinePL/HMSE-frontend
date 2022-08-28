@@ -17,3 +17,8 @@
 .right {
 	float: right;
 }
+
+.button-spacing {
+    display: flex;
+    justify-content: space-around;
+}

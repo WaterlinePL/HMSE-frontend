@@ -65,7 +65,7 @@ def path_check_for_modflow_model(cookie: UserID, project_id: ProjectID) -> Optio
     if not metadata.modflow_model:
         # TODO: error
         # state.activate_error_flag()
-        return redirect(endpoints.UPLOAD_HYDRUS)
+        return redirect(endpoints.PROJECT_MANAGE_HYDRUS)
 
     return None
 

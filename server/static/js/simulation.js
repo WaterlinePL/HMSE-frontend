@@ -153,21 +153,6 @@
         $('#error-alert').toast({autohide: false});
         $('#error-alert').toast('show');
     }
-
-    $(document).ready(function () {
-        const url = Config.projectFinished;
-        ($).ajax({
-            url: url,
-            type: "GET",
-            dataType: "json",
-            context: this,
-            success: function (content) {
-                if(content["status"] === "OK")
-                {
-                    $("#download").removeAttr('hidden');
-                }
-            }
-        });
-    });
+    $(document).ready(isProjectFinished($("#thisProjectId").text(), "#download"));
 
 })(jQuery);
