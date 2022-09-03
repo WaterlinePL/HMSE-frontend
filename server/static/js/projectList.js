@@ -10,7 +10,7 @@ async function doDelete(projectId, wasWarned) {
                 // TODO: Is this needed? - reload seems the best
                 //location.replace(response.url)
             } else {
-                response.json().then(() => {
+                response.json().then(data => {
                     showErrorToast(jQuery, `Error: ${data.description}`);
                 });
             }
@@ -23,33 +23,13 @@ async function doDelete(projectId, wasWarned) {
     }
 };
 
-const createNewProject = async function() {
-    const projectId = document.getElementById("form-create-project").elements.newProjectId.value;
-    await fetch(Config.createProject, {
-        method: "POST",
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            projectId: projectId,
-            projectName: projectId
-        })
-    }).then(response => {
-        console.log(response);
-        if (response.status === 200) {
-            location.replace(response.url);
-        } else {
-            response.json().then(() => {
-                showErrorToast(jQuery, `Error: ${data.description}`);
-            });
-        }
-    });
-};
+
 
 (function ($) {
     'use strict'
 
     document.getElementById("form-search").onsubmit = function (e) {
         e.preventDefault();
-
         const search = this.elements.search.value;
 //        console.log(this.elements.search.value);
         if (search !== null && search !== undefined && search.trim() !== "") {

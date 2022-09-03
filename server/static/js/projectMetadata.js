@@ -25,7 +25,7 @@ async function fillProjectConfig(projectId) {
                 ProjectConfig.hydrusToWeather = data["hydrus_to_weather"];
             });
         } else {
-            response.json().then(() => {
+            response.json().then(data => {
                 showErrorToast(jQuery, `Error: ${data.description}`);
             });
         }

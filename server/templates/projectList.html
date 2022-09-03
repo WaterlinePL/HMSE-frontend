@@ -50,18 +50,14 @@
                 </thead>
                 <tbody>
                 {% for project_id in projects %}
-                <tr>
+                <tr id="project{{ project_id }}">
                     <th scope="row">{{ loop.index + pagination.skip }}</th>
                     <td class="project-name-column">{{ project_id }}</td>
                     <td class="text-right">
                                 <a type="button" hidden id="{{ project_id }}" class="btn btn-success btn-sm download"
-                                   href="{{ url_for('projects.project_download', project_id=project_id) }}">Results</a>
+                                   href="{{ url_for('projects.project_download', project_id=project_id) }}">Download results</a>
                         <a type="button" class="btn btn-primary btn-sm"
-                           href="{{ url_for('projects.project', project_id=project_id) }}">View details
-                        </a>
-                        <a type="button" class="btn btn-secondary btn-sm"
-                           href="{{ url_for('projects.edit_project', project_id=project_id) }}">
-                        Edit
+                           href="{{ url_for('projects.edit_project', project_id=project_id) }}">Select
                         </a>
                         {% include 'deleteProject.html' %}
                     </td>

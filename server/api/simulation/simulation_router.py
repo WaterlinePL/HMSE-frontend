@@ -1,15 +1,16 @@
 from http import HTTPStatus
 
 import flask
-from flask import request, jsonify
+from flask import request, jsonify, Blueprint
 from werkzeug.exceptions import abort
 
 from hmse_simulations.simulation_service import simulation_service
 from server import endpoints, cookie_utils, path_checker
-from server.main import app
+
+simulations = Blueprint('simulations', __name__)
 
 
-@app.route(endpoints.SIMULATION, methods=['GET', 'POST'])
+@simulations.route(endpoints.SIMULATION, methods=['GET', 'POST'])
 def simulation(project_id: str):
     cookie = request.cookies.get(cookie_utils.COOKIE_NAME)
     prev_check_failed = path_checker.path_check_for_modflow_model(cookie, project_id)

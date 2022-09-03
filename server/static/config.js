@@ -7,17 +7,15 @@ var Config = {
     "projectManageWeatherFile": "/project/<project_id>/weather",
     "projectFinished": '/project/<project_id>/is-finished',
     "rchShapes": "/project/<project_id>/rch-shape",
+    "manualShapes": "/project/<project_id>/manual-shape",
     "projectMetadata": "/project/<project_id>/metadata",
+    "simulation": "/simulation/<project_id>",
 
      // Unused
-    "manualShapes": "/manual-shapes/",
     "defineMethod": "/define-method",
     "editProject": "/edit-project/",
     "projectList": '/project-list',
     "projectDownload": '/project-download',
-    "simulation": "/simulation",
-    "simulationCheck": "/simulation-check/",
-    "simulationRun": "/simulation-run",
 }
 
 function getEndpointForProjectId(endpoint, projectId) {

@@ -20,7 +20,7 @@ async function deleteWeatherFile(projectId, weatherId) {
             document.getElementById(weatherId).remove();
             showSuccessToast(jQuery, "Weather file successfully deleted");
         } else {
-            response.json().then(() => {
+            response.json().then(data => {
                 showErrorToast(jQuery, `Error: ${data.description}`);
             });
         }
@@ -52,7 +52,7 @@ async function sendWeatherFileAfterSelected(projectId) {
             addWeatherEntryToSimulation(projectId, weatherFile.name);
             showSuccessToast(jQuery, "Weather file successfully uploaded");
         } else {
-            response.json().then(() => {
+            response.json().then(data => {
                 showErrorToast(jQuery, `Error: ${data.description}`);
             });
         }

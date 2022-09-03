@@ -84,19 +84,19 @@
                         </li>
                     </ul>
                     <div class="button-edit">
-                        <span class="right">
-                            <a id="editConfigButton" type="button" class="btn btn-secondary" onclick="enterEditMode()">
+                        <div class="button-spacing">
+                            <button id="editConfigButton" type="button" class="btn btn-secondary" onclick="enterEditMode()">
                                 Edit Configuration
-                            </a>
-                            <a id="cancelEditConfigButton" hidden type="button" class="btn btn-danger"
+                            </button>
+                            <button id="cancelEditConfigButton" hidden type="button" class="btn btn-danger"
                                onclick="cancelConfigEdit()">
                                 Cancel
-                            </a>
-                            <a id="submitConfigButton" hidden type="button" class="btn btn-success"
+                            </button>
+                            <button id="submitConfigButton" hidden type="button" class="btn btn-success"
                                onclick="submitConfig('{{ metadata.project_id }}')">
                                 Submit
-                            </a>
-                        </span>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="config-labels">
@@ -114,18 +114,18 @@
                         <li id="modflowModelGridUnit" class="list-group-item" {{
                         'hidden' if not metadata.modflow_metadata }}>
                         <span class="slice-column left">Grid Unit</span>
-                        <span id="modflowModelGridUnitContet" class="slice-column right">{{ metadata.modflow_metadata.grid_unit if metadata.modflow_metadata }}</span>
+                        <span id="modflowModelGridUnitContent" class="slice-column right">{{ metadata.modflow_metadata.grid_unit if metadata.modflow_metadata }}</span>
                         </li>
                         <li class="list-group-item" id="modflowUpload">
                             <div class="button-spacing">
+                                <button id="modflowRemoveBtn" type="button" class="btn btn-danger right"
+                                        {{ 'hidden' if not metadata.modflow_metadata }}
+                                        onClick="deleteModflowModel('{{ metadata.project_id }}')">Remove
+                                </button>
                                 <button id="modflowUploadBtn" type="button" class="btn btn-success left"
                                         onClick="openModflowDialog()">{{ 'Change' if metadata.modflow_metadata else
                                     'Upload' }}
                                 </button>
-                                <button id="modflowRemoveBtn" type="button" class="btn btn-danger right"
-                                        {{
-                                'hidden' if not metadata.modflow_metadata }}
-                                onClick="deleteModflowModel('{{ metadata.project_id }}')">Remove</button>
                             </div>
 
                             <input type="file" id="modflowUploadInput" accept=".zip" hidden
@@ -192,7 +192,7 @@
                     <h3 style="text-align: center">Shapes</h3>
                     <ul class="list-group list-group-flush">
                         {% for shape_id, color in metadata.shapes.items() %}
-                        <li class="list-group-item" id="{{ shape_id }}">
+                        <li class="list-group-item" id="shape{{ shape_id }}">
                             <div class="slice-column left">
                                 <div class="slice-column left">{{ shape_id }}</div>
                                 <div class="slice-column left">
@@ -208,94 +208,65 @@
                             </span>
                         </li>
                         {% endfor %}
+                        <li class="list-group-item" id="newShape">
+                            <div class="button-spacing">
+                                <button type="button" class="btn btn-success right" onclick="activateShapeEditMode()">
+                                    New shape
+                                </button>
+                                    <button type="button" class="btn btn-primary right" onclick="rchShapes({{ project_id }})">
+                                        Generate RCH shapes
+                                    </button>
+<!--                                <button id="cancelNewShape" hidden type="button" class="btn btn-danger"-->
+<!--                                   onclick="cancelConfigEdit()">-->
+<!--                                    Cancel-->
+<!--                                </button>-->
+<!--                                <button id="submitNewShape" hidden type="button" class="btn btn-success"-->
+<!--                                   onclick="manualShape('{{ metadata.project_id }}')">-->
+<!--                                    Submit-->
+<!--                                </button>-->
+                            </div>
+                        </li>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<div class="jumbotron">
-    <div class="container mt-5">
-        <div class="row justify-content-md-center">
+<!--<div class="jumbotron">-->
+<!--    <div class="container mt-5">-->
+<!--        <div class="row justify-content-md-center">-->
 
-            <div class="row-lg-9">
-                <hr class="my-4">
-                <div class="text-center">
-                    <h3 class="display-4">Upload files</h3>
-                    <p class="lead">Drop here Hydrus and Modflow models as well as weather .csv files</p>
-                </div>
+<!--            <div class="row-lg-9">-->
+<!--                <hr class="my-4">-->
+<!--                <div class="text-center">-->
+<!--                    <h3 class="display-4">Upload files</h3>-->
+<!--                    <p class="lead">Drop here Hydrus and Modflow models as well as weather .csv files</p>-->
+<!--                </div>-->
 
-                <div class="container" style="background: white; padding: 2em; border-radius: 5px;">
-                    <div class="panel panel-default">
-                        <div class="panel-heading"><strong>Upload Files</strong></div>
-                        <div class="panel-body">
+<!--                <div class="container" style="background: white; padding: 2em; border-radius: 5px;">-->
+<!--                    <div class="panel panel-default">-->
+<!--                        <div class="panel-heading"><strong>Upload Files</strong></div>-->
+<!--                        <div class="panel-body">-->
 
-                            <!-- Drop Zone -->
-                            <h6>Drag and drop files below</b>.</h6>
-                            <div class="upload-drop-zone" id="drop-zone-modflow">
-                                Just drag and drop files here
-                            </div>
-                        </div>
-                    </div>
-                </div> <!-- /container -->
-            </div>
-        </div>
-    </div>
-</div>
+<!--                            &lt;!&ndash; Drop Zone &ndash;&gt;-->
+<!--                            <h6>Drag and drop files below</b>.</h6>-->
+<!--                            <div class="upload-drop-zone" id="drop-zone-modflow">-->
+<!--                                Just drag and drop files here-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div> &lt;!&ndash; /container &ndash;&gt;-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
 
-
-<div class="container mt-5" id="define-method-content">
-    <div class="row justify-content-md-center">
-        <div class="col-lg-9">
-            <div class="text-center">
-                <h1 class="display-4">Select method for defining shapes</h1>
-            </div>
-        </div>
-
-    </div>
-
-    <div class="row justify-content-md-center">
-        <div class="col-lg-4">
-            <div class="card card-display">
-                <div class="card-body">
-                    <h4 class="card-title">Recharge RCH</h4>
-                    <p class="card-text">This method of defining shapes is prepared from recharge file. In this
-                        option
-                        you will be able to link Hydrus models to the detected zones.</p>
-                </div>
-                <div class="card-footer">
-                    <button type="button" class="btn btn-primary right" onclick="rchShapes({{ project_id }})">Generate
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4">
-            <div class="card card-display">
-                <div class="card-body">
-                    <h4 class="card-title">Define shapes manually</h4>
-                    <p class="card-text">In this option you will be able to link Hydrus models to the selected
-                        shapes.</p>
-                </div>
-                <div class="card-footer">
-                    <button type="button" class="btn btn-primary right"
-                            onclick="manualShape({{ project_id }}, null, null)">Create new shape
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row justify-content-md-center">
-        <div class="col-lg-9">
-        </div>
-    </div>
-</div>
 
 <div class="container mt-5" id="define-shapes-content">
     <div class="row justify-content-md-center">
         <div class="col-lg-9">
             <div class="text-center">
-                <h1 class="display-4">Select the fields covered by this Hydrus model</h1>
+                <h1 class="display-4">Model grid with shapes</h1>
             </div>
         </div>
     </div>
@@ -311,10 +282,6 @@
             </select>
         </div>
     </div>
-    <div class="row justify-content-center my-2">
-        <strong>Hydrus model: Sample Hydrus model</strong>
-    </div>
-
     <div class="row justify-content-center my-2">
         <div class="col-2-auto mx-2">
             <table class="table tab-manual table-sm" id="model-mesh" style="width: 500px">
@@ -342,17 +309,20 @@
 
         <div class="col-lg-9">
             <div class="text-center">
-                <h1 class="display-4">Your simulation is ready to be started!</h1>
-                <p class="lead">Click "Run" once you're ready to start it.</p>
+<!--                <h1 class="display-4">Your simulation is ready to be started!</h1>-->
+                <p class="lead">Click "Run simulation" once you're ready to start it.</p>
             </div>
         </div>
     </div>
 
     <div class="row justify-content-md-center">
         <div class="col-lg-9">
-                <span class="slice-column right" style="padding: 50px 15px;">
-                    <button type="button" id="start-simulation" class="btn btn-primary right" href=""> Run </button>
-                </span>
+                <form class="slice-column right" style="padding: 50px 15px;"
+                          action="{{ url_for('simulations.simulation', project_id=metadata.project_id) }}" method="post">
+                    <button type="submit" id="start-simulation" class="btn btn-primary right">
+                        Run simulation
+                    </button>
+                </form>
         </div>
     </div>
 </div> <!-- container -->
@@ -414,7 +384,7 @@
     </div>
     <div class="row justify-content-center">
         <a type="button" id="download" hidden class="btn btn-success mx-5 my-2"
-           href="{{ url_for('projects.project_download', project_id=project_id) }}">Download Results</a>
+           href="{{ url_for('projects.project_download', project_id=metadata.project_id) }}">Download Results</a>
     </div>
 
 </div>

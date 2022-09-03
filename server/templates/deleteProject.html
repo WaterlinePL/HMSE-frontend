@@ -1,6 +1,6 @@
 <button id="{{ 'deleteProject' + project_id}}" data-toggle="modal"
         data-target="#modalDeleteProject"
-        type="button" class="btn btn-danger btn-sm"
-        onClick="doDelete('{{ project_id }}', false)">
+        type="button" class="btn btn-danger btn-sm" onclick="setProjectToDelete('{{ project_id }}')">
     Delete
 </button>
+
