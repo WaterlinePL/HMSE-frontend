@@ -31,6 +31,3 @@ async function fillProjectConfig(projectId) {
         }
     });
 }
-
-
-//console.log(ProjectConfig);
