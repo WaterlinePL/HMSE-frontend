@@ -1,3 +1,16 @@
+function updateWeatherModels(hydrusId) {
+    const hydrusList = document.getElementById(`${hydrusId}SelectWeather`);
+
+}
+
+function addHydrusEntryToSimulation(projectId, hydrusId) {
+    const hydrusList = document.getElementById("hydrusModelList");
+    const uploadButtonListElement = document.getElementById("hydrusUpload");
+    const deleteLambda = () => deleteHydrus(projectId, hydrusId);
+    hydrusList.insertBefore(createProjectListElement(hydrusId, deleteLambda),
+                            uploadButtonListElement);
+}
+
 // model removal
 async function deleteHydrus(projectId, hydrusId) {
     const url = getEndpointForProjectId(Config.projectManageHydrus, projectId);
@@ -6,7 +19,7 @@ async function deleteHydrus(projectId, hydrusId) {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({hydrusId: hydrusId})
+        body: JSON.stringify({'hydrusId': hydrusId})
     }).then(response => {
         if (response.status === 200) {
             document.getElementById(hydrusId).remove();
@@ -36,7 +49,8 @@ async function sendHydrusModelAfterSelected(projectId) {
         body: formData
     }).then(response => {
         if (response.status === 200) {
-            // TODO: Reload?
+            // TODO: Actiavate toast, read ID from response
+            addHydrusEntryToSimulation(projectId, hydrusModel.name);
         } else {
             // TODO: Show error toast
         }

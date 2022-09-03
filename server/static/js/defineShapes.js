@@ -33,7 +33,6 @@ function handleSubmit(modelIdx) {
             showToast('successMessage');
             let nextModelId = parseInt(modelIdx) + 1;
             setTimeout(function () {
-                console.log("redirecting to next model...");
                 window.location.href = Config.manualShapes + nextModelId;
             }, 500);
 
@@ -86,7 +85,6 @@ let prevCells = [];
 let isHighlighted = false;
 
 function removePreviousTrail(id) {
-    console.log(id);
     const grid = getRowColFromId(id);
     const row = grid.row;
     const col = grid.col;
@@ -145,14 +143,12 @@ $(function () {
     let isMouseDown = false;
     $("#model-mesh td")
         .mousedown(function () {
-            console.log(this.id);
             isMouseDown = true;
             isHighlighted = !$(this).hasClass("bg-primary");
             onMouseOver(this.id, isHighlighted);
             return false; // prevent text selection
         })
         .mouseover(function () {
-            console.log(this.id);
             if (isMouseDown) {
                 onMouseOver(this.id, isHighlighted);
             } else {

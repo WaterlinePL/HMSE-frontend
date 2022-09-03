@@ -73,6 +73,15 @@ def project(project_id: str):
         return flask.Response(status=HTTPStatus.OK)
 
 
+@projects.route(endpoints.PROJECT_METADATA)
+def project_metadata(project_id: str):
+    check_previous_steps = path_checker.path_check_simulate_access(request.cookies.get(cookie_utils.COOKIE_NAME))
+    if check_previous_steps:
+        return check_previous_steps
+    metadata = project_service.get(project_id)
+    return metadata.to_json_str()
+
+
 @projects.route(endpoints.CREATE_PROJECT, methods=['POST'])
 def create_project():
     check_previous_steps = path_checker.path_check_simulate_access(request.cookies.get(cookie_utils.COOKIE_NAME))
@@ -129,7 +138,7 @@ def upload_modflow(project_id: str):
                                            cols=10,
                                            grid_unit='meter',
                                            row_cells=[20] * 10,
-                                           col_cells=[40] * 10) # TODO: remove - testing only
+                                           col_cells=[40] * 10)  # TODO: remove - testing only
         return jsonify(modflow_metadata)
     elif request.method == 'DELETE':
         project_service.delete_modflow_model(project_id)

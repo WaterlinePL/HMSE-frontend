@@ -1,15 +1,3 @@
-.slice-column {
-    width: 50%
-}
-
-.left {
-    float: left;
-}
-
-.right {
-    float: right;
-}
-
 .text-box {
     border-bottom: 1px solid #6c757d;
     margin: 25px 0;

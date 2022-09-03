@@ -12,18 +12,6 @@
 	color: white;
 }
 
-.slice-column {
-	width: 50%
-}
-
-.left {
-	float: left;
-}
-
-.right {
-	float: right;
-}
-
 .tab-simulation>tbody>tr:nth-child(10n), table>tbody>tr:last-child {
 	border-bottom: 2px solid darkgray !important;
 }

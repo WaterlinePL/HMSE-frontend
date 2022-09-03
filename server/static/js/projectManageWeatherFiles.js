@@ -1,3 +1,29 @@
+function addWeatherEntryToSimulation(projectId, weatherId) {
+    const weatherList = document.getElementById("weatherFileList");
+    const uploadButtonListElement = document.getElementById("weatherUpload");
+    const deleteLambda = () => deleteWeatherFile(projectId, weatherId);
+    weatherList.insertBefore(createProjectListElement(weatherId, deleteLambda), uploadButtonListElement);
+}
+
+
+// model removal
+async function deleteWeatherFile(projectId, weatherId) {
+    const url = getEndpointForProjectId(Config.projectManageWeatherFile, projectId);
+    await fetch(url, {
+        method: "DELETE",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({'weatherId': weatherId})
+    }).then(response => {
+        if (response.status === 200) {
+            document.getElementById(weatherId).remove();
+            // TODO: Activate toast
+        }
+    });
+}
+
+
 async function openWeatherFileDialog() {
     const input = document.getElementById('weatherFileUploadInput');
     input.click();
@@ -19,6 +45,7 @@ async function sendWeatherFileAfterSelected(projectId) {
     }).then(response => {
         if (response.status === 200) {
             // Reload?
+            addWeatherEntryToSimulation(projectId, weatherFile.name);
         } else {
             // TODO: Show error toast
         }

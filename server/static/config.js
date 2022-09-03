@@ -6,6 +6,8 @@ var Config = {
     "projectManageModflow": "/project/<project_id>/modflow",
     "projectManageWeatherFile": "/project/<project_id>/weather",
     "projectFinished": '/project/<project_id>/is-finished',
+    "rchShapes": "/project/<project_id>/rch-shape",
+    "projectMetadata": "/project/<project_id>/metadata",
 
      // Unused
     "manualShapes": "/manual-shapes/",
@@ -13,7 +15,6 @@ var Config = {
     "editProject": "/edit-project/",
     "projectList": '/project-list',
     "projectDownload": '/project-download',
-    "rchShapes": "/rch-shapes/",
     "simulation": "/simulation",
     "simulationCheck": "/simulation-check/",
     "simulationRun": "/simulation-run",

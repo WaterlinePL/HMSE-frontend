@@ -8,18 +8,6 @@
     border-radius: 4px;
 }
 
-.slice-column {
-    width: 50%
-}
-
 .project-name-column {
     width: 60%;
-}
-
-.left {
-    float: left;
-}
-
-.right {
-    float: right;
 }

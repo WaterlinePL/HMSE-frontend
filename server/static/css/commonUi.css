@@ -1,5 +1,5 @@
 .slice-column {
-	width: 50%
+	width: 50%;
 }
 
 .left {
@@ -8,4 +8,8 @@
 
 .right {
 	float: right;
+}
+
+.row-entries {
+    vertical-align: middle; TODO
 }

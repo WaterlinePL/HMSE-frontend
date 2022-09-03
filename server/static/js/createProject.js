@@ -2,7 +2,6 @@
 
     document.getElementById("form-create-project").onsubmit = function (e) {
         e.preventDefault()
-        console.log(this.elements)
         const name = this.elements.name.value;
         const lat = this.elements.lat.value;
         const long = this.elements.long.value;
