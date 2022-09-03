@@ -6,10 +6,13 @@ async function doDelete(projectId, wasWarned) {
             method: "DELETE",
         }).then(response => {
             if (response.status === 200) {
-                // TODO: Is this needed?
-                location.replace(response.url)
+                showSuccessToast(jQuery, `Project ${projectId} successfully deleted`);
+                // TODO: Is this needed? - reload seems the best
+                //location.replace(response.url)
             } else {
-                // Alert toast
+                response.json().then(() => {
+                    showErrorToast(jQuery, `Error: ${data.description}`);
+                });
             }
         });
     } else {
@@ -33,6 +36,10 @@ const createNewProject = async function() {
         console.log(response);
         if (response.status === 200) {
             location.replace(response.url);
+        } else {
+            response.json().then(() => {
+                showErrorToast(jQuery, `Error: ${data.description}`);
+            });
         }
     });
 };
@@ -52,8 +59,8 @@ const createNewProject = async function() {
         }
     }
 
-    // TODO: Does this always show toast no matter what happens?
-    $('#error').toast('show');
+    // TODO: Does this always show toast no matter what happens? - looks like it, maybe it's empty
+//    $('#error').toast('show');
 
     $(document).ready(function () {
         $(".download").each(function (i, obj) {

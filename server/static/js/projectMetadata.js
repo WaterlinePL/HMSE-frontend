@@ -23,10 +23,11 @@ async function fillProjectConfig(projectId) {
                 ProjectConfig.shapes = data["shapes"];
                 ProjectConfig.shapesToHydrus = data["shapes_to_hydrus"];
                 ProjectConfig.hydrusToWeather = data["hydrus_to_weather"];
-                console.log(ProjectConfig);
             });
         } else {
-            // TODO: Error with toast
+            response.json().then(() => {
+                showErrorToast(jQuery, `Error: ${data.description}`);
+            });
         }
     });
 }
