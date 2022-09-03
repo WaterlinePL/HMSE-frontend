@@ -11,8 +11,11 @@ async function requestRechargeShapes(projectId) {
                     drawShape(shape['mask'], 0, shape['color']);
                 })
             });
+            showSuccessToast(jQuery, "Added RCH shapes from Modflow model");
         } else {
-            // TODO: toast with error
+            response.json().then(() => {
+                showErrorToast(jQuery, `Error: ${data.description}`);
+            });
         }
     });
 }

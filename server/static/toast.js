@@ -1,4 +1,4 @@
-function showSuccessfulToast($, message) {
+function showSuccessToast($, message) {
     const toast = document.getElementById("infoToast");
     toast.classList.toggle("bg-success", true);
     toast.classList.toggle("bg-danger", false);

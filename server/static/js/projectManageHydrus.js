@@ -23,7 +23,7 @@ async function deleteHydrus(projectId, hydrusId) {
     }).then(response => {
         if (response.status === 200) {
             document.getElementById(hydrusId).remove();
-            showSuccessfulToast(jQuery, "Hydrus model successfully deleted")
+            showSuccessToast(jQuery, "Hydrus model successfully deleted")
         } else {
             response.json().then(data => {
                 showErrorToast(jQuery, `Error: ${data.description}`);
@@ -53,15 +53,19 @@ async function sendHydrusModelAfterSelected(projectId) {
         body: formData
     }).then(response => {
         if (response.status === 200) {
-            // TODO: Actiavate toast, read ID from response
-            addHydrusEntryToSimulation(projectId, hydrusModel.name);
+            const hydrusId = hydrusModel.name;
+            showSuccessToast(jQuery, `Hydrus model ${hydrusId} successfully uploaded`)
+            // TODO: Read ID from response
+            addHydrusEntryToSimulation(projectId, hydrusId);
         } else {
-            // TODO: Show error toast
+            response.json().then(() => {
+                showErrorToast(jQuery, `Error: ${data.description}`);
+            });
         }
     })
 }
 
-
+// TODO: multifile upload? - already unused
 async function startUpload(files) {
         const formData = new FormData();
         for (let i = 0; i < files.length; i++)

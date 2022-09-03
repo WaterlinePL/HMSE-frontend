@@ -10,8 +10,11 @@ async function deleteModflowModel(projectId) {
             document.getElementById('modflowModelId').textContent = "None";
             document.getElementById('modflowModelGridSize').hidden = true;
             document.getElementById('modflowModelGridUnit').hidden = true;
+            showSuccessToast(jQuery, "Modflow model successfully deleted");
         } else {
-            // TODO: alert with toast
+            response.json().then(() => {
+                showErrorToast(jQuery, `Error: ${data.description}`);
+            });
         }
     });
 }
@@ -47,9 +50,12 @@ async function sendModflowModelAfterSelected(projectId) {
                 document.getElementById('modflowModelGridUnit').hidden = false;
                 document.getElementById('modflowModelGridUnitContent').textContent = data['grid_unit'];
                 // TODO: prepare grid
+                showSuccessToast(jQuery, "Modflow model successfully uploaded");
             });
         } else {
-            // TODO: Show error toast
+            response.json().then(() => {
+                showErrorToast(jQuery, `Error: ${data.description}`);
+            });
         }
     })
 }

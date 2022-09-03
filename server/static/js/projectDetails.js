@@ -48,8 +48,11 @@ async function submitConfig(projectId) {
             if (response.status === 200) {
                 setFields(requestData);
                 turnOffButtons();
+                showSuccessToast(jQuery, "Project configuration successfully updated");
             } else {
-                // Alert with toast
+                response.json().then(() => {
+                    showErrorToast(jQuery, `Error: ${data.description}`);
+                });
             }
         });
 }

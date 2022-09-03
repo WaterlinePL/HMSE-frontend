@@ -18,7 +18,11 @@ async function deleteWeatherFile(projectId, weatherId) {
     }).then(response => {
         if (response.status === 200) {
             document.getElementById(weatherId).remove();
-            // TODO: Activate toast
+            showSuccessToast(jQuery, "Weather file successfully deleted");
+        } else {
+            response.json().then(() => {
+                showErrorToast(jQuery, `Error: ${data.description}`);
+            });
         }
     });
 }
@@ -46,8 +50,11 @@ async function sendWeatherFileAfterSelected(projectId) {
         if (response.status === 200) {
             // Reload?
             addWeatherEntryToSimulation(projectId, weatherFile.name);
+            showSuccessToast(jQuery, "Weather file successfully uploaded");
         } else {
-            // TODO: Show error toast
+            response.json().then(() => {
+                showErrorToast(jQuery, `Error: ${data.description}`);
+            });
         }
     });
 }
