@@ -194,8 +194,16 @@ def manual_shapes(project_id: str):
 
     shape_id = request.json['shapeId']
     if request.method == 'PUT':
-        shape_mask = request.json['mask']
-        project_service.save_or_update_shape(project_id, shape_id, shape_mask)
+        shape_mask = request.json.get('shapeMask')
+        color = request.json.get('color')
+        hydrus_mapping = request.json.get('hydrusMapping')
+        manual_value = request.json.get('manualValue')
+
+        project_service.save_or_update_shape(project_id, shape_id, shape_mask, color)
+        if hydrus_mapping:
+            project_service.map_shape_to_hydrus(project_id, shape_id, hydrus_id=hydrus_mapping)
+        elif manual_value:
+            project_service.map_shape_to_manual_value(project_id, shape_id, value=manual_value)
         return flask.Response(status=HTTPStatus.OK)
     else:
         project_service.delete_shape(project_id, shape_id)

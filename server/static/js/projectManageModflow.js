@@ -12,7 +12,7 @@ async function deleteModflowModel(projectId) {
             document.getElementById('modflowModelGridUnit').hidden = true;
             showSuccessToast(jQuery, "Modflow model successfully deleted");
         } else {
-            response.json().then(() => {
+            response.json().then(data => {
                 showErrorToast(jQuery, `Error: ${data.description}`);
             });
         }
@@ -38,10 +38,10 @@ async function sendModflowModelAfterSelected(projectId) {
         method: "PUT",
         body: formData
     }).then(response => {
+        document.getElementById('modflowUploadInput').value = "";
         if (response.status === 200) {
             // TODO: Set model details
             response.json().then(data => {
-                console.log(data);
                 document.getElementById('modflowRemoveBtn').hidden = false;
                 document.getElementById('modflowUploadBtn').textContent = "Upload";
                 document.getElementById('modflowModelId').textContent = data['modflow_id'];
@@ -53,7 +53,7 @@ async function sendModflowModelAfterSelected(projectId) {
                 showSuccessToast(jQuery, "Modflow model successfully uploaded");
             });
         } else {
-            response.json().then(() => {
+            response.json().then(data => {
                 showErrorToast(jQuery, `Error: ${data.description}`);
             });
         }

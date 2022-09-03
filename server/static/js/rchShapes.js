@@ -13,7 +13,7 @@ async function requestRechargeShapes(projectId) {
             });
             showSuccessToast(jQuery, "Added RCH shapes from Modflow model");
         } else {
-            response.json().then(() => {
+            response.json().then(data => {
                 showErrorToast(jQuery, `Error: ${data.description}`);
             });
         }

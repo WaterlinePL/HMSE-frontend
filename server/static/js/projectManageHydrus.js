@@ -58,7 +58,7 @@ async function sendHydrusModelAfterSelected(projectId) {
             // TODO: Read ID from response
             addHydrusEntryToSimulation(projectId, hydrusId);
         } else {
-            response.json().then(() => {
+            response.json().then(data => {
                 showErrorToast(jQuery, `Error: ${data.description}`);
             });
         }

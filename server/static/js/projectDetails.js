@@ -50,7 +50,7 @@ async function submitConfig(projectId) {
                 turnOffButtons();
                 showSuccessToast(jQuery, "Project configuration successfully updated");
             } else {
-                response.json().then(() => {
+                response.json().then(data => {
                     showErrorToast(jQuery, `Error: ${data.description}`);
                 });
             }

@@ -8,31 +8,31 @@
         _modflowButton = $('#modflow-button');
 
 
-    _runButton.on("click", (e) => {
-        e.preventDefault();
-        const url = Config.simulationRun;
-
-        // setBusy(_container);
-        ($).ajax({
-            url: url,
-            type: "GET",
-            dataType: "json",
-            context: this,
-            success: function (content) {
-                _runButton.attr('hidden', true);
-                $('#download').attr('hidden', true);
-                $('#start-alert').toast('show');
-                _hydrusCalc.removeAttr('hidden');
-                checkSimulationStatus(content["id"]);
-            },
-            error: function (e) {
-                $('#error-alert').toast('show')
-                const rsp = JSON.parse(e.responseText);
-                const msg = rsp["message"] ? rsp["message"] : "An unknown error occurred";
-                $('#toast-body-error').text(msg);
-            }
-        });
-    });
+//    _runButton.on("click", (e) => {
+//        e.preventDefault();
+//        const url = Config.simulationRun;
+//
+//        // setBusy(_container);
+//        ($).ajax({
+//            url: url,
+//            type: "GET",
+//            dataType: "json",
+//            context: this,
+//            success: function (content) {
+//                _runButton.attr('hidden', true);
+//                $('#download').attr('hidden', true);
+//                $('#start-alert').toast('show');
+//                _hydrusCalc.removeAttr('hidden');
+//                checkSimulationStatus(content["id"]);
+//            },
+//            error: function (e) {
+//                $('#error-alert').toast('show')
+//                const rsp = JSON.parse(e.responseText);
+//                const msg = rsp["message"] ? rsp["message"] : "An unknown error occurred";
+//                $('#toast-body-error').text(msg);
+//            }
+//        });
+//    });
 
     function checkSimulationStatus(id) {
         const url = Config.simulationCheck + id;
