@@ -1,7 +1,7 @@
 import json
-from http.client import HTTPException
 
 from flask import Flask
+from werkzeug.exceptions import HTTPException
 
 from server.api.base.base_router import base
 from server.api.projects.projects_router import projects
@@ -11,7 +11,6 @@ app.register_blueprint(base)
 app.register_blueprint(projects)
 
 
-# TODO: Something like that
 @app.errorhandler(HTTPException)
 def api_error_handler(e):
     """Return JSON instead of HTML for HTTP errors."""

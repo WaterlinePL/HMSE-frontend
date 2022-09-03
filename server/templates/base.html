@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="/static/css/commonUi.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
@@ -36,7 +37,7 @@
     </div>
 
     <div class="p-3" style="position: fixed; bottom: 0; right: 0; z-index: 11">
-        {% block toasts %} {% endblock %}
+        {% include "toast.html" %}
     </div>
 </div>
 <footer class="footer bg-primary text-white">
@@ -64,6 +65,7 @@
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
 <script src="/static/config.js"></script>
+<script src="/static/toast.js"></script>
 {% block scripts %} {% endblock %}
 </body>
 </html>

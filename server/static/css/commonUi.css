@@ -13,3 +13,7 @@
 .row-entries {
     vertical-align: middle; TODO
 }
+
+.toast-exit {
+    padding: 5px;
+}

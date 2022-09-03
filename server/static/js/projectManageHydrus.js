@@ -23,7 +23,11 @@ async function deleteHydrus(projectId, hydrusId) {
     }).then(response => {
         if (response.status === 200) {
             document.getElementById(hydrusId).remove();
-            // TODO: Activate toast
+            showSuccessfulToast(jQuery, "Hydrus model successfully deleted")
+        } else {
+            response.json().then(data => {
+                showErrorToast(jQuery, `Error: ${data.description}`);
+            });
         }
     });
 }

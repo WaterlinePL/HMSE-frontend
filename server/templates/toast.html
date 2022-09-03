@@ -1,7 +1,7 @@
-<div class="toast align-items-center text-white {{ background }} border-0" role="alert" id="{{ id }}" aria-live="assertive"
-     aria-atomic="true" data-delay="4000">
-    <div class="toast-body" id="{{ body_id }}">
-        {{ body }}
+<div class="toast align-items-center text-white border-0 bg-success bg-danger toast-exit" role="alert" id="infoToast"
+     aria-live="assertive" aria-atomic="true" data-autohide="false">
+    <button type="button" class="close toast-exit" data-dismiss="toast">&times;</button>
+    <div class="toast-body" id="toastBody">
     </div>
 </div>
 

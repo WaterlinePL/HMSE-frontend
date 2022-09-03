@@ -84,15 +84,10 @@
 
 {% endblock %}
 
-{% block toasts %}
-{% if error_project_name %}
-<div class="p-3" style="position: fixed; bottom: 0; right: 0; z-index: 11">
-    {% with background="bg-danger", body="Choose correct project", body_id="toast-body-error", id="error" %}
-    {% include "toast.html" %}
-    {% endwith %}
-</div>
-{% endif %}
-{% endblock %}
+
+
+{# block toasts #}
+{# endblock #}
 
 {% block scripts %}
 <script src="/static/js/projectList.js"></script>
