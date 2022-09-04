@@ -33,6 +33,32 @@ function deactivateShapeEditMode(shapeId) {
     // TODO
 }
 
+function getNewColorForShape(shapeId) {
+    return document.getElementById(`${shapeId}ColorPicker`).children[0].children[0].children[0].style.background;
+}
+
+
+function changeShapeColor(shapeId) {
+    var style = document.getElementById(getCssClassNameForShape(shapeId));
+    const color = getNewColorForShape(shapeId);
+    if (color) {
+        style.innerHTML = `.${getCssClassNameForShape(shapeId)} { background: ${color}}`
+    }
+}
+
+
+function createCssClassForShape(shapeId, color) {
+    var style = document.createElement('style');
+    style.type = 'text/css';
+    style.id = getCssClassNameForShape(shapeId);
+    style.innerHTML = `.${getCssClassNameForShape(shapeId)} { background: ${color}}`
+    document.getElementsByTagName('head')[0].appendChild(style);
+}
+
+function getCssClassNameForShape(shapeId) {
+    return `${shapeId}ColorCls`
+}
+
 async function deleteShape(projectId, shapeId) {
     const url = getEndpointForProjectId(Config.manualShapes, projectId);
     await fetch(url, {

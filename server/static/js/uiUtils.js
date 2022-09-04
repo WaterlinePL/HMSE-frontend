@@ -38,8 +38,6 @@ function createDeleteButton(deleteFunction) {
     return rightSpan;
 }
 
-
-
 function testPing() {
     console.log("Ping!");
 }

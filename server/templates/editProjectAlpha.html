@@ -202,7 +202,10 @@
                     <h3 style="text-align: center">Shapes</h3>
                     <ul class="list-group list-group-flush">
                         {% for shape_id, color in metadata.shapes.items() %}
-                        <li class="list-group-item" id="shape{{ shape_id }}">
+                        <script type="text/javascript">
+                            createCssClassForShape('{{ shape_id }}', '{{ color }}');
+                        </script>
+                        <li class="list-group-item {{ shape_id }}ColorCls" id="shape{{ shape_id }}">
                             <div class="slice-column left">
                                 <div class="slice-column left">{{ shape_id }}</div>
                                 <div class="slice-column left">
@@ -210,7 +213,8 @@
                                         <span class="input-group-append">
                                             <span class="input-group-text colorpicker-input-addon">
                                                 <i ></i>
-                                                <input type="text" class="form-control input-lg" hidden onchange="testPing()">
+                                                <input type="text" class="form-control input-lg"
+                                                       hidden onchange="changeShapeColor('{{ shape_id }}')">
                                             </span>
                                         </span>
                                     </div>
