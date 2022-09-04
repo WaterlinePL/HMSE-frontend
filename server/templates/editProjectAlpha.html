@@ -61,33 +61,33 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item ">
                             <span class="slice-column left">Project Name</span>
-                            <span id="metadataProjectName" class="slice-column right text-standard"
-                                  onkeydown="changeColorToUpdated('metadataProjectName')">{{ metadata.project_name }}</span>
+                            <input id="metadataProjectName" class="slice-column right text-standard" type="text" disabled
+                                  onchange="changeColorToUpdated('metadataProjectName')" value="{{ metadata.project_name }}"/>
                         </li>
                         <li class="list-group-item">
                             <span class="slice-column left">Start Date</span>
-                            <span id="metadataStartDate" class="slice-column right text-standard"
-                                  onkeydown="changeColorToUpdated('metadataStartDate')">{{ metadata.start_date }}</span>
+                            <input id="metadataStartDate" class="slice-column right text-standard" type="date" disabled
+                                  onchange="changeColorToUpdated('metadataStartDate')" value="{{ metadata.start_date }}"/>
                         </li>
                         <li class="list-group-item ">
                             <span class="slice-column left">End Date</span>
-                            <span id="metadataEndDate" class="slice-column right text-standard"
-                                  onkeydown="changeColorToUpdated('metadataEndDate')">{{ metadata.end_date }}</span>
+                            <input id="metadataEndDate" class="slice-column right text-standard" type="date" disabled
+                                  onchange="changeColorToUpdated('metadataEndDate')" value="{{ metadata.end_date }}"/>
                         </li>
                         <li class="list-group-item ">
                             <span class="slice-column left">Latitude</span>
-                            <span id="metadataLat" class="slice-column right text-standard"
-                                  onkeydown="changeColorToUpdated('metadataLat')">{{ metadata.lat }}</span>
+                            <input id="metadataLat" class="slice-column right text-standard" type="number" disabled
+                                  onchange="changeColorToUpdated('metadataLat')" value="{{ metadata.lat }}"/>
                         </li>
                         <li class="list-group-item ">
                             <span class="slice-column left">Longitude</span>
-                            <span id="metadataLong" class="slice-column right text-standard"
-                                  onkeydown="changeColorToUpdated('metadataLong')">{{ metadata.long }}</span>
+                            <input id="metadataLong" class="slice-column right text-standard" type="number" disabled
+                                  onchange="changeColorToUpdated('metadataLong')" value="{{ metadata.long }}"/>
                         </li>
                         <li class="list-group-item ">
                             <span class="slice-column left">Spin Up </span>
-                            <span id="metadataSpinUp" class="slice-column right text-standard"
-                                  onkeydown="changeColorToUpdated('metadataSpinUp')">{{ metadata.spin_up }}</span>
+                            <input id="metadataSpinUp" class="slice-column right text-standard" type="number" disabled
+                                  onchange="changeColorToUpdated('metadataSpinUp')" value="{{ metadata.spin_up }}"/>
                         </li>
                     </ul>
                     <div class="button-edit">
