@@ -2,15 +2,18 @@
 
 {% block head %}
 <title>HMSE | Simulation Test project merged</title>
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.2.0/css/bootstrap-colorpicker.min.css"/>
 <link rel="stylesheet" href="/static/css/currentProject.css">
-<link rel="stylesheet" href="/static/css/commonUi.css">
 <link rel="stylesheet" href="/static/css/layout.css">
+<link rel="stylesheet" href="/static/css/shapes.css">
 <link rel="stylesheet" href="/static/css/uploadModflow.css">
 <link rel="stylesheet" href="/static/css/uploadHydrus.css">
 <link rel="stylesheet" href="/static/css/projectDetails.css">
 {% endblock %}
 
 {% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.2.0/js/bootstrap-colorpicker.min.js"></script>
 <script src="/static/js/projectFinished.js"></script>
 <script src="/static/js/currentProject.js"></script>
 <script src="/static/js/projectManageHydrus.js"></script>
@@ -28,6 +31,7 @@
     {% for stage_id, _ in simulation_stages %}
     AllStagesInSimulation.push('{{ stage_id }}');
     {% endfor %}
+
 </script>
 {% endblock %}
 
@@ -92,13 +96,13 @@
                                     onclick="enterEditMode()">
                                 Edit Configuration
                             </button>
-                            <button id="cancelEditConfigButton" hidden type="button" class="btn btn-danger"
-                                    onclick="cancelConfigEdit()">
-                                Cancel
-                            </button>
                             <button id="submitConfigButton" hidden type="button" class="btn btn-success"
                                     onclick="submitConfig('{{ metadata.project_id }}')">
                                 Submit
+                            </button>
+                            <button id="cancelEditConfigButton" hidden type="button" class="btn btn-danger"
+                                    onclick="cancelConfigEdit()">
+                                Cancel
                             </button>
                         </div>
                     </div>
@@ -122,14 +126,14 @@
                         </li>
                         <li class="list-group-item" id="modflowUpload">
                             <div class="button-spacing">
+                                <button id="modflowUploadBtn" type="button" class="btn btn-success left"
+                                        onClick="openModflowDialog()">{{ 'Change' if metadata.modflow_metadata else
+                                    'Upload' }}
+                                </button>
                                 <button id="modflowRemoveBtn" type="button" class="btn btn-danger right"
                                         {{
                                 'hidden' if not metadata.modflow_metadata }}
                                 onClick="deleteModflowModel('{{ metadata.project_id }}')">Remove
-                                </button>
-                                <button id="modflowUploadBtn" type="button" class="btn btn-success left"
-                                        onClick="openModflowDialog()">{{ 'Change' if metadata.modflow_metadata else
-                                    'Upload' }}
                                 </button>
                             </div>
 
@@ -151,10 +155,9 @@
                             </span>
                             <span class="slice-column right">
                                 <span class="slice-column left">
-                                    Weather model:
-                                    <select id="{{ hydrus_id }}SelectWeather" class="custom-select"
+                                    <select id="{{ hydrus_id }}SelectWeather" class="custom-select left"
                                             onclick="testPing()">
-                                        <option id="{{ hydrus_id }}SelectNone" selected value=""> --- None ---</option>
+                                        <option id="{{ hydrus_id }}SelectNone" selected value="">[No weather file]</option>
                                     </select>
                                 </span>
 
@@ -196,30 +199,65 @@
                 </div>
                 <div class="config-labels">
                     <h3 style="text-align: center">Shapes</h3>
-                    <ul class="list-group list-group-flush">
+                    <ul class="list-group list-group-flush" id="shapeList">
                         {% for shape_id, color in metadata.shapes.items() %}
+                        <script type="text/javascript">
+                            createCssClassForShape('{{ shape_id }}', '{{ color }}');
+                        </script>
                         <li class="list-group-item" id="shape{{ shape_id }}">
                             <div class="slice-column left">
-                                <div class="slice-column left">{{ shape_id }}</div>
+                                <div class="slice-column left" id="{{ shape_id }}ShapeName">{{ shape_id }}</div>
                                 <div class="slice-column left">
-                                    <div id="{{ shape_id }}Color" class="slice-column left"
-                                         style="text-align:center;width:25px;height:25px;background-color:{{ color }};"></div>
+                                    <div id="{{ shape_id }}ColorPicker" class="slice-column left">
+                                        <span class="input-group-append">
+                                            <span class="input-group-text colorpicker-input-addon">
+                                                <i ></i>
+                                                <input type="text" class="form-control input-lg"
+                                                       hidden onchange="changeShapeColor('{{ shape_id }}')">
+                                            </span>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
+                            <script>
+                                $(function () {
+                                    $('#{{ shape_id }}ColorPicker').colorpicker({"color": "{{ color }}",
+                                                                                useAlpha: false});
+                                    deactivateShapeEditMode(jQuery, '{{ shape_id }}');
+                                });
+                            </script>
                             <span class="slice-column right">
-                                <button type="button" class="btn btn-danger right"
-                                        onClick="deleteShape('{{ metadata.project_id }}', '{{ weather_id }}')">Remove</button>
-                                <button type="button" class="btn btn-secondary right"
-                                        onClick="editShape('{{ metadata.project_id }}', '{{ weather_id }}')">Edit</button>
+                                <span class="slice-column left">
+                                    <select id="{{ shape_id }}SelectHydrus" class="custom-select"
+                                            onclick="setSelectOptions('{{ shape_id }}')" onchange="checkForManualOption('{{ shape_id }}')" disabled>
+                                        <option selected value="">[No value]</option>
+                                    </select>
+                                    <input id="{{ shape_id }}ManualValue" type="number" class="form-control input-lg" hidden disabled>
+                                </span>
+
+                                <button id="{{ shape_id }}RemoveShapeButton" type="button" class="btn btn-danger right"
+                                        onClick="deleteShape('{{ metadata.project_id }}', '{{ shape_id }}')">Remove</button>
+                                <button id="{{ shape_id }}EditShapeButton" type="button" class="btn btn-secondary right"
+                                        onClick="activateShapeEditMode(jQuery, '{{ shape_id }}')">Edit</button>
+                                <button id="{{ shape_id }}CancelShapeEditButton" hidden type="button"
+                                        class="btn btn-danger right"
+                                        onclick="deactivateShapeEditMode(jQuery, '{{ shape_id }}', true)">
+                                    Cancel
+                                </button>
+                                <button id="{{ shape_id }}SubmitShapeEditButton" hidden type="button"
+                                        class="btn btn-success right"
+                                        onclick="sendShape('{{ metadata.project_id }}', '{{ shape_id }}')">
+                                    Submit
+                                </button>
                             </span>
                         </li>
                         {% endfor %}
                         <li class="list-group-item" id="newShape">
                             <div class="button-spacing">
-                                <button type="button" class="btn btn-success right" onclick="activateShapeEditMode()">
+                                <button id="newShapeButton" type="button" class="btn btn-success right" onclick="addNewListEntry(jQuery, '{{ metadata.project_id }}')">
                                     New shape
                                 </button>
-                                <button type="button" class="btn btn-primary right"
+                                <button id="genRchShapes" type="button" class="btn btn-primary right"
                                         onclick="rchShapes({{ project_id }})">
                                     Generate RCH shapes
                                 </button>
@@ -291,7 +329,7 @@
     </div>
     <div class="row justify-content-center my-2">
         <div class="col-2-auto mx-2">
-            <table class="table tab-manual table-sm" id="model-mesh" style="width: 500px">
+            <table class="table tab-manual table-sm" id="modelGridTable" style="width: 500px">
                 <tbody>
                 {% if metadata.modflow_metadata %}
                 {% for row in range(metadata.modflow_metadata.rows) %}
@@ -409,7 +447,9 @@
         <a type="button" id="download" class="btn btn-success mx-5 my-2"
            href="{{ url_for('projects.project_download', project_id=metadata.project_id) }}">Download Results</a>
     </div>
-
+    <script>
+        initGrid();
+    </script>
 </div>
 
 <!--modals-->

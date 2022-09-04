@@ -196,6 +196,7 @@ def manual_shapes(project_id: str):
 
     shape_id = request.json['shapeId']
     if request.method == 'PUT':
+        new_shape_id = request.json.get('newShapeId')   # TODO: Rename shape if needed
         shape_mask = request.json.get('shapeMask')
         color = request.json.get('color')
         hydrus_mapping = request.json.get('hydrusMapping')
@@ -250,7 +251,7 @@ def map_shape_to_hydrus(project_id: str):
             return flask.Response(status=HTTPStatus.OK)
         abort(400)
     else:
-        project_service.remove_shape_mprojectsing(project_id, shape_id)
+        project_service.remove_shape_mapping(project_id, shape_id)
         return flask.Response(status=HTTPStatus.OK)
 
 

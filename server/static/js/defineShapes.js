@@ -3,14 +3,20 @@ function initializeArray(rows, cols) {
     return Array(rows).fill(0).map(() => Array(cols).fill(0));
 }
 
-let rows_all =  document.getElementsByClassName("cell-row");
-let rows_total = rows_all.length
-let columns_total = rows_all[0].children.length
-console.log("rows: " + rows_total);
-console.log("columns: " + columns_total);
+function initGrid() {
+    rows_all =  document.getElementsByClassName("cell-row");
+    rows_total = rows_all.length;
+    columns_total = rows_all[0].children.length;
+    console.log("rows: " + rows_total);
+    console.log("columns: " + columns_total);
 
-let shapeArray = initializeArray(rows_total, columns_total);
-let addCellInDirection = 0;
+    shapeArray = initializeArray(rows_total, columns_total);
+    addCellInDirection = 0;
+}
+
+var rows_all, rows_total, columns_total, shapeArray, addCellInDirection;
+var editMode = false;
+
 
 if ( $('#error-shapes') && $('#error-shapes').length ){
     showToast('error-shapes');
@@ -138,27 +144,41 @@ function previewPaintedCells(id) {
     }
 }
 
+function setGridEditMode(state) {
+    editMode = state;
+}
+
 $(function () {
 
     let isMouseDown = false;
-    $("#model-mesh td")
+    $("#modelGridTable td")
         .mousedown(function () {
-            isMouseDown = true;
-            isHighlighted = !$(this).hasClass("bg-primary");
-            onMouseOver(this.id, isHighlighted);
+            if (editMode) {
+                isMouseDown = true;
+                isHighlighted = !$(this).hasClass("bg-primary");
+                onMouseOver(this.id, isHighlighted);
+            }
             return false; // prevent text selection
         })
         .mouseover(function () {
-            if (isMouseDown) {
-                onMouseOver(this.id, isHighlighted);
-            } else {
-                previewPaintedCells(this.id);
+            if (editMode) {
+                if (isMouseDown) {
+                    onMouseOver(this.id, isHighlighted);
+                } else {
+                    previewPaintedCells(this.id);
+                }
             }
         })
         .mouseup(function () {
-            removePreviousTrail(this.id);
+            if (editMode) {
+                removePreviousTrail(this.id);
+            }
         })
-        .mouseleave(() => prevCellsCleanup())
+        .mouseleave(() => {
+            if (editMode) {
+                prevCellsCleanup();
+            }
+         })
         .bind("selectstart", function () {
             return false;
         })
