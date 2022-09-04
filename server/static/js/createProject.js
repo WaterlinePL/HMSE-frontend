@@ -180,7 +180,6 @@ const createNewProject = async function() {
             projectName: projectId
         })
     }).then(response => {
-        console.log(response);
         if (response.status === 200) {
             location.replace(response.url);
         } else {
