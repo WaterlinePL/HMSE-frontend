@@ -1,158 +1,100 @@
-(function ($) {
-    var _container = $("#simulation-content"),
-        _hydrusCalc = $('#hydrus-calc'),
-        _modflowCalc = $('#modflow-calc'),
-        _passingCalc = $('#passing-calc'),
-        _runButton = $('#start-simulation');
-        _hydrusButton = $('#hydrus-button');
-        _modflowButton = $('#modflow-button');
+function resetStep(elemId) {
+    document.getElementById(elemId).hidden = true;
+    document.getElementById(`${elemId}Spinner`).hidden = false;
+    document.getElementById(`${elemId}Tick`).setAttribute("hidden", "hidden");
+    document.getElementById(`${elemId}X`).setAttribute("hidden", "hidden");
+}
+
+function resetSimulationSteps() {
+    AllStagesInSimulation.forEach(stepId => resetStep(stepId));
+}
 
 
-//    _runButton.on("click", (e) => {
-//        e.preventDefault();
-//        const url = Config.simulationRun;
-//
-//        // setBusy(_container);
-//        ($).ajax({
-//            url: url,
-//            type: "GET",
-//            dataType: "json",
-//            context: this,
-//            success: function (content) {
-//                _runButton.attr('hidden', true);
-//                $('#download').attr('hidden', true);
-//                $('#start-alert').toast('show');
-//                _hydrusCalc.removeAttr('hidden');
-//                checkSimulationStatus(content["id"]);
-//            },
-//            error: function (e) {
-//                $('#error-alert').toast('show')
-//                const rsp = JSON.parse(e.responseText);
-//                const msg = rsp["message"] ? rsp["message"] : "An unknown error occurred";
-//                $('#toast-body-error').text(msg);
-//            }
-//        });
-//    });
+function markStepSuccess(elemId) {
+    showStep(elemId);
+    document.getElementById(`${elemId}Spinner`).hidden = true;
+    document.getElementById(`${elemId}Tick`).removeAttribute("hidden");
+    document.getElementById(`${elemId}X`).setAttribute("hidden", "hidden");
+}
 
-    function checkSimulationStatus(id) {
-        const url = Config.simulationCheck + id;
+function markStepFailed(elemId) {
+    showStep(elemId);
+    document.getElementById(`${elemId}Spinner`).hidden = true;
+    document.getElementById(`${elemId}Tick`).setAttribute("hidden", "hidden");
+    document.getElementById(`${elemId}X`).removeAttribute("hidden");
+}
 
-        ($).ajax({
-            url: url,
-            type: "GET",
-            dataType: "json",
-            success: function (data) {
-                const stopCheckingSimulation = handleHydrusResponse(data)
-                                                || handlePassingResponse(data)
-                                                || handleModflowResponse(data);
+function showStep(elemId) {
+    document.getElementById(elemId).hidden = false;
+    document.getElementById(`${elemId}Spinner`).hidden = true;
+}
 
-                if (!stopCheckingSimulation) {
-                    setTimeout(checkSimulationStatus, 2000,[id]);
-                }
-            },
-            error: function (e) {
-                setTimeout(checkSimulationStatus, 2000, [id]);
-            }
-        });
-    }
+function showRunningStep(elemId) {
+    document.getElementById(elemId).hidden = false;
+    document.getElementById(`${elemId}Spinner`).hidden = false;
+}
 
-    function handleHydrusResponse (data) {
-        var stopCheckingSimulation = false;
-        if (isHydrusFinished(data)) {
-            _hydrusCalc.removeClass('text-secondary');
-            $('#hydrus-spinner').attr('hidden', true);
-            const errors = getHydrusErrors(data);
-
-            if (errors.length != 0) {
-                _hydrusCalc.addClass('text-danger');
-                $('#hydrus-x').removeAttr('hidden');
-                _hydrusButton.removeAttr('hidden');
-                stopCheckingSimulation = true;
-                showErrors(errors);
-            } else {
-                _hydrusCalc.addClass('text-success');
-                _passingCalc.removeAttr('hidden');
-                $('#hydrus-tick').removeAttr('hidden');
-            }
+function updateStatus(statusResponse) {
+    var is_finished = true;
+    for (const [stepId, status] of Object.entries(statusResponse)) {
+        if (status === "PENDING") {
+            showStep(stepId);
+            is_finished = false;
+        } else if (status === "RUNNING") {
+            showRunningStep(stepId);
+            is_finished = false;
+        } else if (status === "SUCCESS") {
+            markStepSuccess(stepId);
+        } else if (status === "ERROR") {
+            markStepFailed(stepId);
+            return true;
         }
-        return stopCheckingSimulation;
     }
+    return is_finished;
+}
 
-    function handlePassingResponse (data) {
-        var stopCheckingSimulation = false;
-        if (isPassingFinished(data)) {
-            _passingCalc.removeClass('text-secondary');
-            $('#passing-spinner').attr('hidden', true);
-            const errors = getPassingErrors(data);
-
-            if (errors.length != 0) {
-                _passingCalc.addClass('text-danger');
-                $('#passing-x').removeAttr('hidden');
-                _modflowButton.removeAttr('hidden');
-                stopCheckingSimulation = true;
-                showErrors(errors);
-            } else {
-                _passingCalc.addClass('text-success');
-                _modflowCalc.removeAttr('hidden');
-                $('#passing-tick').removeAttr('hidden');
-            }
+async function getSimulationStatus(projectId) {
+    const url = getEndpointForProjectId(Config.simulation, projectId);
+    var is_finished = false;
+    await fetch(url, {
+        method: "GET"
+    }).then(response => {
+        if (response.status === 200) {
+            response.json().then(statusResponse => {
+                is_finished = updateStatus(statusResponse);
+            });
+        } else {
+            response.json().then(data => {
+                showErrorToast(jQuery, `Error: ${data.description}`);
+            });
         }
-        return stopCheckingSimulation;
+    });
+    return is_finished;
+}
+
+async function monitorStatus(projectId) {
+    const is_finished = await getSimulationStatus();
+    if (!is_finished) {
+        setTimeout(() => monitorStatus(projectId), 2000);
     }
+}
 
-    function handleModflowResponse (data) {
-        var stopCheckingSimulation = false;
-        if (isModflowFinished(data)) {
-            _modflowCalc.removeClass('text-secondary');
-            $('#modflow-spinner').attr('hidden', true);
-            const errors = getModflowErrors(data);
-            stopCheckingSimulation = true;
-
-            if (errors.length != 0) {
-                _modflowCalc.addClass('text-danger');
-                _modflowButton.removeAttr('hidden');
-                $('#modflow-x').removeAttr('hidden');
-                showErrors(errors);
-            } else {
-                _modflowCalc.addClass('text-success');
-                $('#modflow-tick').removeAttr('hidden');
-                $('#download').removeAttr('hidden');
-            }
+async function runSimulation(projectId) {
+    const url = getEndpointForProjectId(Config.simulation, projectId);
+    await fetch(url, {
+        method: "POST"
+    }).then(response => {
+        if (response.status === 200) {
+            showSuccessToast(jQuery, "Simulation started");
+            resetSimulationSteps();
+            monitorStatus(projectId);
+        } else {
+            response.json().then(data => {
+                showErrorToast(jQuery, `Error: ${data.description}`);
+            });
         }
-        return stopCheckingSimulation;
-    }
+    });
+}
 
-    function isHydrusFinished (data) {
-        return data["hydrus"]["finished"];
-    }
 
-    function isPassingFinished (data) {
-        return data["passing"]["finished"];
-    }
-
-    function isModflowFinished (data) {
-        return data["modflow"]["finished"];
-    }
-
-    function getHydrusErrors (data) {
-        return data["hydrus"]["errors"];
-    }
-
-    function getPassingErrors (data) {
-        return data["passing"]["errors"];
-    }
-
-    function getModflowErrors (data) {
-        return data["modflow"]["errors"];
-    }
-
-    function showErrors (errors) {
-        const parsedErrors = errors.join("</br>");
-        $('#toast-body-error').html(parsedErrors);
-
-        $('#error-alert').toast({autohide: false});
-        $('#error-alert').toast('show');
-    }
-    $(document).ready(isProjectFinished($("#thisProjectId").text(), "#download"));
-
-})(jQuery);
+const AllStagesInSimulation = [];   // Set by Jinja2

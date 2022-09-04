@@ -25,6 +25,9 @@
 <script src="/static/js/projectMetadata.js"></script>
 <script type="text/javascript">
     fillProjectConfig('{{ metadata.project_id }}');
+    {% for stage_id, _ in simulation_stages %}
+    AllStagesInSimulation.push('{{ stage_id }}');
+    {% endfor %}
 </script>
 {% endblock %}
 
@@ -85,15 +88,16 @@
                     </ul>
                     <div class="button-edit">
                         <div class="button-spacing">
-                            <button id="editConfigButton" type="button" class="btn btn-secondary" onclick="enterEditMode()">
+                            <button id="editConfigButton" type="button" class="btn btn-secondary"
+                                    onclick="enterEditMode()">
                                 Edit Configuration
                             </button>
                             <button id="cancelEditConfigButton" hidden type="button" class="btn btn-danger"
-                               onclick="cancelConfigEdit()">
+                                    onclick="cancelConfigEdit()">
                                 Cancel
                             </button>
                             <button id="submitConfigButton" hidden type="button" class="btn btn-success"
-                               onclick="submitConfig('{{ metadata.project_id }}')">
+                                    onclick="submitConfig('{{ metadata.project_id }}')">
                                 Submit
                             </button>
                         </div>
@@ -119,8 +123,9 @@
                         <li class="list-group-item" id="modflowUpload">
                             <div class="button-spacing">
                                 <button id="modflowRemoveBtn" type="button" class="btn btn-danger right"
-                                        {{ 'hidden' if not metadata.modflow_metadata }}
-                                        onClick="deleteModflowModel('{{ metadata.project_id }}')">Remove
+                                        {{
+                                'hidden' if not metadata.modflow_metadata }}
+                                onClick="deleteModflowModel('{{ metadata.project_id }}')">Remove
                                 </button>
                                 <button id="modflowUploadBtn" type="button" class="btn btn-success left"
                                         onClick="openModflowDialog()">{{ 'Change' if metadata.modflow_metadata else
@@ -147,7 +152,8 @@
                             <span class="slice-column right">
                                 <span class="slice-column left">
                                     Weather model:
-                                    <select id="{{ hydrus_id }}SelectWeather" class="custom-select" onclick="testPing()">
+                                    <select id="{{ hydrus_id }}SelectWeather" class="custom-select"
+                                            onclick="testPing()">
                                         <option id="{{ hydrus_id }}SelectNone" selected value=""> --- None ---</option>
                                     </select>
                                 </span>
@@ -213,17 +219,18 @@
                                 <button type="button" class="btn btn-success right" onclick="activateShapeEditMode()">
                                     New shape
                                 </button>
-                                    <button type="button" class="btn btn-primary right" onclick="rchShapes({{ project_id }})">
-                                        Generate RCH shapes
-                                    </button>
-<!--                                <button id="cancelNewShape" hidden type="button" class="btn btn-danger"-->
-<!--                                   onclick="cancelConfigEdit()">-->
-<!--                                    Cancel-->
-<!--                                </button>-->
-<!--                                <button id="submitNewShape" hidden type="button" class="btn btn-success"-->
-<!--                                   onclick="manualShape('{{ metadata.project_id }}')">-->
-<!--                                    Submit-->
-<!--                                </button>-->
+                                <button type="button" class="btn btn-primary right"
+                                        onclick="rchShapes({{ project_id }})">
+                                    Generate RCH shapes
+                                </button>
+                                <!--                                <button id="cancelNewShape" hidden type="button" class="btn btn-danger"-->
+                                <!--                                   onclick="cancelConfigEdit()">-->
+                                <!--                                    Cancel-->
+                                <!--                                </button>-->
+                                <!--                                <button id="submitNewShape" hidden type="button" class="btn btn-success"-->
+                                <!--                                   onclick="manualShape('{{ metadata.project_id }}')">-->
+                                <!--                                    Submit-->
+                                <!--                                </button>-->
                             </div>
                         </li>
                     </ul>
@@ -309,81 +316,97 @@
 
         <div class="col-lg-9">
             <div class="text-center">
-<!--                <h1 class="display-4">Your simulation is ready to be started!</h1>-->
+                <!--                <h1 class="display-4">Your simulation is ready to be started!</h1>-->
                 <p class="lead">Click "Run simulation" once you're ready to start it.</p>
             </div>
         </div>
     </div>
 
     <div class="row justify-content-md-center">
-        <div class="col-lg-9">
-                <form class="slice-column right" style="padding: 50px 15px;"
-                          action="{{ url_for('simulations.simulation', project_id=metadata.project_id) }}" method="post">
-                    <button type="submit" id="start-simulation" class="btn btn-primary right">
-                        Run simulation
-                    </button>
-                </form>
-        </div>
+        <button type="submit" id="start-simulation" class="btn btn-primary right"
+                onclick="runSimulation('{{ metadata.project_id }}')">
+            Run simulation
+        </button>
     </div>
 </div> <!-- container -->
 
 <div class="container my-5 justify-content-center">
-    <div class="row justify-content-center text-secondary" hidden id="hydrus-calc">
+    <!--    <div class="row justify-content-center text-secondary" hidden id="hydrus-calc">-->
+    <!--        <div class="col-7-auto ">-->
+    <!--            <div class="spinner-border" id="hydrus-spinner" role="status">-->
+    <!--                <span class="sr-only">Loading...</span>-->
+    <!--            </div>-->
+    <!--            <svg xmlns="http://www.w3.org/2000/svg" id="hydrus-tick" hidden width="25" height="25"-->
+    <!--                 fill="currentColor"-->
+    <!--                 class="bi bi-check"-->
+    <!--                 viewBox="0 0 16 16">-->
+    <!--                <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>-->
+    <!--            </svg>-->
+    <!--            <svg height="25" width="25" id="hydrus-x" hidden>-->
+    <!--                <line x1="7" y1="7" x2="18" y2="18" style="stroke:rgb(255,0,0); stroke-width:2"/>-->
+    <!--                <line x1="18" y1="7" x2="7" y2="18" style="stroke:rgb(255,0,0); stroke-width:2"/>-->
+    <!--            </svg>-->
+    <!--            Calculating Hydrus-1d models.-->
+    <!--        </div>-->
+    <!--    </div>-->
+    <!--    <div class="row justify-content-center text-secondary" hidden id="passing-calc">-->
+    <!--        <div class="col-7-auto ">-->
+    <!--            <div class="spinner-border" id="passing-spinner" role="status">-->
+    <!--                <span class="sr-only">Loading...</span>-->
+    <!--            </div>-->
+    <!--            <svg xmlns="http://www.w3.org/2000/svg" hidden id="passing-tick" width="25" height="25"-->
+    <!--                 fill="currentColor"-->
+    <!--                 class="bi bi-check"-->
+    <!--                 viewBox="0 0 16 16">-->
+    <!--                <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>-->
+    <!--            </svg>-->
+    <!--            <svg height="25" width="25" id="passing-x" hidden>-->
+    <!--                <line x1="7" y1="7" x2="18" y2="18" style="stroke:rgb(255,0,0); stroke-width:2"/>-->
+    <!--                <line x1="18" y1="7" x2="7" y2="18" style="stroke:rgb(255,0,0); stroke-width:2"/>-->
+    <!--            </svg>-->
+    <!--            Passing Hydrus-1d result to Modflow model.-->
+    <!--        </div>-->
+    <!--    </div>-->
+    <!--    <div class="row justify-content-center text-secondary" hidden id="modflow-calc">-->
+    <!--        <div class="col-7-auto ">-->
+    <!--            <div class="spinner-border" id="modflow-spinner" role="status">-->
+    <!--                <span class="sr-only">Loading...</span>-->
+    <!--            </div>-->
+    <!--            <svg xmlns="http://www.w3.org/2000/svg" hidden id="modflow-tick" width="25" height="25"-->
+    <!--                 fill="currentColor"-->
+    <!--                 class="bi bi-check"-->
+    <!--                 viewBox="0 0 16 16">-->
+    <!--                <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>-->
+    <!--            </svg>-->
+    <!--            <svg height="25" width="25" id="modflow-x" hidden>-->
+    <!--                <line x1="7" y1="7" x2="18" y2="18" style="stroke:rgb(255,0,0); stroke-width:2"/>-->
+    <!--                <line x1="18" y1="7" x2="7" y2="18" style="stroke:rgb(255,0,0); stroke-width:2"/>-->
+    <!--            </svg>-->
+    <!--            Calculating Modflow model.-->
+    <!--        </div>-->
+    <!--    </div>-->
+    {% for stage_id, stage_name in simulation_stages %}
+    <div class="row justify-content-center text-secondary" hidden id="{{ stage_id }}">
         <div class="col-7-auto ">
-            <div class="spinner-border" id="hydrus-spinner" role="status">
+            {{ stage_name }}
+            <div class="spinner-border" id="{{ stage_id }}Spinner" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
-            <svg xmlns="http://www.w3.org/2000/svg" id="hydrus-tick" hidden width="25" height="25"
+            <svg xmlns="http://www.w3.org/2000/svg" hidden id="{{ stage_id }}Tick" width="25" height="25"
                  fill="currentColor"
                  class="bi bi-check"
                  viewBox="0 0 16 16">
                 <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
             </svg>
-            <svg height="25" width="25" id="hydrus-x" hidden>
+            <svg height="25" width="25" id="{{ stage_id }}X" hidden>
                 <line x1="7" y1="7" x2="18" y2="18" style="stroke:rgb(255,0,0); stroke-width:2"/>
                 <line x1="18" y1="7" x2="7" y2="18" style="stroke:rgb(255,0,0); stroke-width:2"/>
             </svg>
-            Calculating Hydrus-1d models.
         </div>
     </div>
-    <div class="row justify-content-center text-secondary" hidden id="passing-calc">
-        <div class="col-7-auto ">
-            <div class="spinner-border" id="passing-spinner" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
-            <svg xmlns="http://www.w3.org/2000/svg" hidden id="passing-tick" width="25" height="25"
-                 fill="currentColor"
-                 class="bi bi-check"
-                 viewBox="0 0 16 16">
-                <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
-            </svg>
-            <svg height="25" width="25" id="passing-x" hidden>
-                <line x1="7" y1="7" x2="18" y2="18" style="stroke:rgb(255,0,0); stroke-width:2"/>
-                <line x1="18" y1="7" x2="7" y2="18" style="stroke:rgb(255,0,0); stroke-width:2"/>
-            </svg>
-            Passing Hydrus-1d result to Modflow model.
-        </div>
-    </div>
-    <div class="row justify-content-center text-secondary" hidden id="modflow-calc">
-        <div class="col-7-auto ">
-            <div class="spinner-border" id="modflow-spinner" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
-            <svg xmlns="http://www.w3.org/2000/svg" hidden id="modflow-tick" width="25" height="25"
-                 fill="currentColor"
-                 class="bi bi-check"
-                 viewBox="0 0 16 16">
-                <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
-            </svg>
-            <svg height="25" width="25" id="modflow-x" hidden>
-                <line x1="7" y1="7" x2="18" y2="18" style="stroke:rgb(255,0,0); stroke-width:2"/>
-                <line x1="18" y1="7" x2="7" y2="18" style="stroke:rgb(255,0,0); stroke-width:2"/>
-            </svg>
-            Calculating Modflow model.
-        </div>
-    </div>
+    {% endfor %}
     <div class="row justify-content-center">
-        <a type="button" id="download" hidden class="btn btn-success mx-5 my-2"
+        <a type="button" id="download" class="btn btn-success mx-5 my-2"
            href="{{ url_for('projects.project_download', project_id=metadata.project_id) }}">Download Results</a>
     </div>
 

@@ -9,6 +9,7 @@ from werkzeug.utils import redirect
 from hmse_simulations.hmse_projects import project_service
 from hmse_simulations.hmse_projects.hmse_hydrological_models.modflow.modflow_metadata import ModflowMetadata
 from hmse_simulations.hmse_projects.project_metadata import ProjectMetadata
+from hmse_simulations.simulation.simulation import Simulation
 from server import endpoints, cookie_utils, path_checker, template, naming_utils
 
 projects = Blueprint('projects', __name__)
@@ -19,7 +20,8 @@ def edit_project(project_id: str):
     check_previous_steps = path_checker.path_check_simulate_access(request.cookies.get(cookie_utils.COOKIE_NAME))
     if check_previous_steps:
         return check_previous_steps
-    return render_template(template.EDIT_PROJECT, metadata=project_service.get(project_id))
+    return render_template(template.EDIT_PROJECT, metadata=project_service.get(project_id),
+                           simulation_stages=[stage.to_id_and_name() for stage in Simulation.all_stages()])
 
 
 @projects.route(endpoints.PROJECT_LIST, methods=['GET'], defaults={'search': None})
