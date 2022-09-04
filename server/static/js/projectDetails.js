@@ -15,8 +15,8 @@ async function enterEditMode() {
     this.hidden = true;
     configElementIds.forEach(elementId => {
         var element = document.getElementById(elementId);
-        oldValues[elementId] = element.textContent;
-        element.contentEditable = true;
+        oldValues[elementId] = element.value;
+        element.disabled = false;
         element.classList.replace("text-standard", "text-old");
     });
     // Hide this button, show submit button
@@ -31,12 +31,12 @@ async function changeColorToUpdated(id) {
 
 async function submitConfig(projectId) {
     const requestData = {
-        "projectName": document.getElementById("metadataProjectName").textContent.trim(),
-        "startDate": document.getElementById("metadataStartDate").textContent.trim(),
-        "endDate": document.getElementById("metadataEndDate").textContent.trim(),
-        "lat": document.getElementById("metadataLat").textContent.trim(),
-        "long": document.getElementById("metadataLong").textContent.trim(),
-        "spinUp": document.getElementById("metadataSpinUp").textContent.trim()
+        "projectName": document.getElementById("metadataProjectName").value.trim(),
+        "startDate": document.getElementById("metadataStartDate").value.trim(),
+        "endDate": document.getElementById("metadataEndDate").value.trim(),
+        "lat": document.getElementById("metadataLat").value.trim(),
+        "long": document.getElementById("metadataLong").value.trim(),
+        "spinUp": document.getElementById("metadataSpinUp").value.trim()
     }
 
     const url = getEndpointForProjectId(Config.project, projectId);
@@ -63,7 +63,7 @@ async function setFields(valuesDict) {
         const elemId = configElementIds[i];
         const oldVal = Object.values(oldValues)[i];
         var elem = document.getElementById(elemId);
-        elem.textContent = newValue;
+        elem.value = newValue;
 
         if (oldVal == newValue) {
             resetSingleElement(elemId);
@@ -71,7 +71,7 @@ async function setFields(valuesDict) {
             elem.classList.replace("text-edited", "text-updated");
             setTimeout(() => document.getElementById(elemId).classList.replace("text-updated", "text-standard"), 1500);
         }
-        elem.contentEditable = false;
+        elem.disabled = true;
     }
     oldValues = {};
 }
