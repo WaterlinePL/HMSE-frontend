@@ -2,15 +2,18 @@
 
 {% block head %}
 <title>HMSE | Simulation Test project merged</title>
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.2.0/css/bootstrap-colorpicker.min.css"/>
 <link rel="stylesheet" href="/static/css/currentProject.css">
-<link rel="stylesheet" href="/static/css/commonUi.css">
 <link rel="stylesheet" href="/static/css/layout.css">
+<link rel="stylesheet" href="/static/css/shapes.css">
 <link rel="stylesheet" href="/static/css/uploadModflow.css">
 <link rel="stylesheet" href="/static/css/uploadHydrus.css">
 <link rel="stylesheet" href="/static/css/projectDetails.css">
 {% endblock %}
 
 {% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.2.0/js/bootstrap-colorpicker.min.js"></script>
 <script src="/static/js/projectFinished.js"></script>
 <script src="/static/js/currentProject.js"></script>
 <script src="/static/js/projectManageHydrus.js"></script>
@@ -28,6 +31,7 @@
     {% for stage_id, _ in simulation_stages %}
     AllStagesInSimulation.push('{{ stage_id }}');
     {% endfor %}
+
 </script>
 {% endblock %}
 
@@ -202,10 +206,21 @@
                             <div class="slice-column left">
                                 <div class="slice-column left">{{ shape_id }}</div>
                                 <div class="slice-column left">
-                                    <div id="{{ shape_id }}Color" class="slice-column left"
-                                         style="text-align:center;width:25px;height:25px;background-color:{{ color }};"></div>
+                                    <div id="{{ shape_id }}ColorPicker" class="slice-column left">
+                                        <span class="input-group-append">
+                                            <span class="input-group-text colorpicker-input-addon">
+                                                <i ></i>
+                                                <input type="text" class="form-control input-lg" hidden onchange="testPing()">
+                                            </span>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
+                            <script>
+                                $(function () {
+                                    $('#{{ shape_id }}ColorPicker').colorpicker({"color": "{{ color }}"});
+                                });
+                            </script>
                             <span class="slice-column right">
                                 <button type="button" class="btn btn-danger right"
                                         onClick="deleteShape('{{ metadata.project_id }}', '{{ weather_id }}')">Remove</button>

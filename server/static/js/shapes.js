@@ -22,6 +22,9 @@ async function manualShape(projectId, shapeId, color, shapeMask, hydrusMapping, 
     });
 }
 
+// COLOR ACCESS:
+// document.getElementById("shape1ColorPicker").children[0].children[0].children[0].style.background
+
 function activateShapeEditMode(shapeId) {
     // TODO: add that + css to indicate
 }
