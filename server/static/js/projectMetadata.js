@@ -8,6 +8,25 @@ var ProjectConfig = {
     "hydrusToWeather": {}
 }
 
+function removeShape(shapeId) {
+    delete ProjectConfig.shapes[shapeId];
+}
+
+function removeWeatherFile(weatherId) {
+    removeFromArray(ProjectConfig.weatherFiles, weatherId);
+}
+
+function removeHydrusModel(hydrusId) {
+    removeFromArray(ProjectConfig.hydrusModels, hydrusId);
+}
+
+function removeFromArray(arr, elem) {
+    const index = arr.indexOf(elem);
+    if (index > -1) {
+        arr.splice(index, 1);
+    }
+}
+
 // Template needs to call it
 async function fillProjectConfig(projectId) {
     const url = getEndpointForProjectId(Config.projectMetadata, projectId);

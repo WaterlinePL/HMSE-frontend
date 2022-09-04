@@ -230,7 +230,7 @@
                                 <span class="slice-column left">
                                     <select id="{{ shape_id }}SelectHydrus" class="custom-select"
                                             onclick="setSelectOptions('{{ shape_id }}')" onchange="checkForManualOption('{{ shape_id }}')" disabled>
-                                        <option selected value="">[No value]</option>
+                                        <option value="[No value]">[No value]</option>
                                     </select>
                                     <input id="{{ shape_id }}ManualValue" type="number" class="form-control input-lg" hidden disabled>
                                 </span>
@@ -345,6 +345,9 @@
                 {% endif %}
                 </tbody>
             </table>
+            <script>
+                initCurrentShapes('{{ metadata.project_id }}');
+            </script>
         </div>
     </div>
 </div>

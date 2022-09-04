@@ -187,16 +187,16 @@ def manage_hydrus(project_id: str):
         abort(400)
 
 
-@projects.route(endpoints.MANUAL_SHAPE, methods=['PUT', 'DELETE'])
+@projects.route(endpoints.MANUAL_SHAPE, methods=['GET', 'PUT', 'DELETE'])
 def manual_shapes(project_id: str):
     cookie = request.cookies.get(cookie_utils.COOKIE_NAME)
     check_previous_steps = path_checker.path_check_for_modflow_model(cookie, project_id)
     if check_previous_steps:
         return check_previous_steps
 
-    shape_id = request.json['shapeId']
     if request.method == 'PUT':
-        new_shape_id = request.json.get('newShapeId')   # TODO: Rename shape if needed
+        shape_id = request.json['shapeId']
+        new_shape_id = request.json.get('newShapeId')  # TODO: Rename shape if needed
         shape_mask = request.json.get('shapeMask')
         color = request.json.get('color')
         hydrus_mapping = request.json.get('hydrusMapping')
@@ -208,7 +208,10 @@ def manual_shapes(project_id: str):
         elif manual_value:
             project_service.map_shape_to_manual_value(project_id, shape_id, value=manual_value)
         return flask.Response(status=HTTPStatus.OK)
+    elif request.method == 'GET':
+        return project_service.get_all_shapes(project_id)
     else:
+        shape_id = request.json['shapeId']
         project_service.delete_shape(project_id, shape_id)
         return flask.Response(status=HTTPStatus.OK)
 
