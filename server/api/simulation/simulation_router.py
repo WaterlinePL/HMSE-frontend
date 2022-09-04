@@ -22,7 +22,7 @@ def simulation(project_id: str):
         if status is None:
             # TODO: check if it works properly
             abort(404)
-        return jsonify(**status.to_json())
+        return status.to_json()
     else:
         simulation_service.run_simulation(project_id)
         return flask.Response(status=HTTPStatus.OK)
