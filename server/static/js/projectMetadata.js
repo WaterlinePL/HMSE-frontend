@@ -1,8 +1,8 @@
-ProjectConfig = {
+var ProjectConfig = {
     "projectId": undefined,
     "projectName": undefined,
-    "hydrusModels": {},
-    "weatherFiles": {},
+    "hydrusModels": [],
+    "weatherFiles": [],
     "shapes": {},
     "shapesToHydrus": {},
     "hydrusToWeather": {}
