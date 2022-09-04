@@ -2,6 +2,7 @@
 from hmse_simulations.hmse_projects.typing_help import ProjectID
 
 HOME = '/home'
+CONFIGURATION = '/configuration'
 
 # Projects
 CREATE_PROJECT = '/new-project'
