@@ -14,7 +14,7 @@ async function manualShape(projectId, shapeId, newShapeId, color, shapeMask) {
             // TODO: add shape to grid and list
             applyNewValues(projectId, newShapeId);
             deactivateShapeEditMode(jQuery, newShapeId);
-            showSuccessToast(jQuery, "Shape successfully created")
+            showSuccessToast(jQuery, "Shape successfully submitted")
         } else {
             response.json().then(data => {
                 showErrorToast(jQuery, `Error: ${data.description}`);
@@ -27,8 +27,8 @@ async function sendShape(projectId, shapeId) {
     const newShapeId = document.getElementById(getNameDivId(oldShapeId)).textContent;
     const color = getNewColorForShape(shapeId);
     const shapeMask = getShapeMask(getCssClassNameForShape(shapeId));
-    // TODO: apply mapping in another request?
     manualShape(projectId, shapeId, newShapeId, color, shapeMask);
+    sendShapeMapping(projectId, shapeId);
 }
 
 // COLOR ACCESS:
@@ -39,7 +39,26 @@ var oldMask = null, oldMapping = [];
 
 function applyNewValues(projectId, newShapeId) {
     document.getElementById(getNameDivId(oldShapeId)).id = getNameDivId(newShapeId);
-    document.getElementById(getHydrusSelectId(oldShapeId)).id = getHydrusSelectId(newShapeId);
+
+    const oldClassName = getCssClassNameForShape(oldShapeId), newClassName = getCssClassNameForShape(newShapeId);
+    var colorClass = document.getElementById(oldClassName);
+    const color = getNewColorForShape(oldShapeId);
+    const oldMask = getShapeMask(oldClassName);
+    applyMask(oldMask, oldClassName, false);
+
+    colorClass.id = newClassName;
+    colorClass.innerHTML = `.${newClassName} { background: ${color}}`
+    document.getElementById(getShapeColorPickerName(oldShapeId)).children[0].children[0].children[0].style.background = color;
+    applyMask(oldMask, newClassName, true);
+
+    var colorInputField = document.getElementById(getColorInputFieldId(oldShapeId));
+    colorInputField.id = getColorInputFieldId(newShapeId);
+    colorInputField.setAttribute("onchange", `changeShapeColor('${newShapeId}')`);
+
+    var hydrusSelect = document.getElementById(getHydrusSelectId(oldShapeId));
+    hydrusSelect.id = getHydrusSelectId(newShapeId);
+    hydrusSelect.onclick = () => setSelectOptions(newShapeId);
+    hydrusSelect.onchange = () => checkForManualOption(newShapeId);
 
     var editButton = document.getElementById(getEditButtonName(oldShapeId));
     editButton.id = getEditButtonName(newShapeId);
@@ -59,23 +78,38 @@ function applyNewValues(projectId, newShapeId) {
 
     document.getElementById(getShapeColorPickerName(oldShapeId)).id = getShapeColorPickerName(newShapeId);
     document.getElementById(getListEntryName(oldShapeId)).id = getListEntryName(newShapeId);
+    document.getElementById(getManualInputId(oldShapeId)).id = getManualInputId(newShapeId);
 
     delete ProjectConfig.shapes[oldShapeId];
     ProjectConfig.shapes[newShapeId] = getNewColorForShape(newShapeId);
 }
 
 function resetToOldValues(shapeId) {
-    const shapeClass = getCssClassNameForShape(shapeId);
+    const shapeClass = getCssClassNameForShape(oldShapeId);
     document.getElementById(getNameDivId(oldShapeId)).textContent = oldShapeId;
-    document.getElementById(getShapeColorPickerName(oldShapeId)).children[0].children[0].children[0].style.background = oldShapeColor;
-    restoreOldMapping(shapeId);
+    setColorForShape(jQuery, shapeId, oldShapeColor);
+
+    restoreOldMapping(oldShapeId);
     cancelGridModification(oldMask, shapeClass);
+}
+
+function setColorForShape($, shapeId, color) {
+    // Color picker input
+    document.getElementById(getShapeColorPickerName(shapeId)).children[0].children[0].children[0].style.background = color;
+
+    // Color on grid
+    document.getElementById(getCssClassNameForShape(shapeId)).innerHTML = `.${getCssClassNameForShape(shapeId)} { background: ${color}}`
+
+    // Color in color picker
+    var colorPicker = $(`#${getShapeColorPickerName(shapeId)}`).colorpicker('colorpicker');
+    colorPicker.setValue(color);
+    colorPicker.update();
 }
 
 function getMappingValue(shapeId) {
     const mapping = document.getElementById(getHydrusSelectId(shapeId)).value;
     var value = null;
-    if (mapping === "[Manual value]") {
+    if (mapping === MappingsConsts.MANUAL_RECHARGE_VALUE) {
         value = document.getElementById(getManualInputId(shapeId)).value;
     }
     return [mapping, value];
@@ -85,7 +119,7 @@ function restoreOldMapping(shapeId) {
     const oldSelect = oldMapping[0];
     document.getElementById(getHydrusSelectId(shapeId)).value = oldSelect;
     const manualValueInput = document.getElementById(getManualInputId(shapeId));
-    if (oldSelect === "[Manual value]") {
+    if (oldSelect === MappingsConsts.MANUAL_RECHARGE_VALUE) {
         manualValueInput.value = oldMapping[1];
         manualValueInput.hidden = false;
     } else {
@@ -99,7 +133,7 @@ function activateShapeEditMode($, shapeId) {
     oldShapeColor = getNewColorForShape(shapeId);
     oldMask = getShapeMask(getCssClassNameForShape(shapeId));
     oldMapping = getMappingValue(shapeId);
-    removeEditModeForOtherShapes(shapeId);
+    removeEditModeForOtherShapes();
 
     var cp = $(`#${getShapeColorPickerName(shapeId)}`).colorpicker('colorpicker');
     cp.enable();
@@ -110,6 +144,7 @@ function activateShapeEditMode($, shapeId) {
     document.getElementById(getCancelButtonName(shapeId)).hidden = false;
     document.getElementById(getNameDivId(shapeId)).contentEditable = true;
     document.getElementById(getHydrusSelectId(shapeId)).disabled = false;
+    console.log(shapeId);
     document.getElementById(getManualInputId(shapeId)).disabled = false;
 
     setGridEditMode(true);
@@ -118,9 +153,6 @@ function activateShapeEditMode($, shapeId) {
 
 function deactivateShapeEditMode($, shapeId, resetValues = false) {
     showAllEditButtons();
-    var cp = $(`#${getShapeColorPickerName(shapeId)}`).colorpicker('colorpicker');
-    cp.disable();
-
     document.getElementById(getListEntryName(shapeId)).classList.toggle("edited-shape", false);
     document.getElementById(getRemoveButtonName(shapeId)).hidden = false;
     document.getElementById(getSubmitButtonName(shapeId)).hidden = true;
@@ -129,10 +161,13 @@ function deactivateShapeEditMode($, shapeId, resetValues = false) {
     document.getElementById(getHydrusSelectId(shapeId)).disabled = true;
     document.getElementById(getManualInputId(shapeId)).disabled = true;
 
-
     if (resetValues){
         resetToOldValues(shapeId);
     }
+
+    var cp = $(`#${getShapeColorPickerName(shapeId)}`).colorpicker('colorpicker');
+    cp.disable();
+
     oldShapeId = oldShapeColor = null;
     oldMask = null;
     setGridEditMode(false);
@@ -145,12 +180,15 @@ function getNewColorForShape(shapeId) {
 }
 
 
-function changeShapeColor(shapeId) {
-    var style = document.getElementById(getCssClassNameForShape(shapeId));
-    const color = getNewColorForShape(shapeId);
-    if (color) {
-        style.innerHTML = `.${getCssClassNameForShape(shapeId)} { background: ${color}}`
-    }
+async function changeShapeColor(shapeId) {
+    // TODO: This looks terrible, but currently works
+    setTimeout(() => {
+        var style = document.getElementById(getCssClassNameForShape(shapeId));
+        const color = getNewColorForShape(shapeId);
+        if (color) {
+            style.innerHTML = `.${getCssClassNameForShape(shapeId)} { background: ${color}}`
+        }
+    }, 50);
 }
 
 
@@ -203,6 +241,10 @@ function getManualInputId(shapeId) {
     return `${shapeId}ManualValue`;
 }
 
+function getColorInputFieldId(shapeId) {
+    return `${shapeId}ColorInputField`;
+}
+
 function removeEditModeForOtherShapes() {
     for (const shapeId of Object.keys(ProjectConfig.shapes)) {
         document.getElementById(getEditButtonName(shapeId)).hidden = true;
@@ -234,8 +276,6 @@ async function deleteShape(projectId, shapeId) {
         })
     }).then(response => {
         if (response.status === 200) {
-            removeClassFromGrid(getCssClassNameForShape(shapeId));
-            document.getElementById(getListEntryName(shapeId)).remove();
             removeShape(shapeId);
             showSuccessToast(jQuery, "Shape successfully deleted")
         } else {
@@ -245,42 +285,32 @@ async function deleteShape(projectId, shapeId) {
         }
     });
 }
+//
+//async function deleteAllRchShapes(projectId) {
+//    const url = getEndpointForProjectId(Config.rchShapes, projectId);
+//    await fetch(url, {
+//        method: "DELETE"
+//    }).then(response => {
+//        if (response.status === 200) {
+//            // TODO: remove RCH shapes from grid and list
+//            showSuccessToast(jQuery, "All RCH shapes successfully deleted")
+//        } else {
+//            response.json().then(data => {
+//                showErrorToast(jQuery, `Error: ${data.description}`);
+//            });
+//        }
+//    });
+//}
 
-async function deleteAllRchShapes(projectId) {
-    const url = getEndpointForProjectId(Config.rchShapes, projectId);
-    await fetch(url, {
-        method: "DELETE"
-    }).then(response => {
-        if (response.status === 200) {
-            // TODO: remove RCH shapes from grid and list
-            showSuccessToast(jQuery, "All RCH shapes successfully deleted")
-        } else {
-            response.json().then(data => {
-                showErrorToast(jQuery, `Error: ${data.description}`);
-            });
+function addNewListEntry($, projectId, edit = true, shapeColor = "blue", shapeId = null) {
+    if (!shapeId) {
+        const enterShapeName = "EnterShapeName";
+        shapeId = enterShapeName;
+        for (let i = 1; document.getElementById(getListEntryName(shapeId)); ++i) {
+            shapeId = `${enterShapeName}${i}`;
         }
-    });
-}
+    }
 
-async function rchShapes(projectId) {
-    const url = getEndpointForProjectId(Config.rchShapes, projectId);
-    await fetch(url, {
-        method: "PUT"
-    }).then(response => {
-        if (response.status === 200) {
-            // TODO: add new shapes to grid and list
-            showSuccessToast(jQuery, "RCH shapes successfully generated")
-        } else {
-            response.json().then(data => {
-                showErrorToast(jQuery, `Error: ${data.description}`);
-            });
-        }
-    });
-}
-
-
-function addNewListEntry($, projectId) {
-    const shapeId = "EnterShapeName";
     const listEntry = createEmptyListEntry(getListEntryName(shapeId));
     const leftContent = createElement("div", ["slice-column", "left"]);
     const rightContent = createElement("span", ["slice-column", "right"]);
@@ -305,10 +335,11 @@ function addNewListEntry($, projectId) {
 
     const italic = document.createElement("i");
     const input = createElement("input", ["form-control", "input-lg"]);
+    input.id = getColorInputFieldId(shapeId);
     input.type = "text";
     input.hidden = true;
-    createCssClassForShape(shapeId, "blue");
-    input.setAttribute("onchange", () => changeShapeColor(shapeId));
+    createCssClassForShape(shapeId, shapeColor);
+    input.setAttribute("onchange", `changeShapeColor('${shapeId}')`);
     colorPickerInputSpan.appendChild(italic);
     colorPickerInputSpan.appendChild(input);
 
@@ -318,10 +349,11 @@ function addNewListEntry($, projectId) {
 
     const select = createElement("select", ["custom-select"], getHydrusSelectId(shapeId));
     select.onclick = () => setSelectOptions(shapeId);
+    select.onchange = () => checkForManualOption(shapeId);
     select.disabled = true;
     hydrusSelectSpan.appendChild(select);
 
-    const noValOpt = createOption("[No value]");
+    const noValOpt = createOption(MappingsConsts.NO_RECHARGE_VALUE);
     noValOpt.selected = true;
     select.appendChild(noValOpt);
 
@@ -329,6 +361,7 @@ function addNewListEntry($, projectId) {
     manualValInput.type = "number";
     manualValInput.hidden = true;
     manualValInput.disabled = true;
+    manualValInput.value = 0;
     hydrusSelectSpan.appendChild(manualValInput);
 
     // Right buttons
@@ -338,11 +371,14 @@ function addNewListEntry($, projectId) {
 
     const editButton = createButtonWithoutFunction(getEditButtonName(shapeId), "btn-secondary", "Edit");
     editButton.onclick = () => activateShapeEditMode(jQuery, shapeId);
-    editButton.hidden = true;
     rightContent.appendChild(editButton);
 
     const cancelButton = createButtonWithoutFunction(getCancelButtonName(shapeId), "btn-danger", "Cancel");
-    cancelButton.onclick = () => removeTemporaryShape(shapeId);
+    if (edit) {
+        cancelButton.onclick = () => removeTemporaryShape(shapeId);
+    } else {
+        cancelButton.onclick = () => deactivateShapeEditMode(jQuery, shapeId, true);
+    }
     cancelButton.hidden = true;
     rightContent.appendChild(cancelButton);
 
@@ -355,10 +391,13 @@ function addNewListEntry($, projectId) {
     const newShapeListEntry = document.getElementById("newShape");
     shapeList.insertBefore(listEntry, newShapeListEntry);
 
-    $(`#${getShapeColorPickerName(shapeId)}`).colorpicker({"color": "blue",
+    $(`#${getShapeColorPickerName(shapeId)}`).colorpicker({"color": shapeColor,
                                                             useAlpha: false});
     deactivateShapeEditMode(jQuery, shapeId);
-    activateShapeEditMode(jQuery, shapeId);
+    if (edit) {
+        editButton.hidden = true;
+        activateShapeEditMode(jQuery, shapeId);
+    }
 }
 
 function removeTemporaryShape(shapeId) {
@@ -366,19 +405,25 @@ function removeTemporaryShape(shapeId) {
     document.getElementById(getListEntryName(shapeId)).remove();
 }
 
-var currentOptions = ["[No value]"]
 
 function setSelectOptions(shapeId) {
-    const options = ["[No value]", "[Manual value]"].concat(ProjectConfig.hydrusModels);
+    const hydrusSelect = document.getElementById(getHydrusSelectId(shapeId));
+    var currentOptions = [];
+    console.log(shapeId);
+    for (const child of hydrusSelect.children) {
+        currentOptions.push(child.value);
+    }
+
+    const options = [MappingsConsts.NO_RECHARGE_VALUE, MappingsConsts.MANUAL_RECHARGE_VALUE].concat(ProjectConfig.hydrusModels);
     if (arrayEquals(currentOptions, options)) {
         return;
     }
+    [options[0], options[1]] = [options[1], options[0]];
 
     const htmlOptions = [];
     options.forEach(opt => htmlOptions.push(createOption(opt)));
     htmlOptions[0].selected = true;
 
-    const hydrusSelect = document.getElementById(getHydrusSelectId(shapeId));
     var child = hydrusSelect.lastElementChild;
     while (child) {
         hydrusSelect.removeChild(child);
@@ -392,7 +437,7 @@ function setSelectOptions(shapeId) {
 function checkForManualOption(shapeId) {
     const select = document.getElementById(getHydrusSelectId(shapeId));
 
-    if (select.value === "[Manual value]") {
+    if (select.value === MappingsConsts.MANUAL_RECHARGE_VALUE) {
         document.getElementById(getManualInputId(shapeId)).hidden = false;
     } else {
         document.getElementById(getManualInputId(shapeId)).hidden = true;

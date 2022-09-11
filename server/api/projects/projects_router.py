@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
 import flask
-from flask import request, render_template, jsonify, Blueprint
+from flask import request, render_template, jsonify, Blueprint, send_file
 from flask_paginate import get_page_args, Pagination
 from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
@@ -122,7 +122,7 @@ def project_download(project_id: str):
     check_previous_steps = path_checker.path_check_cookie(request.cookies.get(cookie_utils.COOKIE_NAME))
     if check_previous_steps:
         return check_previous_steps
-    return project_service.download_project(project_id)  # TODO: check how does that one work in previous version
+    return send_file(project_service.download_project(project_id), as_attachment=True)
 
 
 @projects.route(endpoints.PROJECT_MANAGE_MODFLOW, methods=['PUT', 'DELETE'])
@@ -216,27 +216,16 @@ def manual_shapes(project_id: str):
         return flask.Response(status=HTTPStatus.OK)
 
 
-@projects.route(endpoints.RCH_SHAPES, methods=['PUT', 'DELETE'])
+@projects.route(endpoints.RCH_SHAPES, methods=['PUT'])
 def rch_shapes(project_id: str):
     cookie = request.cookies.get(cookie_utils.COOKIE_NAME)
     check_previous_steps = path_checker.path_check_for_modflow_model(cookie, project_id)
     if check_previous_steps:
         return check_previous_steps
-
-    if request.method == 'PUT':
-        rch_shapes = {}  # TODO: create shapes
-        for shape_id, shape_mask in rch_shapes:
-            project_service.save_or_update_shape(project_id, shape_id, shape_mask)
-    else:
-        for shape_id in project_service.get_all_shapes(project_id):
-            is_rch = False  # FIXME: distingush shape types
-            if is_rch:
-                # TODO: Logging
-                project_service.delete_shape(project_id, shape_id)
-        return flask.Response(status=HTTPStatus.OK)
+    return project_service.get_rch_shapes(project_id)
 
 
-@projects.route(endpoints.MAP_SHAPE_RECHARGE, methods=['PUT', 'DELETE'])
+@projects.route(endpoints.MAP_SHAPE_RECHARGE, methods=['PUT'])
 def map_shape_to_hydrus(project_id: str):
     cookie = request.cookies.get(cookie_utils.COOKIE_NAME)
     check_previous_steps = path_checker.path_check_for_modflow_model(cookie, project_id)
@@ -244,21 +233,20 @@ def map_shape_to_hydrus(project_id: str):
         return check_previous_steps
 
     shape_id = request.json['shapeId']
-    if request.method == 'PUT':
-        hydrus_id = request.json.get('hydrusId')
-        if hydrus_id is not None:
-            project_service.map_shape_to_hydrus(project_id, shape_id, hydrus_id)
-            return flask.Response(status=HTTPStatus.OK)
-        elif request.json.get('rechargeValue') is not None:
-            project_service.map_shape_to_manual_value(project_id, shape_id, request.json.get('rechargeValue'))
-            return flask.Response(status=HTTPStatus.OK)
-        abort(400)
+    hydrus_id = request.json.get('hydrusId')
+    recharge_value = request.json.get('rechargeValue')
+    if hydrus_id is not None:
+        project_service.map_shape_to_hydrus(project_id, shape_id, hydrus_id)
+        return flask.Response(status=HTTPStatus.OK)
+    elif recharge_value is not None:
+        project_service.map_shape_to_manual_value(project_id, shape_id, recharge_value)
+        return flask.Response(status=HTTPStatus.OK)
     else:
         project_service.remove_shape_mapping(project_id, shape_id)
         return flask.Response(status=HTTPStatus.OK)
 
 
-@projects.route(endpoints.MAP_WEATHER_FILE_TO_HYDRUS, methods=['PUT', 'DELETE'])
+@projects.route(endpoints.MAP_WEATHER_FILE_TO_HYDRUS, methods=['PUT'])
 def map_weather_to_hydrus(project_id: str):
     cookie = request.cookies.get(cookie_utils.COOKIE_NAME)
     check_previous_steps = path_checker.path_check_for_modflow_model(cookie, project_id)
@@ -266,8 +254,8 @@ def map_weather_to_hydrus(project_id: str):
         return check_previous_steps
 
     hydrus_id = request.json['hydrusId']
-    if request.method == 'PUT':
-        weather_id = request.json['weatherId']
+    weather_id = request.json.get('weatherId')
+    if weather_id is not None:
         project_service.map_hydrus_to_weather_file(project_id, hydrus_id, weather_id)
         return flask.Response(status=HTTPStatus.OK)
     else:

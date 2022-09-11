@@ -131,6 +131,7 @@ function setupGridSettings($, shapeClass) {
         .mousedown(function () {
             if (editMode) {
                 isMouseDown = true;
+                console.log(shapeClass);
                 isHighlighted = !$(this).hasClass(shapeClass);
                 onMouseOver(this.id, isHighlighted, shapeClass);
             }

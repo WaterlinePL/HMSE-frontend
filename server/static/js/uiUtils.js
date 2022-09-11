@@ -60,18 +60,28 @@ function createElement(element, classes, id = null) {
     return div;
 }
 
-function createOption(text) {
+function createOption(text, selected = false) {
     const option = document.createElement("option");
     option.value = text;
     option.textContent = text;
+    option.selected = selected;
     return option;
 }
 
 function arrayEquals(a, b) {
-    return Array.isArray(a) &&
-        Array.isArray(b) &&
-        a.length === b.length &&
-        a.every((val, index) => val === b[index]);
+    const sortedA = a.sort();
+    const sortedB = b.sort();
+    return a.length === b.length &&
+        sortedA.every((val, index) => val === sortedB[index]);
+}
+
+function unselectDeletedOption(selectElement, optToRemove, defaultOptIndex) {
+    for (const option of selectElement.children) {
+        if (option.value === optToRemove) {
+            option.selected = false;
+            selectElement.children[defaultOptIndex].selected = true;
+        }
+    }
 }
 
 function testPing() {

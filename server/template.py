@@ -1,5 +1,5 @@
 # Base
-HOME = 'home.html'  # TODO: maybe delete?
+HELP = 'home.html'  # TODO: maybe delete?
 CONFIGURATION = 'configuration.html'
 EDIT_PROJECT = 'editProjectAlpha.html'
 

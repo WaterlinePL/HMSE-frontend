@@ -10,6 +10,8 @@ var Config = {
     "manualShapes": "/project/<project_id>/manual-shape",
     "projectMetadata": "/project/<project_id>/metadata",
     "simulation": "/simulation/<project_id>",
+    "mapShapeRecharge": "/project/<project_id>/map-shape-to-hydrus",
+    "mapWeatherFile": "/project/<project_id>/map-weather",
 
      // Unused
     "defineMethod": "/define-method",

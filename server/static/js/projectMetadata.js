@@ -8,16 +8,68 @@ var ProjectConfig = {
     "hydrusToWeather": {}
 }
 
+function addShapeToHydrusMapping(shapeId, hydrusIdOrRechargeValue) {
+    ProjectConfig.shapesToHydrus[shapeId] = hydrusIdOrRechargeValue;
+}
+
+function addHydrusToWeatherMapping(hydrusId, weatherId) {
+    ProjectConfig.hydrusToWeather[hydrusId] = weatherId;
+}
+
+
 function removeShape(shapeId) {
+    removeClassFromGrid(getCssClassNameForShape(shapeId));
+    document.getElementById(getListEntryName(shapeId)).remove();
     delete ProjectConfig.shapes[shapeId];
+    delete ProjectConfig.shapesToHydrus[shapeId];
+}
+
+function addNewShape(projectId, shapeId, color, shapeMask) {
+    ProjectConfig.shapes[shapeId] = color;
+    addNewListEntry(jQuery, projectId, false, color, shapeId);
+    applyMask(shapeMask, getCssClassNameForShape(shapeId), true);
+}
+
+function unselectHydrusModelForAllShapes(hydrusIdToDelete) {
+    for (const [shapeId, hydrusId] of Object.entries(ProjectConfig.shapesToHydrus)) {
+        if (hydrusId === hydrusIdToDelete) {
+            const hydrusSelect = document.getElementById(getHydrusSelectId(shapeId));
+            unselectDeletedOption(hydrusSelect, hydrusIdToDelete, 0);
+        }
+    }
+}
+
+function unselectWeatherFileForAllHydrusModels(weatherIdToDelete) {
+    for (const [hydrusId, weatherId] of Object.entries(ProjectConfig.hydrusToWeather)) {
+        if (weatherId === weatherIdToDelete) {
+            const weatherSelect = document.getElementById(getWeatherSelectId(hydrusId));
+            unselectDeletedOption(weatherSelect, weatherIdToDelete, 0);
+        }
+    }
+}
+
+
+function addWeatherFile(projectId, weatherId) {
+    addWeatherEntryToSimulation(projectId, weatherId);
+    ProjectConfig.weatherFiles.push(weatherId);
+}
+
+function addHydrusModel(projectId, hydrusId) {
+    addHydrusEntryToSimulation(projectId, hydrusId);
+    ProjectConfig.hydrusModels.push(hydrusId);
 }
 
 function removeWeatherFile(weatherId) {
+    unselectWeatherFileForAllHydrusModels(weatherId);
+    document.getElementById(getWeatherListEntryId(weatherId)).remove();
     removeFromArray(ProjectConfig.weatherFiles, weatherId);
 }
 
 function removeHydrusModel(hydrusId) {
+    unselectHydrusModelForAllShapes(hydrusId);
+    document.getElementById(getHydrusListEntryId(hydrusId)).remove();
     removeFromArray(ProjectConfig.hydrusModels, hydrusId);
+    delete ProjectConfig.hydrusToWeather[hydrusId];
 }
 
 function removeFromArray(arr, elem) {

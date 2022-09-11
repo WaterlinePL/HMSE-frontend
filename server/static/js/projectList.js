@@ -21,7 +21,7 @@ async function doDelete(projectId, wasWarned) {
             doDelete(projectName, true);
         };
     }
-};
+}
 
 
 
@@ -39,11 +39,10 @@ async function doDelete(projectId, wasWarned) {
         }
     }
 
-    // TODO: Does this always show toast no matter what happens? - looks like it, maybe it's empty
-//    $('#error').toast('show');
-
     $(document).ready(function () {
+        console.log("ping");
         $(".download").each(function (i, obj) {
+            console.log(obj);
             isProjectFinished(obj.id, obj);
 //            const url = getEndpointForProjectId(Config.projectFinished, obj.id);
 //            console.log(obj.id);
