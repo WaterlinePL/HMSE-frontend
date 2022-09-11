@@ -14,7 +14,7 @@ def path_check_cookie(cookie: UserID) -> Optional[Response]:
     """
 
     if cookie is None:
-        return redirect(endpoints.HOME)
+        return redirect('/')
     return None
 
 

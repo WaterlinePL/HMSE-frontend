@@ -28,7 +28,6 @@
         const elem = document.getElementById("draggableMask");
         const x = elem.offsetLeft + elem.offsetWidth / 2, y = elem.offsetTop + elem.offsetHeight / 2;
         const htmlElements = document.elementsFromPoint(x, y);
-        console.log(htmlElements);
         return findHydrusElement(htmlElements) === null;
     }
 
@@ -42,7 +41,6 @@
             const hydrusElement = findHydrusElement(document.elementsFromPoint(x, y));
             if (hydrusElement !== null) {
                 $("#draggableMask").appendTo(hydrusElement);
-                console.log("reparent");
             }
         }
     });
@@ -52,8 +50,6 @@
         helper: "clone",
         stop: function(event, ui) {
             const x = ui.position.left + ui.helper.width() / 2, y = ui.position.top + ui.helper.height() / 2;
-            console.log(x, y);
-            console.log(document.elementsFromPoint(x, y));
         }});
    } );
 </script>

@@ -21,7 +21,9 @@
 <script src="/static/js/projectManageWeatherFiles.js"></script>
 <script src="/static/js/defineMethod.js"></script>
 <script src="/static/js/defineShapes.js"></script>
+<script src="/static/js/rchShapes.js"></script>
 <script src="/static/js/simulation.js"></script>
+<script src="/static/js/mappings.js"></script>
 <script src="/static/js/shapes.js"></script>
 <script src="/static/js/projectDetails.js"></script>
 <script src="/static/js/uiUtils.js"></script>
@@ -146,7 +148,7 @@
                     <h3 style="text-align: center">Hydrus models</h3>
                     <ul class="list-group list-group-flush" id="hydrusModelList">
                         {% for hydrus_id in metadata.hydrus_models %}
-                        <li class="list-group-item row-entries" id="{{ hydrus_id }}">
+                        <li class="list-group-item row-entries" id="hydrus_{{ hydrus_id }}">
                             <span class="slice-column left">
                                 {{ hydrus_id }}
                                 <span class="slice-column right">
@@ -156,8 +158,11 @@
                             <span class="slice-column right">
                                 <span class="slice-column left">
                                     <select id="{{ hydrus_id }}SelectWeather" class="custom-select left"
-                                            onclick="testPing()">
-                                        <option id="{{ hydrus_id }}SelectNone" selected value="">[No weather file]</option>
+                                            onclick="setWeatherSelectOptions('{{ hydrus_id }}')"
+                                            onchange="sendWeatherMapping('{{ metadata.project_id }}', '{{ hydrus_id }}')">
+                                        <script>
+                                            setWeatherSelectOptions('{{ hydrus_id }}');
+                                        </script>
                                     </select>
                                 </span>
 
@@ -180,7 +185,7 @@
                     <h3 style="text-align: center">Weather files</h3>
                     <ul class="list-group list-group-flush" id="weatherFileList">
                         {% for weather_id in metadata.weather_files %}
-                        <li class="list-group-item" id="{{ weather_id }}">
+                        <li class="list-group-item" id="weather_{{ weather_id }}">
                             <span class="slice-column left">{{ weather_id }}</span>
                             <span class="slice-column right">
                                 <button type="button" class="btn btn-danger right"
@@ -212,7 +217,7 @@
                                         <span class="input-group-append">
                                             <span class="input-group-text colorpicker-input-addon">
                                                 <i ></i>
-                                                <input type="text" class="form-control input-lg"
+                                                <input id="{{ shape_id }}ColorInputField" type="text" class="form-control input-lg"
                                                        hidden onchange="changeShapeColor('{{ shape_id }}')">
                                             </span>
                                         </span>
@@ -230,9 +235,11 @@
                                 <span class="slice-column left">
                                     <select id="{{ shape_id }}SelectHydrus" class="custom-select"
                                             onclick="setSelectOptions('{{ shape_id }}')" onchange="checkForManualOption('{{ shape_id }}')" disabled>
-                                        <option value="[No value]">[No value]</option>
+                                        <script>
+                                            setSelectOptions('{{ shape_id }}');
+                                        </script>
                                     </select>
-                                    <input id="{{ shape_id }}ManualValue" type="number" class="form-control input-lg" hidden disabled>
+                                    <input id="{{ shape_id }}ManualValue" value="0" type="number" class="form-control input-lg" hidden disabled>
                                 </span>
 
                                 <button id="{{ shape_id }}RemoveShapeButton" type="button" class="btn btn-danger right"
@@ -258,7 +265,7 @@
                                     New shape
                                 </button>
                                 <button id="genRchShapes" type="button" class="btn btn-primary right"
-                                        onclick="rchShapes({{ project_id }})">
+                                        onclick="requestRechargeShapes('{{ metadata.project_id }}')">
                                     Generate RCH shapes
                                 </button>
                                 <!--                                <button id="cancelNewShape" hidden type="button" class="btn btn-danger"-->

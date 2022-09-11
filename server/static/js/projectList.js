@@ -21,7 +21,7 @@ async function doDelete(projectId, wasWarned) {
             doDelete(projectName, true);
         };
     }
-};
+}
 
 
 
@@ -31,7 +31,6 @@ async function doDelete(projectId, wasWarned) {
     document.getElementById("form-search").onsubmit = function (e) {
         e.preventDefault();
         const search = this.elements.search.value;
-//        console.log(this.elements.search.value);
         if (search !== null && search !== undefined && search.trim() !== "") {
             window.location.href = `${Config.projectList}/${search}`;
         } else {
@@ -39,28 +38,9 @@ async function doDelete(projectId, wasWarned) {
         }
     }
 
-    // TODO: Does this always show toast no matter what happens? - looks like it, maybe it's empty
-//    $('#error').toast('show');
-
     $(document).ready(function () {
         $(".download").each(function (i, obj) {
             isProjectFinished(obj.id, obj);
-//            const url = getEndpointForProjectId(Config.projectFinished, obj.id);
-//            console.log(obj.id);
-//            ($).ajax({
-//                url: url,
-//                type: "GET",
-////                dataType: "json",
-//                context: this,
-//                success: function (data, textStatus, jqXHR) {
-//                    if (textStatus === "success") {
-//                        $(this).removeAttr('hidden');
-//                    }
-//                },
-//                error: function(data, textStatus, jqXHR) {
-//                    // TODO: Alert in toast
-//                }
-//            });
         });
     });
 

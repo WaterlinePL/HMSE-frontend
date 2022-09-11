@@ -1,7 +1,7 @@
 # Base
 from hmse_simulations.hmse_projects.typing_help import ProjectID
 
-HOME = '/home'
+HELP = '/home'
 CONFIGURATION = '/configuration'
 
 # Projects

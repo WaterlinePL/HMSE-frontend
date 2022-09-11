@@ -5,7 +5,7 @@ async function isProjectFinished(projectId, obj) {
     }).then(response => {
         if (response.status === 200) {
             $(obj).removeAttr('hidden');
-        } else {
+        } else if (response.status !== 204) {
             response.json().then(data => {
                 showErrorToast(jQuery, `Error: ${data.description}`);
             });
