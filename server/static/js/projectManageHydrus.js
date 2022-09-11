@@ -88,13 +88,11 @@ async function startUpload(files) {
         formData.append('archive-input', files[i]);
     const url = getEndpointForProjectId(Config.projectManageHydrus, projectId);
 
-//        console.log(formData);
     await fetch(url, {
         method : "PUT",
         body: formData
     }).then(response => {
         if (response.status === 200) {
-//                console.log(response)
             location.reload();  // TODO: poor solution or create with JS
             // Activate success toast
         }

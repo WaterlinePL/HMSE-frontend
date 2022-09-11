@@ -73,7 +73,6 @@ function setWeatherSelectOptions(hydrusId) {
     const weatherSelect = document.getElementById(getWeatherSelectId(hydrusId));
     const options = [MappingsConsts.NO_WEATHER_FILE].concat(ProjectConfig.weatherFiles);
     const currentSelectedOpt = document.getElementById(getWeatherSelectId(hydrusId)).value;
-    console.log(currentSelectedOpt);
 
     const htmlOptions = [];
     options.forEach(opt => htmlOptions.push(createOption(opt, opt === currentSelectedOpt)));

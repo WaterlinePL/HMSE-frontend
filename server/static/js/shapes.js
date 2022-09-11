@@ -144,7 +144,6 @@ function activateShapeEditMode($, shapeId) {
     document.getElementById(getCancelButtonName(shapeId)).hidden = false;
     document.getElementById(getNameDivId(shapeId)).contentEditable = true;
     document.getElementById(getHydrusSelectId(shapeId)).disabled = false;
-    console.log(shapeId);
     document.getElementById(getManualInputId(shapeId)).disabled = false;
 
     setGridEditMode(true);
@@ -409,7 +408,6 @@ function removeTemporaryShape(shapeId) {
 function setSelectOptions(shapeId) {
     const hydrusSelect = document.getElementById(getHydrusSelectId(shapeId));
     var currentOptions = [];
-    console.log(shapeId);
     for (const child of hydrusSelect.children) {
         currentOptions.push(child.value);
     }

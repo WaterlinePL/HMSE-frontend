@@ -1,7 +1,5 @@
 async function requestRechargeShapes(projectId) {
     const url = getEndpointForProjectId(Config.rchShapes, projectId);
-    console.log(Config.rchShapes);
-    console.log(url);
     await fetch(url, {
         method: "PUT"
     }).then(response => {
