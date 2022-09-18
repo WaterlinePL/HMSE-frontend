@@ -284,22 +284,6 @@ async function deleteShape(projectId, shapeId) {
         }
     });
 }
-//
-//async function deleteAllRchShapes(projectId) {
-//    const url = getEndpointForProjectId(Config.rchShapes, projectId);
-//    await fetch(url, {
-//        method: "DELETE"
-//    }).then(response => {
-//        if (response.status === 200) {
-//            // TODO: remove RCH shapes from grid and list
-//            showSuccessToast(jQuery, "All RCH shapes successfully deleted")
-//        } else {
-//            response.json().then(data => {
-//                showErrorToast(jQuery, `Error: ${data.description}`);
-//            });
-//        }
-//    });
-//}
 
 function addNewListEntry($, projectId, edit = true, shapeColor = "blue", shapeId = null) {
     if (!shapeId) {

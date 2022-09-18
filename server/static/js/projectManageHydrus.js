@@ -84,7 +84,7 @@ async function sendHydrusModelAfterSelected(projectId) {
     })
 }
 
-// TODO: multifile upload? - already unused
+// TODO: multifile upload? - currently unused
 async function startUpload(files) {
     const formData = new FormData();
     for (let i = 0; i < files.length; i++)
