@@ -6,7 +6,9 @@ function addWeatherEntryToSimulation(projectId, weatherId) {
     const weatherList = document.getElementById("weatherFileList");
     const uploadButtonListElement = document.getElementById("weatherUpload");
     const deleteLambda = () => deleteWeatherFile(projectId, weatherId);
-    weatherList.insertBefore(createProjectListElement(weatherId, deleteLambda), uploadButtonListElement);
+    const listEntry = createProjectListElement(weatherId, deleteLambda);
+    listEntry.id = getWeatherListEntryId(weatherId);
+    weatherList.insertBefore(listEntry, uploadButtonListElement);
 }
 
 
@@ -51,10 +53,13 @@ async function sendWeatherFileAfterSelected(projectId) {
         method: "PUT",
         body: formData
     }).then(response => {
+        document.getElementById('weatherFileUploadInput').value = "";
         if (response.status === 200) {
-            // TODO: const weatherId = ...
-            addWeatherFile(projectId, weatherFile.name);
-            showSuccessToast(jQuery, "Weather file successfully uploaded");
+            response.json().then(data => {
+                const weatherId = data['weather_id'];
+                addWeatherFile(projectId, weatherId);
+                showSuccessToast(jQuery, "Weather file successfully uploaded");
+            });
         } else {
             response.json().then(data => {
                 showErrorToast(jQuery, `Error: ${data.description}`);

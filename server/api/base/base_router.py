@@ -1,8 +1,12 @@
 import uuid
+from http import HTTPStatus
 
+import flask
 from flask import make_response, render_template, request, Blueprint
 from werkzeug.utils import redirect
 
+from config import app_config
+from config.app_config import AppConfig
 from server import endpoints, cookie_utils, template, path_checker
 
 base = Blueprint('base', __name__)
@@ -22,9 +26,14 @@ def home():
     return render_template(template.HELP)
 
 
-@base.route(endpoints.CONFIGURATION, methods=['GET'])
+@base.route(endpoints.CONFIGURATION, methods=['GET', 'PUT'])
 def configuration():
     check_previous_steps = path_checker.path_check_cookie(request.cookies.get(cookie_utils.COOKIE_NAME))
     if check_previous_steps:
         return check_previous_steps
-    return render_template(template.CONFIGURATION)
+    if request.method == 'PUT':
+        app_config.app_config = AppConfig(**request.json)
+        app_config.app_config.save()
+        return flask.Response(status=HTTPStatus.OK)
+
+    return render_template(template.CONFIGURATION, app_config=app_config.app_config)

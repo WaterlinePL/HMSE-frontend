@@ -65,6 +65,32 @@ async function sendWeatherMapping(projectId, hydrusId) {
     createWeatherMapping(projectId, hydrusId, weatherId);
 }
 
+function setMappings(mapping, selectFindingFunction, optionSetter) {
+    for (const [key, value] of Object.entries(mapping)) {
+        optionSetter(key);
+        var select = document.getElementById(selectFindingFunction(key));
+        const isNumber = typeof value == 'number';
+
+        for (var option of select.children) {
+            const selectNumber = isNumber && option.value === MappingsConsts.MANUAL_RECHARGE_VALUE;
+            if (option.value === value || selectNumber) {
+                option.selected = true;
+                if (selectNumber) {
+                    document.getElementById(getManualInputId(key)).value = value;
+                    document.getElementById(getManualInputId(key)).hidden = false;
+                }
+            } else {
+                option.selected = false;
+            }
+        }
+    }
+}
+
+function fillMappings() {
+    setMappings(ProjectConfig.shapesToHydrus, getHydrusSelectId, setSelectOptions);
+    setMappings(ProjectConfig.hydrusToWeather, getWeatherSelectId, setWeatherSelectOptions);
+}
+
 
 const MappingsConsts = {
     "MANUAL_RECHARGE_VALUE": "[Manual recharge value]",

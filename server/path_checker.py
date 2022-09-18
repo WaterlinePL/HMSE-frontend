@@ -2,7 +2,9 @@ from typing import Optional
 
 from flask import Response, redirect
 
+import config.app_config as app_config
 from hmse_simulations.hmse_projects.project_dao import project_dao
+from hmse_simulations.hmse_projects.project_exceptions import UnsetModflowModelError
 from server import endpoints, cookie_utils
 from server.typing_help import UserID, ProjectID
 
@@ -29,7 +31,8 @@ def path_check_simulate_access(cookie: UserID) -> Optional[Response]:
         return check_previous
 
     # Here carry out check for local executables or delete for other deployments
-    pass
+    if not (app_config.get_config().hydrus_program_path and app_config.get_config().modflow_program_path):
+        return redirect(endpoints.CONFIGURATION)
 
     return None
 
@@ -60,12 +63,11 @@ def path_check_for_modflow_model(cookie: UserID, project_id: ProjectID) -> Optio
     if check_previous:
         return check_previous
 
-    project_id = cookie_utils.get_project_id_by_cookie(cookie)
+    # project_id = cookie_utils.get_project_id_by_cookie(cookie)
     metadata = project_dao.read_metadata(project_id)
+
     if not metadata.modflow_metadata:
-        # TODO: error
-        # state.activate_error_flag()
-        return redirect(endpoints.PROJECT_MANAGE_HYDRUS)
+        raise UnsetModflowModelError()
 
     return None
 

@@ -40,10 +40,9 @@ async function sendModflowModelAfterSelected(projectId) {
     }).then(response => {
         document.getElementById('modflowUploadInput').value = "";
         if (response.status === 200) {
-            // TODO: Set model details
             response.json().then(data => {
                 document.getElementById('modflowRemoveBtn').hidden = false;
-                document.getElementById('modflowUploadBtn').textContent = "Upload";
+                document.getElementById('modflowUploadBtn').textContent = "Change";
                 document.getElementById('modflowModelId').textContent = data['modflow_id'];
                 document.getElementById('modflowModelGridSize').hidden = false;
                 document.getElementById('modflowModelGridSizeContent').textContent = `${data['rows']} cells x ${data['cols']} cells`
