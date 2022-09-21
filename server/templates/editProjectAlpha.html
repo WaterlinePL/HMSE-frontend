@@ -15,11 +15,9 @@
 {% block scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.2.0/js/bootstrap-colorpicker.min.js"></script>
 <script src="/static/js/projectFinished.js"></script>
-<script src="/static/js/currentProject.js"></script>
 <script src="/static/js/projectManageHydrus.js"></script>
 <script src="/static/js/projectManageModflow.js"></script>
 <script src="/static/js/projectManageWeatherFiles.js"></script>
-<script src="/static/js/defineMethod.js"></script>
 <script src="/static/js/defineShapes.js"></script>
 <script src="/static/js/rchShapes.js"></script>
 <script src="/static/js/simulation.js"></script>
@@ -34,11 +32,19 @@
     AllStagesInSimulation.push('{{ stage_id }}');
     {% endfor %}
 
+
+
+
+
+
+
+
+
 </script>
 {% endblock %}
 
 {% block body %}
-<div class="container mt-5" id="configuration-content">
+<div class="container-fluid mt-5" id="configuration-content">
     <div class="row justify-content-md-center">
         <div class="col-lg-9">
             <div class="text-center">
@@ -55,331 +61,395 @@
             </a>
         </div>
     </div>
-    <div class="container">
+    <div class="container-fluid">
         <div class="row justify-content-md-center">
-            <div class="col-lg-9">
+            <div class="row justify-content-center">
                 <div class="config-labels">
-                    <h3 style="text-align: center">Project Configuration</h3>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item ">
-                            <span class="slice-column left">Project Name</span>
-                            <input id="metadataProjectName" class="slice-column right text-standard" type="text" disabled
-                                  onchange="changeColorToUpdated('metadataProjectName')" value="{{ metadata.project_name }}"/>
-                        </li>
-                        <li class="list-group-item">
-                            <span class="slice-column left">Start Date</span>
-                            <input id="metadataStartDate" class="slice-column right text-standard" type="date" disabled
-                                  onchange="changeColorToUpdated('metadataStartDate')" value="{{ metadata.start_date }}"/>
-                        </li>
-                        <li class="list-group-item ">
-                            <span class="slice-column left">End Date</span>
-                            <input id="metadataEndDate" class="slice-column right text-standard" type="date" disabled
-                                  onchange="changeColorToUpdated('metadataEndDate')" value="{{ metadata.end_date }}"/>
-                        </li>
-                        <li class="list-group-item ">
-                            <span class="slice-column left">Latitude</span>
-                            <input id="metadataLat" class="slice-column right text-standard" type="number" disabled
-                                  onchange="changeColorToUpdated('metadataLat')" value="{{ metadata.lat }}"/>
-                        </li>
-                        <li class="list-group-item ">
-                            <span class="slice-column left">Longitude</span>
-                            <input id="metadataLong" class="slice-column right text-standard" type="number" disabled
-                                  onchange="changeColorToUpdated('metadataLong')" value="{{ metadata.long }}"/>
-                        </li>
-                        <li class="list-group-item ">
-                            <span class="slice-column left">Spin Up </span>
-                            <input id="metadataSpinUp" class="slice-column right text-standard" type="number" disabled
-                                  onchange="changeColorToUpdated('metadataSpinUp')" value="{{ metadata.spin_up }}"/>
-                        </li>
-                    </ul>
-                    <div class="button-edit">
-                        <div class="button-spacing">
-                            <button id="editConfigButton" type="button" class="btn btn-secondary"
-                                    onclick="enterEditMode()">
-                                Edit Configuration
-                            </button>
-                            <button id="submitConfigButton" hidden type="button" class="btn btn-success"
-                                    onclick="submitConfig('{{ metadata.project_id }}')">
-                                Submit
-                            </button>
-                            <button id="cancelEditConfigButton" hidden type="button" class="btn btn-danger"
-                                    onclick="cancelConfigEdit()">
-                                Cancel
-                            </button>
+                    <div class="slice-column left">
+                        <div>
+                            <div style="display: flex; justify-content: begin">
+                                <button type="button" class="btn btn-outline-secondary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16">
+                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                        <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div style="display: flex; justify-content: center">
+                                <h3 style="text-align: center">Project Configuration</h3>
+                            </div>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item ">
+                                <span class="slice-column left">Project Name</span>
+                                <input id="metadataProjectName" class="slice-column right text-standard" type="text"
+                                       disabled
+                                       onchange="changeColorToUpdated('metadataProjectName')"
+                                       value="{{ metadata.project_name }}"/>
+                            </li>
+                            <li class="list-group-item">
+                                <span class="slice-column left">Start Date</span>
+                                <input id="metadataStartDate" class="slice-column right text-standard" type="date"
+                                       disabled
+                                       onchange="changeColorToUpdated('metadataStartDate')"
+                                       value="{{ metadata.start_date }}"/>
+                            </li>
+                            <li class="list-group-item ">
+                                <span class="slice-column left">End Date</span>
+                                <input id="metadataEndDate" class="slice-column right text-standard" type="date"
+                                       disabled
+                                       onchange="changeColorToUpdated('metadataEndDate')"
+                                       value="{{ metadata.end_date }}"/>
+                            </li>
+                            <li class="list-group-item ">
+                                <span class="slice-column left">Latitude</span>
+                                <input id="metadataLat" class="slice-column right text-standard" type="number" disabled
+                                       onchange="changeColorToUpdated('metadataLat')" value="{{ metadata.lat }}"/>
+                            </li>
+                            <li class="list-group-item ">
+                                <span class="slice-column left">Longitude</span>
+                                <input id="metadataLong" class="slice-column right text-standard" type="number" disabled
+                                       onchange="changeColorToUpdated('metadataLong')" value="{{ metadata.long }}"/>
+                            </li>
+                            <li class="list-group-item ">
+                                <span class="slice-column left">Spin Up </span>
+                                <input id="metadataSpinUp" class="slice-column right text-standard" type="number"
+                                       disabled
+                                       onchange="changeColorToUpdated('metadataSpinUp')"
+                                       value="{{ metadata.spin_up }}"/>
+                            </li>
+                        </ul>
+                        <div class="button-edit">
+                            <div class="button-spacing">
+                                <button id="editConfigButton" type="button" class="btn btn-secondary"
+                                        onclick="enterEditMode()">
+                                    Edit Configuration
+                                </button>
+                                <button id="submitConfigButton" hidden type="button" class="btn btn-success"
+                                        onclick="submitConfig('{{ metadata.project_id }}')">
+                                    Submit
+                                </button>
+                                <button id="cancelEditConfigButton" hidden type="button" class="btn btn-danger"
+                                        onclick="cancelConfigEdit()">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slice-column right">
+                        <div>
+                            <div style="display: flex; justify-content: begin">
+                                <button type="button" class="btn btn-outline-secondary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16">
+                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                        <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <h3 style="text-align: center">Modflow model</h3>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item ">
+                                <span class="slice-column left">Modflow Model</span>
+                                <span id="modflowModelId" class="slice-column right">{{ metadata.modflow_metadata.modflow_id if metadata.modflow_metadata else 'None' }}</span>
+                            </li>
+                            <li id="modflowModelGridSize" class="list-group-item" {{
+                            'hidden' if not metadata.modflow_metadata }}>
+                            <span class="slice-column left">Grid Size</span>
+                            <span id="modflowModelGridSizeContent" class="slice-column right">{{ metadata.modflow_metadata.rows if metadata.modflow_metadata }} cells x {{ metadata.modflow_metadata.cols if metadata.modflow_metadata }} cells</span>
+                            </li>
+                            <li id="modflowModelGridUnit" class="list-group-item" {{
+                            'hidden' if not metadata.modflow_metadata }}>
+                            <span class="slice-column left">Grid Unit</span>
+                            <span id="modflowModelGridUnitContent" class="slice-column right">{{ metadata.modflow_metadata.grid_unit if metadata.modflow_metadata }}</span>
+                            </li>
+                            <li class="list-group-item" id="modflowUpload">
+                                <div class="button-spacing">
+                                    <button id="modflowUploadBtn" type="button" class="btn btn-success left"
+                                            onClick="openModflowDialog()">{{ 'Change' if metadata.modflow_metadata else
+                                        'Upload' }}
+                                    </button>
+                                    <button id="modflowRemoveBtn" type="button" class="btn btn-danger right"
+                                            {{
+                                    'hidden' if not metadata.modflow_metadata }}
+                                    onClick="deleteModflowModel('{{ metadata.project_id }}')">Remove
+                                    </button>
+                                </div>
+
+                                <input type="file" id="modflowUploadInput" accept=".zip" hidden
+                                       onchange="sendModflowModelAfterSelected('{{ metadata.project_id }}')">
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="config-labels-1">
+                    <div class="slice-column left">
+                        <div>
+                            <div style="display: flex; justify-content: begin">
+                                <button type="button" class="btn btn-outline-secondary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16">
+                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                        <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <h3 style="text-align: center">Hydrus models</h3>
+                        </div>
+                        <ul class="list-group list-group-flush" id="hydrusModelList">
+                            {% for hydrus_id in metadata.hydrus_models %}
+                            <li class="list-group-item row-entries" id="hydrus_{{ hydrus_id }}">
+                                <span class="slice-column left">
+                                    {{ hydrus_id }}
+                                    <span class="slice-column right">
+
+                                    </span>
+                                </span>
+                                <span class="slice-column right">
+                                    <span class="slice-column left">
+                                        <select id="{{ hydrus_id }}SelectWeather" class="custom-select left"
+                                                onclick="setWeatherSelectOptions('{{ hydrus_id }}')"
+                                                onchange="sendWeatherMapping('{{ metadata.project_id }}', '{{ hydrus_id }}')">
+                                        </select>
+                                        <script>
+                                            setWeatherSelectOptions('{{ hydrus_id }}')
+                                        </script>
+                                    </span>
+
+                                    <button type="button" class="btn btn-danger right"
+                                            onClick="deleteHydrus('{{ metadata.project_id }}', '{{ hydrus_id }}')">Remove</button>
+                                </span>
+                            </li>
+                            {% endfor %}
+                            <li class="list-group-item" id="hydrusUpload">
+                                <span class="d-flex justify-content-center">
+                                    <button type="button" class="btn btn-success right"
+                                            onClick="openHydrusDialog()">Upload</button>
+                                </span>
+                                <input type="file" id="hydrusUploadInput" accept=".zip" hidden
+                                       onchange="sendHydrusModelAfterSelected('{{ metadata.project_id }}')">
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="slice-column right">
+                        <div>
+                            <div style="display: flex; justify-content: begin">
+                                <button type="button" class="btn btn-outline-secondary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16">
+                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                        <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <h3 style="text-align: center">Weather files</h3>
+                        </div>
+                        <ul class="list-group list-group-flush" id="weatherFileList">
+                            {% for weather_id in metadata.weather_files %}
+                            <li class="list-group-item" id="weather_{{ weather_id }}">
+                                <span class="slice-column left">{{ weather_id }}</span>
+                                <span class="slice-column right">
+                                    <button type="button" class="btn btn-danger right"
+                                            onClick="deleteWeatherFile('{{ metadata.project_id }}', '{{ weather_id }}')">Remove</button>
+                                </span>
+                            </li>
+                            {% endfor %}
+                            <li class="list-group-item" id="weatherUpload">
+                                <span class="d-flex justify-content-center">
+                                    <button type="button" class="btn btn-success right"
+                                            onClick="openWeatherFileDialog()">Upload</button>
+                                </span>
+                                <input type="file" id="weatherFileUploadInput" accept=".csv" hidden
+                                       onchange="sendWeatherFileAfterSelected('{{ metadata.project_id }}')">
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="shape-editing-field">
+                    <div class="slice-column left">
+                        <div>
+                            <div style="display: flex; justify-content: begin">
+                                <button type="button" class="btn btn-outline-secondary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16">
+                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                        <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <h3 style="text-align: center">Shapes</h3>
+                        </div>
+                        <ul class="list-group list-group-flush" id="shapeList">
+                            {% for shape_id, color in metadata.shapes.items() %}
+                            <script type="text/javascript">
+                                createCssClassForShape('{{ shape_id }}', '{{ color }}');
+                            </script>
+                            <li class="list-group-item" id="shape{{ shape_id }}">
+                                <div class="slice-column left">
+                                    <div class="slice-column left" id="{{ shape_id }}ShapeName">{{ shape_id }}</div>
+                                    <div class="slice-column left">
+                                        <div id="{{ shape_id }}ColorPicker" class="slice-column left">
+                                            <span class="input-group-append">
+                                                <span class="input-group-text colorpicker-input-addon">
+                                                    <i></i>
+                                                    <input id="{{ shape_id }}ColorInputField" type="text"
+                                                           class="form-control input-lg"
+                                                           hidden onchange="changeShapeColor('{{ shape_id }}')">
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <script>
+                                    $(function () {
+                                        $('#{{ shape_id }}ColorPicker').colorpicker({"color": "{{ color }}",
+                                                                                    useAlpha: false});
+                                        deactivateShapeEditMode(jQuery, '{{ shape_id }}');
+                                    });
+                                </script>
+                                <span class="slice-column right">
+                                    <span class="slice-column left">
+                                        <select id="{{ shape_id }}SelectHydrus" class="custom-select"
+                                                onclick="setSelectOptions('{{ shape_id }}')"
+                                                onchange="checkForManualOption('{{ shape_id }}')" disabled>
+                                            <script>
+                                                setSelectOptions('{{ shape_id }}');
+                                            </script>
+                                        </select>
+                                        <input id="{{ shape_id }}ManualValue" value="0" type="number"
+                                               class="form-control input-lg" hidden disabled>
+                                    </span>
+
+                                    <button id="{{ shape_id }}RemoveShapeButton" type="button"
+                                            class="btn btn-danger right"
+                                            onClick="deleteShape('{{ metadata.project_id }}', '{{ shape_id }}')">Remove</button>
+                                    <button id="{{ shape_id }}EditShapeButton" type="button"
+                                            class="btn btn-secondary right"
+                                            onClick="activateShapeEditMode(jQuery, '{{ shape_id }}')">Edit</button>
+                                    <button id="{{ shape_id }}CancelShapeEditButton" hidden type="button"
+                                            class="btn btn-danger right"
+                                            onclick="deactivateShapeEditMode(jQuery, '{{ shape_id }}', true)">
+                                        Cancel
+                                    </button>
+                                    <button id="{{ shape_id }}SubmitShapeEditButton" hidden type="button"
+                                            class="btn btn-success right"
+                                            onclick="sendShape('{{ metadata.project_id }}', '{{ shape_id }}')">
+                                        Submit
+                                    </button>
+                                </span>
+                            </li>
+                            {% endfor %}
+                            <li class="list-group-item" id="newShape">
+                                <div class="button-spacing">
+                                    <button id="newShapeButton" type="button" class="btn btn-success right"
+                                            onclick="addNewListEntry(jQuery, '{{ metadata.project_id }}')">
+                                        New shape
+                                    </button>
+                                    <button id="genRchShapes" type="button" class="btn btn-primary right"
+                                            onclick="requestRechargeShapes('{{ metadata.project_id }}')">
+                                        Generate RCH shapes
+                                    </button>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="slice-column right shape-container-1">
+                        <div>
+                            <div style="display: flex; justify-content: begin">
+                                <button type="button" class="btn btn-outline-secondary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16">
+                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                        <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="row justify-content-center my-4">
+                                <div class="col-2-auto mx-2"><h4>Brush Size</h4></div>
+                                <div class="col-2-auto">
+                                    <select id="brush-size" class="form-control form-control-sm">
+                                        <option selected value="0">1x1</option>
+                                        <option value="1">3x3</option>
+                                        <option value="2">5x5</option>
+                                        <option value="3">7x7</option>
+                                        <option value="4">9x9</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="shape-container-2">
+                            <table class="shape-grid" id="modelGridTable">
+                                <tbody>
+                                {% if metadata.modflow_metadata %}
+                                {% for row in range(metadata.modflow_metadata.rows) %}
+                                <tr class="cell-row"
+                                    style="height: {{ metadata.modflow_metadata.row_cells[row] }}vw !important; padding:0 !important;">
+                                    {% for col in range(metadata.modflow_metadata.cols) %}
+                                    <td class="cell border border-1"
+                                        id="{{ 'cell_' + row|string + '_' + col|string }}"
+                                        style="width: {{ metadata.modflow_metadata.col_cells[col] }}vw !important; padding:0 !important;">
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                                <script>
+                                        initCurrentShapes('{{ metadata.project_id }}');
+                                </script>
+                                {% endif %}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
-                <div class="config-labels">
-                    <h3 style="text-align: center">Modflow model</h3>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item ">
-                            <span class="slice-column left">Modflow Model</span>
-                            <span id="modflowModelId" class="slice-column right">{{ metadata.modflow_metadata.modflow_id if metadata.modflow_metadata else 'None' }}</span>
-                        </li>
-                        <li id="modflowModelGridSize" class="list-group-item" {{
-                        'hidden' if not metadata.modflow_metadata }}>
-                        <span class="slice-column left">Grid Size</span>
-                        <span id="modflowModelGridSizeContent" class="slice-column right">{{ metadata.modflow_metadata.rows if metadata.modflow_metadata }} cells x {{ metadata.modflow_metadata.cols if metadata.modflow_metadata }} cells</span>
-                        </li>
-                        <li id="modflowModelGridUnit" class="list-group-item" {{
-                        'hidden' if not metadata.modflow_metadata }}>
-                        <span class="slice-column left">Grid Unit</span>
-                        <span id="modflowModelGridUnitContent" class="slice-column right">{{ metadata.modflow_metadata.grid_unit if metadata.modflow_metadata }}</span>
-                        </li>
-                        <li class="list-group-item" id="modflowUpload">
-                            <div class="button-spacing">
-                                <button id="modflowUploadBtn" type="button" class="btn btn-success left"
-                                        onClick="openModflowDialog()">{{ 'Change' if metadata.modflow_metadata else
-                                    'Upload' }}
-                                </button>
-                                <button id="modflowRemoveBtn" type="button" class="btn btn-danger right"
-                                        {{
-                                'hidden' if not metadata.modflow_metadata }}
-                                onClick="deleteModflowModel('{{ metadata.project_id }}')">Remove
-                                </button>
-                            </div>
-
-                            <input type="file" id="modflowUploadInput" accept=".zip" hidden
-                                   onchange="sendModflowModelAfterSelected('{{ metadata.project_id }}')">
-                        </li>
-                    </ul>
-                </div>
-                <div class="config-labels">
-                    <h3 style="text-align: center">Hydrus models</h3>
-                    <ul class="list-group list-group-flush" id="hydrusModelList">
-                        {% for hydrus_id in metadata.hydrus_models %}
-                        <li class="list-group-item row-entries" id="hydrus_{{ hydrus_id }}">
-                            <span class="slice-column left">
-                                {{ hydrus_id }}
-                                <span class="slice-column right">
-
-                                </span>
-                            </span>
-                            <span class="slice-column right">
-                                <span class="slice-column left">
-                                    <select id="{{ hydrus_id }}SelectWeather" class="custom-select left"
-                                            onclick="setWeatherSelectOptions('{{ hydrus_id }}')"
-                                            onchange="sendWeatherMapping('{{ metadata.project_id }}', '{{ hydrus_id }}')">
-                                    </select>
-                                </span>
-
-                                <button type="button" class="btn btn-danger right"
-                                        onClick="deleteHydrus('{{ metadata.project_id }}', '{{ hydrus_id }}')">Remove</button>
-                            </span>
-                        </li>
-                        {% endfor %}
-                        <li class="list-group-item" id="hydrusUpload">
-                            <span class="d-flex justify-content-center">
-                                <button type="button" class="btn btn-success right"
-                                        onClick="openHydrusDialog()">Upload</button>
-                            </span>
-                            <input type="file" id="hydrusUploadInput" accept=".zip" hidden
-                                   onchange="sendHydrusModelAfterSelected('{{ metadata.project_id }}')">
-                        </li>
-                    </ul>
-                </div>
-                <div class="config-labels">
-                    <h3 style="text-align: center">Weather files</h3>
-                    <ul class="list-group list-group-flush" id="weatherFileList">
-                        {% for weather_id in metadata.weather_files %}
-                        <li class="list-group-item" id="weather_{{ weather_id }}">
-                            <span class="slice-column left">{{ weather_id }}</span>
-                            <span class="slice-column right">
-                                <button type="button" class="btn btn-danger right"
-                                        onClick="deleteWeatherFile('{{ metadata.project_id }}', '{{ weather_id }}')">Remove</button>
-                            </span>
-                        </li>
-                        {% endfor %}
-                        <li class="list-group-item" id="weatherUpload">
-                            <span class="d-flex justify-content-center">
-                                <button type="button" class="btn btn-success right" onClick="openWeatherFileDialog()">Upload</button>
-                            </span>
-                            <input type="file" id="weatherFileUploadInput" accept=".csv" hidden
-                                   onchange="sendWeatherFileAfterSelected('{{ metadata.project_id }}')">
-                        </li>
-                    </ul>
-                </div>
-                <div class="config-labels">
-                    <h3 style="text-align: center">Shapes</h3>
-                    <ul class="list-group list-group-flush" id="shapeList">
-                        {% for shape_id, color in metadata.shapes.items() %}
-                        <script type="text/javascript">
-                            createCssClassForShape('{{ shape_id }}', '{{ color }}');
-                        </script>
-                        <li class="list-group-item" id="shape{{ shape_id }}">
-                            <div class="slice-column left">
-                                <div class="slice-column left" id="{{ shape_id }}ShapeName">{{ shape_id }}</div>
-                                <div class="slice-column left">
-                                    <div id="{{ shape_id }}ColorPicker" class="slice-column left">
-                                        <span class="input-group-append">
-                                            <span class="input-group-text colorpicker-input-addon">
-                                                <i></i>
-                                                <input id="{{ shape_id }}ColorInputField" type="text"
-                                                       class="form-control input-lg"
-                                                       hidden onchange="changeShapeColor('{{ shape_id }}')">
-                                            </span>
-                                        </span>
-                                    </div>
+                <div class="simulation-section">
+                    <div class="container my-5 justify-content-center">
+                        <div class="text-center justify-content-center">
+                            <p class="lead">Click "Run simulation" once you're ready to start it.</p>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <button type="submit" id="start-simulation" class="btn btn-primary right"
+                                onclick="runSimulation('{{ metadata.project_id }}')">
+                            Run simulation
+                        </button>
+                    </div>
+                    <div class="container my-5 justify-content-center">
+                        {% for stage_id, stage_name in simulation_stages %}
+                        <div class="row justify-content-center text-secondary" hidden id="{{ stage_id }}">
+                            <div class="col-7-auto">
+                                {{ stage_name }}
+                                <div class="spinner-border" id="{{ stage_id }}Spinner" role="status">
+                                    <span class="sr-only">Loading...</span>
                                 </div>
+                                <svg xmlns="http://www.w3.org/2000/svg" hidden id="{{ stage_id }}Tick" width="25"
+                                     height="25"
+                                     fill="currentColor"
+                                     class="bi bi-check"
+                                     viewBox="0 0 16 16">
+                                    <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
+                                </svg>
+                                <svg height="25" width="25" id="{{ stage_id }}X" hidden>
+                                    <line x1="7" y1="7" x2="18" y2="18"
+                                          style="stroke:rgb(255,0,0); stroke-width:2"/>
+                                    <line x1="18" y1="7" x2="7" y2="18"
+                                          style="stroke:rgb(255,0,0); stroke-width:2"/>
+                                </svg>
                             </div>
-                            <script>
-                                $(function () {
-                                    $('#{{ shape_id }}ColorPicker').colorpicker({"color": "{{ color }}",
-                                                                                useAlpha: false});
-                                    deactivateShapeEditMode(jQuery, '{{ shape_id }}');
-                                });
-                            </script>
-                            <span class="slice-column right">
-                                <span class="slice-column left">
-                                    <select id="{{ shape_id }}SelectHydrus" class="custom-select"
-                                            onclick="setSelectOptions('{{ shape_id }}')" onchange="checkForManualOption('{{ shape_id }}')" disabled>
-                                        <script>
-                                            setSelectOptions('{{ shape_id }}');
-                                        </script>
-                                    </select>
-                                    <input id="{{ shape_id }}ManualValue" value="0" type="number" class="form-control input-lg" hidden disabled>
-                                </span>
-
-                                <button id="{{ shape_id }}RemoveShapeButton" type="button" class="btn btn-danger right"
-                                        onClick="deleteShape('{{ metadata.project_id }}', '{{ shape_id }}')">Remove</button>
-                                <button id="{{ shape_id }}EditShapeButton" type="button" class="btn btn-secondary right"
-                                        onClick="activateShapeEditMode(jQuery, '{{ shape_id }}')">Edit</button>
-                                <button id="{{ shape_id }}CancelShapeEditButton" hidden type="button"
-                                        class="btn btn-danger right"
-                                        onclick="deactivateShapeEditMode(jQuery, '{{ shape_id }}', true)">
-                                    Cancel
-                                </button>
-                                <button id="{{ shape_id }}SubmitShapeEditButton" hidden type="button"
-                                        class="btn btn-success right"
-                                        onclick="sendShape('{{ metadata.project_id }}', '{{ shape_id }}')">
-                                    Submit
-                                </button>
-                            </span>
-                        </li>
+                        </div>
                         {% endfor %}
-                        <li class="list-group-item" id="newShape">
-                            <div class="button-spacing">
-                                <button id="newShapeButton" type="button" class="btn btn-success right" onclick="addNewListEntry(jQuery, '{{ metadata.project_id }}')">
-                                    New shape
-                                </button>
-                                <button id="genRchShapes" type="button" class="btn btn-primary right"
-                                        onclick="requestRechargeShapes('{{ metadata.project_id }}')">
-                                    Generate RCH shapes
-                                </button>
-                                <!--                                <button id="cancelNewShape" hidden type="button" class="btn btn-danger"-->
-                                <!--                                   onclick="cancelConfigEdit()">-->
-                                <!--                                    Cancel-->
-                                <!--                                </button>-->
-                                <!--                                <button id="submitNewShape" hidden type="button" class="btn btn-success"-->
-                                <!--                                   onclick="manualShape('{{ metadata.project_id }}')">-->
-                                <!--                                    Submit-->
-                                <!--                                </button>-->
-                            </div>
-                        </li>
-                    </ul>
+                        <script>
+                            initGrid();
+                        </script>
+                    </div>
+                    <div class="row justify-content-center">
+                        <a type="button" id="downloadProjectBtn" class="btn btn-success mx-5 my-2"
+                           {% if not metadata.finished %} hidden {% endif %}
+                           href="{{ url_for('projects.project_download', project_id=metadata.project_id) }}">Download
+                            Results</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+    <!--modals-->
+    {% include 'createShapeModal.html' %}
 
-<div class="container mt-5" id="define-shapes-content">
-    <div class="row justify-content-md-center">
-        <div class="col-lg-9">
-            <div class="text-center">
-                <h1 class="display-4">Model grid with shapes</h1>
-            </div>
-        </div>
-    </div>
-    <div class="row justify-content-center my-4">
-        <div class="col-2-auto mx-2"><h4>Brush Size</h4></div>
-        <div class="col-2-auto">
-            <select id="brush-size" class="form-control form-control-sm">
-                <option selected value="0">1x1</option>
-                <option value="1">3x3</option>
-                <option value="2">5x5</option>
-                <option value="3">7x7</option>
-                <option value="4">9x9</option>
-            </select>
-        </div>
-    </div>
-    <div class="row justify-content-center my-2">
-        <div class="col-2-auto mx-2">
-            <table class="table tab-manual table-sm" id="modelGridTable" style="width: 500px">
-                <tbody>
-                {% if metadata.modflow_metadata %}
-                {% for row in range(metadata.modflow_metadata.rows) %}
-                <tr class="cell-row"
-                    style="height: {{ metadata.modflow_metadata.row_cells[row] }}px !important; padding:0 !important;">
-                    {% for col in range(metadata.modflow_metadata.cols) %}
-                    <td class="cell border border-1" id="{{ 'cell_' + row|string + '_' + col|string }}"
-                        style="width: {{ metadata.modflow_metadata.col_cells[col] }}px !important; padding:0 !important;">
-                    </td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-                <script>
-                    initCurrentShapes('{{ metadata.project_id }}');
-                </script>
-                {% endif %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<div class="container mt-5" id="simulation-content">
-    <div class="row justify-content-md-center">
-
-        <div class="col-lg-9">
-            <div class="text-center">
-                <!--                <h1 class="display-4">Your simulation is ready to be started!</h1>-->
-                <p class="lead">Click "Run simulation" once you're ready to start it.</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="row justify-content-md-center">
-        <button type="submit" id="start-simulation" class="btn btn-primary right"
-                onclick="runSimulation('{{ metadata.project_id }}')">
-            Run simulation
-        </button>
-    </div>
-</div> <!-- container -->
-
-<div class="container my-5 justify-content-center">
-    {% for stage_id, stage_name in simulation_stages %}
-    <div class="row justify-content-center text-secondary" hidden id="{{ stage_id }}">
-        <div class="col-7-auto ">
-            {{ stage_name }}
-            <div class="spinner-border" id="{{ stage_id }}Spinner" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
-            <svg xmlns="http://www.w3.org/2000/svg" hidden id="{{ stage_id }}Tick" width="25" height="25"
-                 fill="currentColor"
-                 class="bi bi-check"
-                 viewBox="0 0 16 16">
-                <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
-            </svg>
-            <svg height="25" width="25" id="{{ stage_id }}X" hidden>
-                <line x1="7" y1="7" x2="18" y2="18" style="stroke:rgb(255,0,0); stroke-width:2"/>
-                <line x1="18" y1="7" x2="7" y2="18" style="stroke:rgb(255,0,0); stroke-width:2"/>
-            </svg>
-        </div>
-    </div>
-    {% endfor %}
-    <div class="row justify-content-center">
-        <a type="button" id="downloadProjectBtn" class="btn btn-success mx-5 my-2"
-           {% if not metadata.finished %} hidden {% endif %}
-           href="{{ url_for('projects.project_download', project_id=metadata.project_id) }}">Download Results</a>
-    </div>
-    <script>
-        initGrid();
-    </script>
-</div>
-
-<!--modals-->
-{% include 'createShapeModal.html' %}
-
-{% endblock %}
+    {% endblock %}
