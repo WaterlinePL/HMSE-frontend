@@ -285,6 +285,7 @@ async function deleteShape(projectId, shapeId) {
     });
 }
 
+
 function addNewListEntry($, projectId, edit = true, shapeColor = "blue", shapeId = null) {
     if (!shapeId) {
         const enterShapeName = "EnterShapeName";

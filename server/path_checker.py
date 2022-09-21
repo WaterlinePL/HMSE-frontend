@@ -60,7 +60,6 @@ def path_check_for_modflow_model(cookie: UserID, project_id: ProjectID) -> Optio
     if check_previous:
         return check_previous
 
-    # project_id = cookie_utils.get_project_id_by_cookie(cookie)
     metadata = project_dao.read_metadata(project_id)
 
     if not metadata.modflow_metadata:

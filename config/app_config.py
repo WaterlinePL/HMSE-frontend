@@ -1,7 +1,6 @@
 import json
 import os
 from dataclasses import dataclass
-from typing import Optional
 
 CONFIG_FILENAME = "config.json"
 
