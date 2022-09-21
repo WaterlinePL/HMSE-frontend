@@ -8,8 +8,8 @@ CONFIG_FILENAME = "config.json"
 
 @dataclass
 class AppConfig:
-    modflow_program_path: Optional[str] = None
-    hydrus_program_path: Optional[str] = None
+    # modflow_program_path: Optional[str] = None
+    # hydrus_program_path: Optional[str] = None
 
     def to_json(self):
         return self.__dict__

@@ -1,9 +1,7 @@
-import logging
 from typing import Optional
 
 from flask import Response, redirect
 
-import config.app_config as app_config
 from hmse_simulations.hmse_projects.project_dao import project_dao
 from hmse_simulations.hmse_projects.project_exceptions import UnsetModflowModelError
 from server import endpoints, cookie_utils
@@ -32,8 +30,6 @@ def path_check_simulate_access(cookie: UserID) -> Optional[Response]:
         return check_previous
 
     # Here carry out check for local executables or delete for other deployments
-    if not (app_config.get_config().hydrus_program_path and app_config.get_config().modflow_program_path):
-        return redirect(endpoints.CONFIGURATION)
 
     return None
 

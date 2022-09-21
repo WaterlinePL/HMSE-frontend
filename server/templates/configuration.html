@@ -4,54 +4,16 @@
     <title>HMSE | Configuration</title>
 {% endblock %}
 
-
 {% block configuration_active %} active {% endblock %}
 
 {% block body %}
     <div class="container mt-5" id="configuration-content">
         <div class="row justify-content-md-center">
-
             <div class="col-lg-9">
                 <div class="text-center">
-                    <h1 class="display-4">Please provide correct paths to Modflow and Hydrus programs</h1>
-                    <p class="lead">Click "Submit" to save your local paths</p>
-                </div>
-                <div class="form-group">
-                    <label for="modflowFile">Provide path to Modflow executable file: </label>
-                    <input type="text" class="form-control" id="modflowFile"
-                           placeholder="e.g. C:\MF2005.1_12\bin\mf2005.exe">
-                    <label for="hydrusFile">Provide path to Hydrus executable file: </label>
-                    <input type="text" class="form-control" id="hydrusFile"
-                           placeholder="e.g. C:\Program Files (x86)\PC-Progress\Hydrus-1D 4.xx\H1D_CALC.exe">
-                </div>
-                <button type="button" class="btn btn-primary right" onclick="submitLocalConfig()">Submit</button>
-            </div>
-        </div>
-
-        <div class="container">
-            <div class="row justify-content-md-center">
-                <div class="col-lg-9">
-                    <div>
-                        <h3 style="text-align: center">Current setup:</h3>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item ">
-                                <span class="slice-column left">Modflow</span>
-                                <span id="modflowCurrentConfig" class="slice-column right">
-                                    {{ app_config.modflow_program_path }}
-                                </span>
-                            </li>
-                            <li class="list-group-item">
-                                <span class="slice-column left">Hydrus</span>
-                                <span id="hydrusCurrentConfig" class="slice-column right">
-                                    {{ app_config.hydrus_program_path }}
-                                </span>
-                            </li>
-                        </ul>
-                    </div>
+                    <h1 class="display-4">Configuration currently not available in the docker deployment</h1>
                 </div>
             </div>
         </div>
     </div>
-
-<script src="/static/js/configuration.js"></script>
 {% endblock %}
