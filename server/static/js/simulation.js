@@ -89,7 +89,7 @@ async function runSimulation(projectId) {
         if (response.status === 200) {
             showSuccessToast(jQuery, "Simulation started");
             resetSimulationSteps();
-            monitorStatus(projectId);
+            setTimeout(() => monitorStatus(projectId), 2000);
         } else {
             response.json().then(data => {
                 showErrorToast(jQuery, `Error: ${data.description}`);
