@@ -71,7 +71,7 @@ async function getSimulationStatus(projectId) {
 }
 
 async function monitorStatus(projectId) {
-    const isFinished = await getSimulationStatus();
+    const isFinished = await getSimulationStatus(projectId);
     if (!isFinished) {
         setTimeout(() => monitorStatus(projectId), 2000);
     } else {
