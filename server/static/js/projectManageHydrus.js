@@ -12,6 +12,7 @@ function addHydrusEntryToSimulation(projectId, hydrusId) {
     const deleteLambda = () => deleteHydrus(projectId, hydrusId);
 
     const listEntry = createProjectListElement(hydrusId, deleteLambda);
+    listEntry.id = getHydrusListEntryId(hydrusId);
     const weatherSelectSpan = createElement("span", ["slice-column", "left"]);
     const rightContent = listEntry.children[1];
     rightContent.appendChild(weatherSelectSpan);
@@ -70,9 +71,11 @@ async function sendHydrusModelAfterSelected(projectId) {
         body: formData
     }).then(response => {
         if (response.status === 200) {
-            const hydrusId = hydrusModel.name;
-            addHydrusModel(projectId, hydrusId);
-            showSuccessToast(jQuery, `Hydrus model ${hydrusId} successfully uploaded`)
+            response.json().then(data => {
+                const hydrusId = data['hydrus_id'];
+                addHydrusModel(projectId, hydrusId);
+                showSuccessToast(jQuery, `Hydrus model ${hydrusId} successfully uploaded`)
+            });
         } else {
             response.json().then(data => {
                 showErrorToast(jQuery, `Error: ${data.description}`);
@@ -81,7 +84,7 @@ async function sendHydrusModelAfterSelected(projectId) {
     })
 }
 
-// TODO: multifile upload? - already unused
+// TODO: multifile upload? - currently unused
 async function startUpload(files) {
     const formData = new FormData();
     for (let i = 0; i < files.length; i++)

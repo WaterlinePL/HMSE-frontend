@@ -35,14 +35,14 @@ function showRunningStep(elemId) {
 }
 
 function updateStatus(statusResponse) {
-    var is_finished = true;
+    var isFinished = true;
     for (const [stepId, status] of Object.entries(statusResponse)) {
         if (status === "PENDING") {
             showStep(stepId);
-            is_finished = false;
+            isFinished = false;
         } else if (status === "RUNNING") {
             showRunningStep(stepId);
-            is_finished = false;
+            isFinished = false;
         } else if (status === "SUCCESS") {
             markStepSuccess(stepId);
         } else if (status === "ERROR") {
@@ -50,18 +50,17 @@ function updateStatus(statusResponse) {
             return true;
         }
     }
-    return is_finished;
+    return isFinished;
 }
 
 async function getSimulationStatus(projectId) {
     const url = getEndpointForProjectId(Config.simulation, projectId);
-    var is_finished = false;
-    await fetch(url, {
+    return await fetch(url, {
         method: "GET"
     }).then(response => {
         if (response.status === 200) {
-            response.json().then(statusResponse => {
-                is_finished = updateStatus(statusResponse);
+            return response.json().then(statusResponse => {
+                return updateStatus(statusResponse);
             });
         } else {
             response.json().then(data => {
@@ -69,13 +68,14 @@ async function getSimulationStatus(projectId) {
             });
         }
     });
-    return is_finished;
 }
 
 async function monitorStatus(projectId) {
-    const is_finished = await getSimulationStatus();
-    if (!is_finished) {
+    const isFinished = await getSimulationStatus();
+    if (!isFinished) {
         setTimeout(() => monitorStatus(projectId), 2000);
+    } else {
+        document.getElementById("downloadProjectBtn").hidden = false;
     }
 }
 
@@ -87,7 +87,7 @@ async function runSimulation(projectId) {
         if (response.status === 200) {
             showSuccessToast(jQuery, "Simulation started");
             resetSimulationSteps();
-            monitorStatus(projectId);
+            setTimeout(() => monitorStatus(projectId), 2000);   // Avoid race condition
         } else {
             response.json().then(data => {
                 showErrorToast(jQuery, `Error: ${data.description}`);

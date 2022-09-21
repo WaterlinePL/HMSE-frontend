@@ -30,4 +30,4 @@ def api_error_handler(e):
 
 if __name__ == '__main__':
     # run flask app
-    app.run(debug=True, host="0.0.0.0", port=8079)
+    app.run(debug=True, host="0.0.0.0", port=8080)

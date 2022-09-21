@@ -1,9 +1,10 @@
 from http import HTTPStatus
 
 import flask
-from flask import request, jsonify, Blueprint
+from flask import request, Blueprint
 from werkzeug.exceptions import abort
 
+from hmse_simulations.hmse_projects import project_service
 from hmse_simulations.simulation_service import simulation_service
 from server import endpoints, cookie_utils, path_checker
 
@@ -20,9 +21,9 @@ def simulation(project_id: str):
     if request.method == 'GET':
         status = simulation_service.check_simulation_status(project_id)
         if status is None:
-            # TODO: check if it works properly
             abort(404)
         return status.to_json()
     else:
-        simulation_service.run_simulation(project_id)
+        metadata = project_service.get(project_id)
+        simulation_service.run_simulation(metadata)
         return flask.Response(status=HTTPStatus.OK)

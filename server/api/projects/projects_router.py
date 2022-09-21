@@ -70,7 +70,7 @@ def project(project_id: str):
         metadata.end_date = patch['endDate']
         metadata.lat = patch['lat']
         metadata.long = patch['long']
-        metadata.spin_up = patch['spinUp']
+        metadata.spin_up = int(patch['spinUp'])
         project_service.save_or_update_metadata(metadata)
         return flask.Response(status=HTTPStatus.OK)
     else:
@@ -84,7 +84,7 @@ def project_metadata(project_id: str):
     if check_previous_steps:
         return check_previous_steps
     metadata = project_service.get(project_id)
-    return metadata.to_json_str()
+    return jsonify(metadata.to_json_response())
 
 
 @projects.route(endpoints.CREATE_PROJECT, methods=['POST'])
@@ -154,8 +154,8 @@ def upload_weather_file(project_id: str):
 
     if request.method == 'PUT' and request.files:
         weather_file = request.files['weatherFile']
-        project_service.add_weather_file(project_id, weather_file)
-        return flask.Response(status=HTTPStatus.OK)
+        weather_id = project_service.add_weather_file(project_id, weather_file)
+        return jsonify(weather_id=weather_id)
     elif request.method == 'DELETE':
         weather_id = request.json['weatherId']
         project_service.delete_weather_file(project_id, weather_id)
@@ -173,8 +173,8 @@ def manage_hydrus(project_id: str):
 
     if request.method == 'PUT' and request.files:
         archive = request.files['modelArchive']
-        project_service.add_hydrus_model(project_id, archive)
-        return flask.Response(status=HTTPStatus.OK)
+        hydrus_id = project_service.add_hydrus_model(project_id, archive)
+        return jsonify(hydrus_id=hydrus_id)
     elif request.method == 'DELETE':
         hydrus_id = request.json['hydrusId']
         project_service.delete_hydrus_model(project_id, hydrus_id)
@@ -195,13 +195,7 @@ def manual_shapes(project_id: str):
         new_shape_id = request.json.get('newShapeId') or shape_id
         shape_mask = request.json.get('shapeMask')
         color = request.json.get('color')
-        hydrus_mapping = request.json.get('hydrusMapping')
-        manual_value = request.json.get('manualValue')
         project_service.save_or_update_shape(project_id, shape_id, shape_mask, color, new_shape_id)
-        if hydrus_mapping:
-            project_service.map_shape_to_hydrus(project_id, new_shape_id, hydrus_id=hydrus_mapping)
-        elif manual_value:
-            project_service.map_shape_to_manual_value(project_id, new_shape_id, value=manual_value)
         return flask.Response(status=HTTPStatus.OK)
     elif request.method == 'GET':
         return project_service.get_all_shapes(project_id)
@@ -234,7 +228,7 @@ def map_shape_to_hydrus(project_id: str):
         project_service.map_shape_to_hydrus(project_id, shape_id, hydrus_id)
         return flask.Response(status=HTTPStatus.OK)
     elif recharge_value is not None:
-        project_service.map_shape_to_manual_value(project_id, shape_id, recharge_value)
+        project_service.map_shape_to_manual_value(project_id, shape_id, float(recharge_value))
         return flask.Response(status=HTTPStatus.OK)
     else:
         project_service.remove_shape_mapping(project_id, shape_id)

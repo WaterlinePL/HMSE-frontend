@@ -1,7 +1,7 @@
 async function manualShape(projectId, shapeId, newShapeId, color, shapeMask) {
     const url = getEndpointForProjectId(Config.manualShapes, projectId);
     await fetch(url, {
-        method: "put",
+        method: "PUT",
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
             shapeId: oldShapeId,
@@ -11,7 +11,7 @@ async function manualShape(projectId, shapeId, newShapeId, color, shapeMask) {
         })
     }).then(response => {
         if (response.status === 200) {
-            // TODO: add shape to grid and list
+            // TODO: Extract to another function
             applyNewValues(projectId, newShapeId);
             deactivateShapeEditMode(jQuery, newShapeId);
             showSuccessToast(jQuery, "Shape successfully submitted")
@@ -27,8 +27,8 @@ async function sendShape(projectId, shapeId) {
     const newShapeId = document.getElementById(getNameDivId(oldShapeId)).textContent;
     const color = getNewColorForShape(shapeId);
     const shapeMask = getShapeMask(getCssClassNameForShape(shapeId));
-    manualShape(projectId, shapeId, newShapeId, color, shapeMask);
-    sendShapeMapping(projectId, shapeId);
+    await manualShape(projectId, shapeId, newShapeId, color, shapeMask);
+    sendShapeMapping(projectId, newShapeId ? newShapeId : shapeId);     // TODO: edge cases?
 }
 
 // COLOR ACCESS:
@@ -284,22 +284,7 @@ async function deleteShape(projectId, shapeId) {
         }
     });
 }
-//
-//async function deleteAllRchShapes(projectId) {
-//    const url = getEndpointForProjectId(Config.rchShapes, projectId);
-//    await fetch(url, {
-//        method: "DELETE"
-//    }).then(response => {
-//        if (response.status === 200) {
-//            // TODO: remove RCH shapes from grid and list
-//            showSuccessToast(jQuery, "All RCH shapes successfully deleted")
-//        } else {
-//            response.json().then(data => {
-//                showErrorToast(jQuery, `Error: ${data.description}`);
-//            });
-//        }
-//    });
-//}
+
 
 function addNewListEntry($, projectId, edit = true, shapeColor = "blue", shapeId = null) {
     if (!shapeId) {

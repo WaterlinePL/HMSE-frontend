@@ -3,6 +3,7 @@ from typing import Optional
 from flask import Response, redirect
 
 from hmse_simulations.hmse_projects.project_dao import project_dao
+from hmse_simulations.hmse_projects.project_exceptions import UnsetModflowModelError
 from server import endpoints, cookie_utils
 from server.typing_help import UserID, ProjectID
 
@@ -60,12 +61,9 @@ def path_check_for_modflow_model(cookie: UserID, project_id: ProjectID) -> Optio
     if check_previous:
         return check_previous
 
-    project_id = cookie_utils.get_project_id_by_cookie(cookie)
     metadata = project_dao.read_metadata(project_id)
     if not metadata.modflow_metadata:
-        # TODO: error
-        # state.activate_error_flag()
-        return redirect(endpoints.PROJECT_MANAGE_HYDRUS)
+        raise UnsetModflowModelError()
 
     return None
 
