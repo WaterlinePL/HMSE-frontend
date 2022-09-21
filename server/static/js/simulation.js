@@ -72,7 +72,6 @@ async function getSimulationStatus(projectId) {
 
 async function monitorStatus(projectId) {
     const isFinished = await getSimulationStatus(projectId);
-    console.log(isFinished);
     if (!isFinished) {
         setTimeout(() => monitorStatus(projectId), 2000);
     } else {
@@ -89,7 +88,7 @@ async function runSimulation(projectId) {
         if (response.status === 200) {
             showSuccessToast(jQuery, "Simulation started");
             resetSimulationSteps();
-            monitorStatus(projectId);
+            setTimeout(() => monitorStatus(projectId), 2000);   // Avoid race condition
         } else {
             response.json().then(data => {
                 showErrorToast(jQuery, `Error: ${data.description}`);
