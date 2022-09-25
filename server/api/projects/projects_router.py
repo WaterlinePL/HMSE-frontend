@@ -21,7 +21,10 @@ def edit_project(project_id: str):
     check_previous_steps = path_checker.path_check_simulate_access(request.cookies.get(cookie_utils.COOKIE_NAME))
     if check_previous_steps:
         return check_previous_steps
-    return render_template(template.EDIT_PROJECT, metadata=project_service.get(project_id),
+
+    metadata = project_service.get(project_id)
+    metadata.modflow_metadata = modflow_utils.adapt_model_to_display(metadata.modflow_metadata)
+    return render_template(template.EDIT_PROJECT, metadata=metadata,
                            simulation_stages=[stage.to_id_and_name() for stage in Simulation.all_stages()])
 
 
@@ -60,8 +63,7 @@ def project(project_id: str):
 
     if request.method == 'GET':
         metadata = project_service.get(project_id)
-        metadata.modflow_metadata = modflow_utils.adapt_model_to_display(metadata.modflow_metadata)
-        return render_template(template.PROJECT, metadata=metadata)
+        return jsonify(metadata.to_json_response())
     elif request.method == 'PATCH':
         metadata = project_service.get(project_id)
         patch = request.json
@@ -76,15 +78,6 @@ def project(project_id: str):
     else:
         project_service.delete(project_id)
         return flask.Response(status=HTTPStatus.OK)
-
-
-@projects.route(endpoints.PROJECT_METADATA)
-def project_metadata(project_id: str):
-    check_previous_steps = path_checker.path_check_simulate_access(request.cookies.get(cookie_utils.COOKIE_NAME))
-    if check_previous_steps:
-        return check_previous_steps
-    metadata = project_service.get(project_id)
-    return jsonify(metadata.to_json_response())
 
 
 @projects.route(endpoints.CREATE_PROJECT, methods=['POST'])
