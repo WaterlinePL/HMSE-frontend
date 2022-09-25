@@ -137,9 +137,14 @@ function updateProjectName(newProjectName) {
 // TODO: Validation
 function enterEditMode(configElementIdMapping, oldValuesContainer, hideBtnIds, showBtnIds) {
     this.hidden = true;
-    Object.values(configElementIdMapping).forEach(elementId => {
+    Object.entries(configElementIdMapping).forEach(mapping => {
+        [fieldName, elementId] = mapping;
         var element = document.getElementById(elementId);
-        oldValuesContainer[elementId] = element.value;
+        if (fieldName !== "endDate") {
+            oldValuesContainer[fieldName] = element.value;
+        } else {
+            oldValuesContainer[fieldName] = element.textContent;
+        }
         element.disabled = false;
         element.classList.replace("text-standard", "text-old");
     });
@@ -153,7 +158,7 @@ function changeColorToUpdated(id) {
 function setFields(valuesDict, configElementIdMapping, oldValuesContainer) {
     for (const [fieldName, newValue] of Object.entries(valuesDict)) {
         const elemId = configElementIdMapping[fieldName];
-        const oldVal = oldValuesContainer[elemId];
+        const oldVal = oldValuesContainer[fieldName];
         var elem = document.getElementById(elemId);
         elem.value = newValue;
 
