@@ -21,11 +21,6 @@ def start():
     return res
 
 
-@base.route(endpoints.HELP, methods=['GET'])
-def home():
-    return render_template(template.HELP)
-
-
 @base.route(endpoints.CONFIGURATION, methods=['GET', 'PUT'])
 def configuration():
     check_previous_steps = path_checker.path_check_cookie(request.cookies.get(cookie_utils.COOKIE_NAME))
