@@ -8,7 +8,6 @@ var Config = {
     "projectFinished": '/project/<project_id>/is-finished',
     "rchShapes": "/project/<project_id>/rch-shape",
     "manualShapes": "/project/<project_id>/manual-shape",
-    "projectMetadata": "/project/<project_id>/metadata",
     "simulation": "/simulation/<project_id>",
     "mapShapeRecharge": "/project/<project_id>/map-shape-to-hydrus",
     "mapWeatherFile": "/project/<project_id>/map-weather",

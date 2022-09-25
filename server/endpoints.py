@@ -11,7 +11,6 @@ PROJECT_LIST_SEARCH = '/project-list/<search>'
 
 PROJECT_DOWNLOAD = '/project/<project_id>/download'
 PROJECT = '/project/<project_id>'
-PROJECT_METADATA = '/project/<project_id>/metadata'
 PROJECT_FINISHED = '/project/<project_id>/is-finished'
 PROJECT_IN_USE = '/project/<project_id>/in-use'  # TODO
 

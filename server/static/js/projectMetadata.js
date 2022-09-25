@@ -81,7 +81,7 @@ function removeFromArray(arr, elem) {
 
 // Template needs to call it
 async function fillProjectConfig(projectId) {
-    const url = getEndpointForProjectId(Config.projectMetadata, projectId);
+    const url = getEndpointForProjectId(Config.project, projectId);
     await fetch(url, {
         method: "GET"
     }).then(response => {
