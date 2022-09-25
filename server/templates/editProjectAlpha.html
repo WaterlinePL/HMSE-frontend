@@ -31,26 +31,21 @@
     {% for stage_id, _ in simulation_stages %}
     AllStagesInSimulation.push('{{ stage_id }}');
     {% endfor %}
-
-
-
-
-
-
-
-
-
 </script>
 {% endblock %}
 
 {% block body %}
 <div class="container-fluid mt-5" id="configuration-content">
-    <div class="row justify-content-md-center">
-        <div class="col-lg-9">
+    <div class="col justify-content-md-center">
+        <div style="display: flex; justify-content: end">
+            <button id="renameProjectButton" type="button" class="btn btn-secondary"
+                        onclick="console.log('TODO')">
+                Rename project
+            </button>
+        </div>
+        <div class="justify-content-md-center">
             <div class="text-center">
                 <h1 class="display-4">Simulation for project: {{ metadata.project_name }}</h1>
-                <!--                TODO: Not the smartest move-->
-                <div id="thisProjectId" hidden>{{ metadata.project_id }}</div>
             </div>
         </div>
     </div>
@@ -64,8 +59,8 @@
     <div class="container-fluid">
         <div class="row justify-content-md-center">
             <div class="row justify-content-center">
-                <div class="config-labels">
-                    <div class="slice-column left">
+                <div class="config-labels justify-content-center">
+                    <div class="justify-content-center">
                         <div>
                             <div style="display: flex; justify-content: begin">
                                 <button type="button" class="btn btn-outline-secondary">
@@ -75,18 +70,24 @@
                                     </svg>
                                 </button>
                             </div>
-                            <div style="display: flex; justify-content: center">
-                                <h3 style="text-align: center">Project Configuration</h3>
-                            </div>
+                            <h3 style="text-align: center">Modflow model</h3>
                         </div>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item ">
-                                <span class="slice-column left">Project Name</span>
-                                <input id="metadataProjectName" class="slice-column right text-standard" type="text"
-                                       disabled
-                                       onchange="changeColorToUpdated('metadataProjectName')"
-                                       value="{{ metadata.project_name }}"/>
+                                <span class="slice-column left">Modflow Model</span>
+                                <span id="modflowModelId" class="slice-column right">{{ metadata.modflow_metadata.modflow_id if metadata.modflow_metadata else 'None' }}</span>
                             </li>
+                            <li id="modflowModelGridSize" class="list-group-item"
+                                {{ 'hidden' if not metadata.modflow_metadata }}>
+                                <span class="slice-column left">Grid Size</span>
+                                <span id="modflowModelGridSizeContent" class="slice-column right">{{ metadata.modflow_metadata.rows if metadata.modflow_metadata }} cells x {{ metadata.modflow_metadata.cols if metadata.modflow_metadata }} cells</span>
+                            </li>
+                            <li id="modflowModelGridUnit" class="list-group-item" {{
+                            'hidden' if not metadata.modflow_metadata }}>
+                                <span class="slice-column left">Grid Unit</span>
+                                <span id="modflowModelGridUnitContent" class="slice-column right">{{ metadata.modflow_metadata.grid_unit if metadata.modflow_metadata }}</span>
+                            </li>
+
                             <li class="list-group-item">
                                 <span class="slice-column left">Start Date</span>
                                 <input id="metadataStartDate" class="slice-column right text-standard" type="date"
@@ -111,67 +112,29 @@
                                 <input id="metadataLong" class="slice-column right text-standard" type="number" disabled
                                        onchange="changeColorToUpdated('metadataLong')" value="{{ metadata.long }}"/>
                             </li>
-                            <li class="list-group-item ">
-                                <span class="slice-column left">Spin Up </span>
-                                <input id="metadataSpinUp" class="slice-column right text-standard" type="number"
-                                       disabled
-                                       onchange="changeColorToUpdated('metadataSpinUp')"
-                                       value="{{ metadata.spin_up }}"/>
-                            </li>
-                        </ul>
-                        <div class="button-edit">
-                            <div class="button-spacing">
-                                <button id="editConfigButton" type="button" class="btn btn-secondary"
-                                        onclick="enterEditMode()">
-                                    Edit Configuration
-                                </button>
-                                <button id="submitConfigButton" hidden type="button" class="btn btn-success"
-                                        onclick="submitConfig('{{ metadata.project_id }}')">
-                                    Submit
-                                </button>
-                                <button id="cancelEditConfigButton" hidden type="button" class="btn btn-danger"
-                                        onclick="cancelConfigEdit()">
-                                    Cancel
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="slice-column right">
-                        <div>
-                            <div style="display: flex; justify-content: begin">
-                                <button type="button" class="btn btn-outline-secondary">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16">
-                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                                        <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
-                                    </svg>
-                                </button>
-                            </div>
-                            <h3 style="text-align: center">Modflow model</h3>
-                        </div>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item ">
-                                <span class="slice-column left">Modflow Model</span>
-                                <span id="modflowModelId" class="slice-column right">{{ metadata.modflow_metadata.modflow_id if metadata.modflow_metadata else 'None' }}</span>
-                            </li>
-                            <li id="modflowModelGridSize" class="list-group-item" {{
-                            'hidden' if not metadata.modflow_metadata }}>
-                            <span class="slice-column left">Grid Size</span>
-                            <span id="modflowModelGridSizeContent" class="slice-column right">{{ metadata.modflow_metadata.rows if metadata.modflow_metadata }} cells x {{ metadata.modflow_metadata.cols if metadata.modflow_metadata }} cells</span>
-                            </li>
-                            <li id="modflowModelGridUnit" class="list-group-item" {{
-                            'hidden' if not metadata.modflow_metadata }}>
-                            <span class="slice-column left">Grid Unit</span>
-                            <span id="modflowModelGridUnitContent" class="slice-column right">{{ metadata.modflow_metadata.grid_unit if metadata.modflow_metadata }}</span>
-                            </li>
+
                             <li class="list-group-item" id="modflowUpload">
-                                <div class="button-spacing">
+                                <div class="button-spacing button-edit">
                                     <button id="modflowUploadBtn" type="button" class="btn btn-success left"
                                             onClick="openModflowDialog()">{{ 'Change' if metadata.modflow_metadata else
                                         'Upload' }}
                                     </button>
+
+                                    <button id="modflowEditConfigDetails" type="button" class="btn btn-secondary"
+                                            onclick="enterModflowEditMode()">
+                                        Edit Configuration
+                                    </button>
+                                    <button id="modflowSubmitConfigDetails" hidden type="button" class="btn btn-success"
+                                            onclick="submitModflowConfigDetails('{{ metadata.project_id }}')">
+                                        Submit
+                                    </button>
+                                    <button id="modflowCancelConfigDetails" hidden type="button" class="btn btn-danger"
+                                            onclick="cancelModflowConfigEdit()">
+                                        Cancel
+                                    </button>
+
                                     <button id="modflowRemoveBtn" type="button" class="btn btn-danger right"
-                                            {{
-                                    'hidden' if not metadata.modflow_metadata }}
+                                            {{ 'hidden' if not metadata.modflow_metadata }}
                                     onClick="deleteModflowModel('{{ metadata.project_id }}')">Remove
                                     </button>
                                 </div>
@@ -193,7 +156,41 @@
                                     </svg>
                                 </button>
                             </div>
-                            <h3 style="text-align: center">Hydrus models</h3>
+                            <h3 style="text-align: center">Hydrus configuration</h3>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item ">
+                                    <div class="slice-column left">
+                                        <span>Spin Up </span>
+                                        <div class="slice-column right">
+                                            <input id="metadataSpinUp" class="text-standard" type="number"
+                                               disabled
+                                               onchange="changeColorToUpdated('metadataSpinUp')"
+                                               value="{{ metadata.spin_up }}"/>
+                                        </div>
+                                    </div>
+                                    <div class="slice-column right">
+                                        <button id="hydrusEditConfigDetails" type="button"
+                                                class="btn btn-secondary right"
+                                                onClick="enterHydrusEditMode()">
+                                            Edit
+                                        </button>
+
+                                        <button id="hydrusCancelConfigDetails" hidden type="button"
+                                                class="btn btn-danger right"
+                                                onClick="cancelHydrusConfigEdit()">
+                                            Cancel
+                                        </button>
+
+                                        <button id="hydrusSubmitConfigDetails" hidden type="button"
+                                                class="btn btn-success right"
+                                                onclick="submitHydrusConfigDetails('{{ metadata.project_id }}')">
+                                            Submit
+                                        </button>
+                                    </div>
+                                </li>
+                            </ul>
+
+                            <h3 style="text-align: center; margin-top: 40px">Hydrus models</h3>
                         </div>
                         <ul class="list-group list-group-flush" id="hydrusModelList">
                             {% for hydrus_id in metadata.hydrus_models %}
@@ -449,7 +446,6 @@
     </div>
 </div>
 
-    <!--modals-->
-    {% include 'createShapeModal.html' %}
+<!--modals-->
 
-    {% endblock %}
+{% endblock %}
