@@ -58,7 +58,9 @@ async function sendModflowModelAfterSelected(projectId) {
                     document.getElementById('metadataEndDate').textContent = data['end_date'];
                 }
 
-                // TODO: prepare grid
+                // TODO: prepare grid - workaround
+                setTimeout(() => location.reload(), 1500);
+
                 showSuccessToast(jQuery, "Modflow model successfully uploaded");
             });
         } else {

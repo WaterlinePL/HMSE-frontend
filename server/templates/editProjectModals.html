@@ -30,3 +30,183 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="modalHelpModflow" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Modflow model section</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>&emsp;Uploaded models must be in .zip format and have all the files directly inside the archive (not in a folder).
+                    Models' names must be unique in the project.</p>
+                <strong>Modflow model</strong> - name of uploaded Modflow model (filled after upload)<br>
+                <strong>Grid size</strong> - size of model's rectangular grid (filled after upload)<br>
+                <strong>Grid length unit</strong> - length unit used in determining model's grid size (filled after upload)<br>
+                <strong>Model duration</strong> - Modflow simulation duration in days (filled after upload)<br>
+                <strong>Start date</strong> - start date of Modflow simulation (filled if provided in model, can be edited manually)<br>
+                <strong>End date</strong> - end date of Modflow (automatically calculated by adding model duration to start date)<br>
+                <strong>Latitude</strong> - latitude of upper left corner of the model in Decimal Degrees format (edited manually)<br>
+                <strong>Longitude</strong> - longitude of upper left corner of the model in Decimal Degrees format (edited manually)<br>
+                <br>
+                <strong>Edit configuration</strong> - activate edit mode to change manually edited fields<br>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalHelpHydrus" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Hydrus models section</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>&emsp;
+                    <strong>Spin-up</strong> - spin-up period of Hydrus simulations in days (edited manually)<br>
+                </p>
+                <p>&emsp;
+                    Uploaded models must be in .zip format and have all the files directly inside the archive (not in a folder).
+                    Models' names must be unique in the project.
+                </p>
+                <p>&emsp;After uploading Hydrus model, one may choose to overwrite Hydrus simulation parameters in Atmosph.in and Meteo.in files with Weather files.
+                The changes are applied only for the period of simulation (uploaded models remain unaffected by the application of Weather files).</p>
+                Overwritten parameters include following Hydrus parameters:
+                <ul>
+                    <li>latitude (Latitude, file: Meteo.in)</li>
+                    <li>elevation (Altitude, file: Meteo.in)</li>
+                    <li>solar radiation (Rad, file: Meteo.in)</li>
+                    <li>max temperature during day (TMax, file: Meteo.in)</li>
+                    <li>min temperature during day (TMin, file: Meteo.in)</li>
+                    <li>relative humidity (RHMean, file: Meteo.in)</li>
+                    <li>wind (Wind, file: Meteo.in)</li>
+                    <li>precipitation (Prec, file: Atmposh.in)</li>
+                </ul>
+                The details of Weather files are described in help section for Weather files.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalHelpWeather" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Weather files section</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>&emsp;In order to overwrite input parameters for Hydrus simulation, one can upload custom .csv Weather file.
+                After uploading Weather file they are added to this list and can be selected in a select box in the Hydrus section.
+                Uploaded Weather files must have their names unique in the project.
+                </p>
+                <p>&emsp;For the modification to succeed, the uploaded weather data file must contain <strong>at least
+                as many</strong> daily records as the Hydrus model you want to modify. The file can be longer than the
+                model - if that is the case, the model will be updated with the first rows of the uploaded file, and the
+                remaining rows will be ignored.
+                </p>
+
+                Overwriting has the following rules (SWAT format):
+                <ul>
+                    <li>Column "Latitude" (required) overwrites latitude (Latitude, file: Meteo.in)</li>
+                    <li>Column "Elevation" (required) overwrites elevation (Altitude, file: Meteo.in)</li>
+                    <li>Column "Solar" (optional, MJ/m^2) overwrites solar radiation (Rad, file: Meteo.in)</li>
+                    <li>Column "Max Temperature" (optional, deg. C) overwrites max temperature during day (TMax, file: Meteo.in)</li>
+                    <li>Column "Min Temperature" (optional, deg. C) overwrites min temperature during day (TMin, file: Meteo.in)</li>
+                    <li>Column "Relative Humidity" (optional, value from 0 to 1) overwrites relative humidity (RHMean, file: Meteo.in)</li>
+                    <li>Column "Wind" (optional, m/s) overwrites wind (Wind, file: Meteo.in)</li>
+                    <li>Column "Precipitation" (optional, mm) overwrites precipitation (Prec, file: Atmposh.in)</li>
+                </ul>
+
+
+                <p>&emsp;Currently only SWAT format Weather files are supported.&emsp;Files following this format can be downloaded for free from <a href="https://globalweather.tamu.edu/">
+                this site</a>, courtesy of the <em>Texas Agricultural and Mechanical University</em>. Use these files
+                to modify your models or for reference while preparing your own data. (TODO: should this stay?)
+                </p>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalHelpShapes" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Shapes section</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <strong>Generate RCH shapes</strong> - add to the model shapes based on .rch file in Modflow model (all fields with equal adjacent recharge value are grouped into shapes)<br>
+                <strong>New shape</strong> - manually create a new shape
+                <br><br>
+                <p>
+                    &emsp;Shapes are used to apply Hydrus models' recharge values to the selected part of Modflow model grid.
+                    Shapes must have their names unique in the project.
+                    In order to edit a shape, one must click on the "Edit" button - this activates the Edit mode.
+                </p>
+
+                <p>&emsp;In the edit mode user may change the color of the shape, assign a Hydrus model to it
+                (or enter manually the recharge value that should be applied on this shape) and change the shape itself
+                    by drawing on the grid. While editing one shape, user cannot draw on other shapes.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalHelpGrid" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Modflow model grid section</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>&emsp;The grid is visible after uploading Modflow model. It is used to preview and change shapes used in
+                the project. Outside the shape's Edit mode the grid is inactive.
+                </p>
+                <p>&emsp;In the edit mode user may draw on the grid to assign cells to the shape. The brush size can be changed
+                using the dropdown.</p>
+                There are 4 rules applicable while drawing:
+                <ul>
+                    <li>Only one shape can be edited at the time - thus user can draw only in one color</li>
+                    <li>User cannot draw on the other shapes than the edited one</li>
+                    <li>Starting on a blank cell - brush applies the color</li>
+                    <li>Starting on a colored cell (belonging to edited shape) - brush erases the color</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
