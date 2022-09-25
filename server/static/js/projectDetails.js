@@ -1,12 +1,12 @@
 // MODFLOW
 var oldModflowValues = {};
 
-const modflowConfigElementIds = [
-    "metadataStartDate",
-    "metadataEndDate",
-    "metadataLat",
-    "metadataLong"
-];
+const modflowConfigElementIdMapping = {
+    "startDate": "metadataStartDate",
+    "lat": "metadataLat",
+    "long": "metadataLong",
+    "endDate": "metadataEndDate"
+};
 
 const modflowEditModeBtnIds = [
     "modflowSubmitConfigDetails",
@@ -22,7 +22,6 @@ const modflowDefaultModeBtnIds = [
 async function submitModflowConfigDetails(projectId) {
     const requestData = {
         "startDate": document.getElementById("metadataStartDate").value.trim(),
-        "endDate": document.getElementById("metadataEndDate").value.trim(),
         "lat": document.getElementById("metadataLat").value.trim(),
         "long": document.getElementById("metadataLong").value.trim()
     }
@@ -34,9 +33,11 @@ async function submitModflowConfigDetails(projectId) {
         body: JSON.stringify(requestData)
     }).then(response => {
         if (response.status === 200) {
-            setFields(requestData, modflowConfigElementIds, oldModflowValues);
-            switchButtonsVisibility(modflowEditModeBtnIds, modflowDefaultModeBtnIds)
-            showSuccessToast(jQuery, "Project configuration successfully updated");
+            response.json().then(data => {
+                setFields(data, modflowConfigElementIdMapping, oldModflowValues);
+                switchButtonsVisibility(modflowEditModeBtnIds, modflowDefaultModeBtnIds)
+                showSuccessToast(jQuery, "Project configuration successfully updated");
+            });
         } else {
             response.json().then(data => {
                 showErrorToast(jQuery, `Error: ${data.description}`);
@@ -46,12 +47,11 @@ async function submitModflowConfigDetails(projectId) {
 }
 
 function enterModflowEditMode() {
-    console.log("MEWO");
-    enterEditMode(modflowConfigElementIds, oldModflowValues, modflowDefaultModeBtnIds, modflowEditModeBtnIds);
+    enterEditMode(modflowConfigElementIdMapping, oldModflowValues, modflowDefaultModeBtnIds, modflowEditModeBtnIds);
 }
 
 function cancelModflowConfigEdit() {
-    cancelConfigEdit(oldModflowValues, modflowConfigElementIds, modflowEditModeBtnIds, modflowDefaultModeBtnIds);
+    cancelConfigEdit(oldModflowValues, modflowConfigElementIdMapping, modflowEditModeBtnIds, modflowDefaultModeBtnIds);
 }
 
 
@@ -59,9 +59,9 @@ function cancelModflowConfigEdit() {
 
 var oldHydrusValues = {};
 
-const hydrusConfigElementIds = [
-    "metadataSpinUp"
-];
+const hydrusConfigElementIdMapping = {
+    "spinUp": "metadataSpinUp"
+};
 
 const hydrusEditModeBtnIds = [
     "hydrusSubmitConfigDetails",
@@ -84,7 +84,7 @@ async function submitHydrusConfigDetails(projectId) {
         body: JSON.stringify(requestData)
     }).then(response => {
         if (response.status === 200) {
-            setFields(requestData, hydrusConfigElementIds, oldHydrusValues);
+            setFields(requestData, hydrusConfigElementIdMapping, oldHydrusValues);
             switchButtonsVisibility(hydrusEditModeBtnIds, hydrusDefaultModeBtnIds)
             showSuccessToast(jQuery, "Project configuration successfully updated");
         } else {
@@ -97,21 +97,47 @@ async function submitHydrusConfigDetails(projectId) {
 
 
 function enterHydrusEditMode() {
-    enterEditMode(hydrusConfigElementIds, oldHydrusValues, hydrusDefaultModeBtnIds, hydrusEditModeBtnIds);
+    enterEditMode(hydrusConfigElementIdMapping, oldHydrusValues, hydrusDefaultModeBtnIds, hydrusEditModeBtnIds);
 }
 
 function cancelHydrusConfigEdit() {
-    cancelConfigEdit(oldHydrusValues, hydrusConfigElementIds, hydrusEditModeBtnIds, hydrusDefaultModeBtnIds);
+    cancelConfigEdit(oldHydrusValues, hydrusConfigElementIdMapping, hydrusEditModeBtnIds, hydrusDefaultModeBtnIds);
 }
 
 
+// PROJECT
+async function submitNewProjectName(projectId) {
+    const requestData = {
+        "projectName": document.getElementById("renameProjectField").value.trim()
+    }
+
+    const url = getEndpointForProjectId(Config.project, projectId);
+    await fetch(url, {
+        method: "PATCH",
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(requestData)
+    }).then(response => {
+        if (response.status === 200) {
+            updateProjectName(requestData["projectName"]);
+            showSuccessToast(jQuery, "Project configuration successfully updated");
+        } else {
+            response.json().then(data => {
+                showErrorToast(jQuery, `Error: ${data.description}`);
+            });
+        }
+    });
+}
+
+function updateProjectName(newProjectName) {
+    document.getElementById("projectNameDisplay").textContent = `Simulation for project: ${newProjectName}`;
+}
 
 // PRIVATE
 
 // TODO: Validation
-function enterEditMode(configElementIds, oldValuesContainer, hideBtnIds, showBtnIds) {
+function enterEditMode(configElementIdMapping, oldValuesContainer, hideBtnIds, showBtnIds) {
     this.hidden = true;
-    configElementIds.forEach(elementId => {
+    Object.values(configElementIdMapping).forEach(elementId => {
         var element = document.getElementById(elementId);
         oldValuesContainer[elementId] = element.value;
         element.disabled = false;
@@ -124,12 +150,16 @@ function changeColorToUpdated(id) {
     document.getElementById(id).classList.replace("text-old", "text-edited");
 }
 
-function setFields(valuesDict, configElementIds, oldValuesContainer) {
-    for (const [i, newValue] of Object.entries(Object.values(valuesDict))) {
-        const elemId = configElementIds[i];
-        const oldVal = Object.values(oldValuesContainer)[i];
+function setFields(valuesDict, configElementIdMapping, oldValuesContainer) {
+    for (const [fieldName, newValue] of Object.entries(valuesDict)) {
+        const elemId = configElementIdMapping[fieldName];
+        const oldVal = oldValuesContainer[elemId];
         var elem = document.getElementById(elemId);
         elem.value = newValue;
+
+        if (fieldName === "endDate") {
+            elem.textContent = newValue;
+        }
 
         if (oldVal == newValue) {
             resetSingleElement(elemId);
@@ -151,8 +181,8 @@ function switchButtonsVisibility(hideBtnIds, showBtnIds) {
     });
 }
 
-function returnToOriginalTextStyle(configElementIds) {
-    configElementIds.forEach(elemId => resetSingleElement(elemId));
+function returnToOriginalTextStyle(configElementIdMapping) {
+    Object.values(configElementIdMapping).forEach(elemId => resetSingleElement(elemId));
 }
 
 
@@ -161,8 +191,8 @@ function resetSingleElement(elemId) {
     document.getElementById(elemId).classList.replace("text-edited", "text-standard");
 }
 
-function cancelConfigEdit(oldValuesContainer, configElementIds, hideBtnIds, showBtnIds) {
-    setFields(oldValuesContainer, configElementIds, oldValuesContainer);
+function cancelConfigEdit(oldValuesContainer, configElementIdMapping, hideBtnIds, showBtnIds) {
+    setFields(oldValuesContainer, configElementIdMapping, oldValuesContainer);
     switchButtonsVisibility(hideBtnIds, showBtnIds);
-    returnToOriginalTextStyle(configElementIds);
+    returnToOriginalTextStyle(configElementIdMapping);
 }

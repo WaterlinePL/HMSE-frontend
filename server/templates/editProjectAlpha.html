@@ -39,13 +39,13 @@
     <div class="col justify-content-md-center">
         <div style="display: flex; justify-content: end">
             <button id="renameProjectButton" type="button" class="btn btn-secondary"
-                        onclick="console.log('TODO')">
+                        data-toggle="modal" data-target="#modalRenameProject">
                 Rename project
             </button>
         </div>
         <div class="justify-content-md-center">
             <div class="text-center">
-                <h1 class="display-4">Simulation for project: {{ metadata.project_name }}</h1>
+                <h1 id="projectNameDisplay" class="display-4">Simulation for project: {{ metadata.project_name }}</h1>
             </div>
         </div>
     </div>
@@ -75,18 +75,32 @@
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item ">
                                 <span class="slice-column left">Modflow Model</span>
-                                <span id="modflowModelId" class="slice-column right">{{ metadata.modflow_metadata.modflow_id if metadata.modflow_metadata else 'None' }}</span>
+                                <span id="modflowModelId" class="slice-column right">
+                                    {{ metadata.modflow_metadata.modflow_id if metadata.modflow_metadata else 'None' }}
+                                </span>
                             </li>
                             <li id="modflowModelGridSize" class="list-group-item"
                                 {{ 'hidden' if not metadata.modflow_metadata }}>
                                 <span class="slice-column left">Grid Size</span>
-                                <span id="modflowModelGridSizeContent" class="slice-column right">{{ metadata.modflow_metadata.rows if metadata.modflow_metadata }} cells x {{ metadata.modflow_metadata.cols if metadata.modflow_metadata }} cells</span>
+                                <span id="modflowModelGridSizeContent" class="slice-column right">
+                                    {{ modflow_model_width }} x {{ modflow_model_height }}
+                                </span>
                             </li>
                             <li id="modflowModelGridUnit" class="list-group-item" {{
                             'hidden' if not metadata.modflow_metadata }}>
                                 <span class="slice-column left">Grid Unit</span>
-                                <span id="modflowModelGridUnitContent" class="slice-column right">{{ metadata.modflow_metadata.grid_unit if metadata.modflow_metadata }}</span>
+                                <span id="modflowModelGridUnitContent" class="slice-column right">
+                                    {{ metadata.modflow_metadata.grid_unit if metadata.modflow_metadata }}
+                                </span>
                             </li>
+                            <li id="modflowModelDuration" class="list-group-item" {{
+                            'hidden' if not metadata.modflow_metadata }}>
+                                <span class="slice-column left">Model duration</span>
+                                <span id="modflowModelDurationContent" class="slice-column right">
+                                    {{ metadata.modflow_metadata.duration if metadata.modflow_metadata }}
+                                </span>
+                            </li>
+
 
                             <li class="list-group-item">
                                 <span class="slice-column left">Start Date</span>
@@ -97,10 +111,9 @@
                             </li>
                             <li class="list-group-item ">
                                 <span class="slice-column left">End Date</span>
-                                <input id="metadataEndDate" class="slice-column right text-standard" type="date"
-                                       disabled
-                                       onchange="changeColorToUpdated('metadataEndDate')"
-                                       value="{{ metadata.end_date }}"/>
+                                    <span id="metadataEndDate" class="slice-column right">
+                                    {{ end_date }}
+                                </span>
                             </li>
                             <li class="list-group-item ">
                                 <span class="slice-column left">Latitude</span>
@@ -447,5 +460,6 @@
 </div>
 
 <!--modals-->
+{% include 'editProjectModals.html' %}
 
 {% endblock %}
