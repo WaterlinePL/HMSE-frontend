@@ -98,7 +98,7 @@
                             'hidden' if not metadata.modflow_metadata }}>
                                 <span class="slice-column left">Model duration</span>
                                 <span id="modflowModelDurationContent" class="slice-column right">
-                                    {{ metadata.modflow_metadata.duration if metadata.modflow_metadata }}
+                                    {{ metadata.modflow_metadata.duration|string + ' days' if metadata.modflow_metadata }}
                                 </span>
                             </li>
 
@@ -409,6 +409,12 @@
                                 {% endif %}
                                 </tbody>
                             </table>
+                            <div class="text-center" id="cursorGridCoords">
+                                Cursor outside the grid
+                            </div>
+                            <script>
+                                setupGridSettings(jQuery, null);
+                            </script>
                         </div>
                     </div>
                 </div>
