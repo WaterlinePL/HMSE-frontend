@@ -18,3 +18,10 @@ pyinstaller.exe --onedir -n hmse --paths ".\server" \
 ```
 
 After creating a build with PyInstaller, the executable is located in the `dist` folder (`hmse.exe`).
+
+### Running the application
+In order to run a simulation in the application, the user must download following two programs:
+* [MODFLOW-2005](https://www.usgs.gov/software/modflow-2005-usgs-three-dimensional-finite-difference-ground-water-model)
+* [HYDRUS-1D](https://www.pc-progress.com/en/Default.aspx?H1d-downloads) (requires registration)
+
+When accessing simulation, the application will redirect to the configuration page and will prompt for the paths to executables for the programs metioned above. Currently there is no other way of providing the path to executables due to local storage access policy of web browsers (web browser cannot access file system).
