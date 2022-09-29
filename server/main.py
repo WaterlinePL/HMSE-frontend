@@ -1,4 +1,5 @@
 import json
+import webbrowser
 
 from flask import Flask
 from werkzeug.exceptions import HTTPException
@@ -30,4 +31,6 @@ def api_error_handler(e):
 
 if __name__ == '__main__':
     # run flask app
-    app.run(debug=True, host="0.0.0.0", port=8080)
+    port = 8080
+    webbrowser.open(f"http://localhost:{port}")
+    app.run(host="0.0.0.0", port=port)
