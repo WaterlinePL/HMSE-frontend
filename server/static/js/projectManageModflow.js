@@ -27,6 +27,11 @@ async function openModflowDialog() {
     input.click();
 }
 
+
+function isModflowPresent() {
+    return !document.getElementById("modflowModelGridSize").hidden;
+}
+
 async function sendModflowModelAfterSelected(projectId) {
     const elem = document.getElementById('modflowUploadInput');
     if (!elem.files) {
