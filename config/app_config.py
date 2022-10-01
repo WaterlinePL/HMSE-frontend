@@ -28,8 +28,14 @@ class AppConfig:
             return AppConfig(**json.load(handle))
 
 
+def update_config(config: AppConfig):
+    global __app_config
+    __app_config = config
+    __app_config.save()
+
+
 def get_config() -> AppConfig:
-    return app_config
+    return __app_config
 
 
-app_config = AppConfig.setup()
+__app_config = AppConfig.setup()
