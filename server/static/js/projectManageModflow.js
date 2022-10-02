@@ -15,7 +15,7 @@ async function deleteModflowModel(projectId) {
             document.getElementById('metadataEndDate').textContent = "None";
 
             // TODO: update all the fields
-            setTimeout(() => location.reload(), 1500);
+            setTimeout(() => location.reload(), 500);
 
             showSuccessToast(jQuery, "Modflow model successfully deleted");
         } else {
@@ -57,9 +57,9 @@ async function sendModflowModelAfterSelected(projectId) {
                 document.getElementById('modflowUploadBtn').textContent = "Change";
                 document.getElementById('modflowModelId').textContent = data['modflow_id'];
                 document.getElementById('modflowModelGridSize').hidden = false;
-                document.getElementById('modflowModelGridSizeContent').textContent = `${data['total_width']} x ${data['total_height']}`
-                document.getElementById('modflowModelGridUnit').hidden = false;
-                document.getElementById('modflowModelGridUnitContent').textContent = data['grid_unit'];
+                document.getElementById('modflowModelGridSizeContent').textContent = `${data['total_width']} ${data['grid_unit']} x ${data['total_height']} ${data['grid_unit']}`
+                document.getElementById('modflowModelGridCells').hidden = false;
+                document.getElementById('modflowModelGridCellsContent').textContent = `${data['rows']} cells x ${data['cols']} cells`;
                 document.getElementById('modflowModelDuration').hidden = false;
                 document.getElementById('modflowModelDurationContent').textContent = data['duration'];
 
@@ -68,7 +68,7 @@ async function sendModflowModelAfterSelected(projectId) {
                 }
 
                 // TODO: prepare grid - workaround
-                setTimeout(() => location.reload(), 1500);
+                setTimeout(() => location.reload(), 500);
 
                 showSuccessToast(jQuery, "Modflow model successfully uploaded");
             });

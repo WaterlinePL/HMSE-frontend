@@ -132,6 +132,7 @@ async function submitNewProjectName(projectId) {
     }).then(response => {
         if (response.status === 200) {
             updateProjectName(requestData["projectName"]);
+            document.title = `HMSE | Simulation ${requestData["projectName"]}`;
             showSuccessToast(jQuery, "Project configuration successfully updated");
         } else {
             response.json().then(data => {
