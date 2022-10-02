@@ -89,7 +89,7 @@ function prevCellsCleanup() {
 
 function hasColor(gridElement, skipColor = null) {
     for (const cls of gridElement.classList) {
-        if (cls.includes("ColorCls") && cls !== skipColor) {
+        if (cls.includes("colorCls") && cls !== skipColor) {
             return true;
         }
     }
@@ -115,7 +115,7 @@ function previewPaintedCells(id, shapeClass) {
 
             if (willErase) {
                 elem.classList.toggle("bg-secondary", true);
-            } else if (!hasColor(elem)) {
+            } else if (!hasColor(elem, shapeClass)) {
                 elem.classList.toggle("bg-light", true);
             }
 
