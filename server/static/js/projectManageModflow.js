@@ -13,6 +13,10 @@ async function deleteModflowModel(projectId) {
             document.getElementById('modflowModelDuration').hidden = true;
             document.getElementById('modflowModelDuration').hidden = true;
             document.getElementById('metadataEndDate').textContent = "None";
+
+            // TODO: update all the fields
+            setTimeout(() => location.reload(), 1500);
+
             showSuccessToast(jQuery, "Modflow model successfully deleted");
         } else {
             response.json().then(data => {
