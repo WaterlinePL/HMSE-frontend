@@ -1,37 +1,51 @@
 function resetStep(elemId) {
     document.getElementById(elemId).hidden = true;
-    document.getElementById(`${elemId}Spinner`).hidden = false;
-    document.getElementById(`${elemId}Tick`).setAttribute("hidden", "hidden");
-    document.getElementById(`${elemId}X`).setAttribute("hidden", "hidden");
+    document.getElementById(getSpinnerName(elemId)).hidden = false;
+    document.getElementById(getSuccessfulTickName(elemId)).setAttribute("hidden", "hidden");
+    document.getElementById(getFailedXMarkName(elemId)).setAttribute("hidden", "hidden");
 }
 
 function resetSimulationSteps() {
     AllStagesInSimulation.forEach(stepId => resetStep(stepId));
 }
 
+function getSpinnerName(stageId) {
+    return `spinner${stageId}`;
+}
+
+function getSuccessfulTickName(stageId) {
+    return `tick${stageId}`;
+}
+
+
+function getFailedXMarkName(stageId) {
+    return `X${stageId}`;
+}
+
+
 
 function markStepSuccess(elemId) {
     showStep(elemId);
-    document.getElementById(`${elemId}Spinner`).hidden = true;
-    document.getElementById(`${elemId}Tick`).removeAttribute("hidden");
-    document.getElementById(`${elemId}X`).setAttribute("hidden", "hidden");
+    document.getElementById(getSpinnerName(elemId)).hidden = true;
+    document.getElementById(getSuccessfulTickName(elemId)).removeAttribute("hidden");
+    document.getElementById(getFailedXMarkName(elemId)).setAttribute("hidden", "hidden");
 }
 
 function markStepFailed(elemId) {
     showStep(elemId);
-    document.getElementById(`${elemId}Spinner`).hidden = true;
-    document.getElementById(`${elemId}Tick`).setAttribute("hidden", "hidden");
-    document.getElementById(`${elemId}X`).removeAttribute("hidden");
+    document.getElementById(getSpinnerName(elemId)).hidden = true;
+    document.getElementById(getSuccessfulTickName(elemId)).setAttribute("hidden", "hidden");
+    document.getElementById(getFailedXMarkName(elemId)).removeAttribute("hidden");
 }
 
 function showStep(elemId) {
     document.getElementById(elemId).hidden = false;
-    document.getElementById(`${elemId}Spinner`).hidden = true;
+    document.getElementById(getSpinnerName(elemId)).hidden = true;
 }
 
 function showRunningStep(elemId) {
     document.getElementById(elemId).hidden = false;
-    document.getElementById(`${elemId}Spinner`).hidden = false;
+    document.getElementById(getSpinnerName(elemId)).hidden = false;
 }
 
 function updateStatus(statusResponse) {
