@@ -117,7 +117,7 @@ def project_download(project_id: str):
 
 
 @projects.route(endpoints.PROJECT_MANAGE_MODFLOW, methods=['PUT', 'DELETE', 'PATCH'])
-def upload_modflow(project_id: str):
+def manage_modflow(project_id: str):
     cookie = request.cookies.get(cookie_utils.COOKIE_NAME)
     check_previous_steps = path_checker.path_check_for_accessing_selected_project(cookie, project_id)
     if check_previous_steps:
