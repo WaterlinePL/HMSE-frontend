@@ -9,7 +9,7 @@ async function deleteModflowModel(projectId) {
             document.getElementById('modflowUploadBtn').textContent = "Upload";
             document.getElementById('modflowModelId').textContent = "None";
             document.getElementById('modflowModelGridSize').hidden = true;
-            document.getElementById('modflowModelGridUnit').hidden = true;
+            document.getElementById('modflowModelGridCells').hidden = true;
             document.getElementById('modflowModelDuration').hidden = true;
             document.getElementById('modflowModelDuration').hidden = true;
             document.getElementById('metadataEndDate').textContent = "None";
