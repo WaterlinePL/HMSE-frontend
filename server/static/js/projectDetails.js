@@ -35,7 +35,14 @@ async function submitModflowConfigDetails(projectId) {
         if (response.status === 200) {
             response.json().then(data => {
                 setFields(data, modflowConfigElementIdMapping, oldModflowValues);
-                switchButtonsVisibility(modflowEditModeBtnIds, modflowDefaultModeBtnIds)
+
+                var showBtnIds = ["modflowUploadBtn", "modflowEditConfigDetails"];
+                // if modflow is set, show Remove Modflow button
+                if (isModflowPresent()) {
+                    showBtnIds.push("modflowRemoveBtn");
+                }
+                switchButtonsVisibility(modflowEditModeBtnIds, showBtnIds);
+
                 showSuccessToast(jQuery, "Project configuration successfully updated");
             });
         } else {
@@ -51,7 +58,13 @@ function enterModflowEditMode() {
 }
 
 function cancelModflowConfigEdit() {
-    cancelConfigEdit(oldModflowValues, modflowConfigElementIdMapping, modflowEditModeBtnIds, modflowDefaultModeBtnIds);
+    var showBtnIds = ["modflowUploadBtn", "modflowEditConfigDetails"];
+    // if modflow is set, show Remove Modflow button
+    if (isModflowPresent()) {
+        showBtnIds.push("modflowRemoveBtn");
+    }
+
+    cancelConfigEdit(oldModflowValues, modflowConfigElementIdMapping, modflowEditModeBtnIds, showBtnIds);
 }
 
 
@@ -119,6 +132,7 @@ async function submitNewProjectName(projectId) {
     }).then(response => {
         if (response.status === 200) {
             updateProjectName(requestData["projectName"]);
+            document.title = `HMSE | Simulation ${requestData["projectName"]}`;
             showSuccessToast(jQuery, "Project configuration successfully updated");
         } else {
             response.json().then(data => {
