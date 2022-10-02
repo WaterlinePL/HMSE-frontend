@@ -209,7 +209,7 @@
                         </div>
                         <ul class="list-group list-group-flush" id="hydrusModelList">
                             {% for hydrus_id in metadata.hydrus_models %}
-                            <li class="list-group-item row-entries" id="hydrus_{{ hydrus_id }}">
+                            <li class="list-group-item row-entries" id="hydrus{{ hydrus_id }}">
                                 <span class="slice-column left">
                                     {{ hydrus_id }}
                                     <span class="slice-column right">
@@ -218,7 +218,7 @@
                                 </span>
                                 <span class="slice-column right">
                                     <span class="slice-column left">
-                                        <select id="{{ hydrus_id }}SelectWeather" class="custom-select left"
+                                        <select id="selectWeather{{ hydrus_id }}" class="custom-select left"
                                                 onclick="setWeatherSelectOptions('{{ hydrus_id }}')"
                                                 onchange="sendWeatherMapping('{{ metadata.project_id }}', '{{ hydrus_id }}')">
                                         </select>
@@ -257,7 +257,7 @@
                         </div>
                         <ul class="list-group list-group-flush" id="weatherFileList">
                             {% for weather_id in metadata.weather_files %}
-                            <li class="list-group-item" id="weather_{{ weather_id }}">
+                            <li class="list-group-item" id="weather{{ weather_id }}">
                                 <span class="slice-column left">{{ weather_id }}</span>
                                 <span class="slice-column right">
                                     <button type="button" class="btn btn-danger right"
@@ -297,13 +297,13 @@
                             </script>
                             <li class="list-group-item" id="shape{{ shape_id }}">
                                 <div class="slice-column left">
-                                    <div class="slice-column left" id="{{ shape_id }}ShapeName">{{ shape_id }}</div>
+                                    <div class="slice-column left" id="shapeName{{ shape_id }}">{{ shape_id }}</div>
                                     <div class="slice-column left">
-                                        <div id="{{ shape_id }}ColorPicker" class="slice-column left">
+                                        <div id="colorPicker{{ shape_id }}" class="slice-column left">
                                             <span class="input-group-append">
                                                 <span class="input-group-text colorpicker-input-addon">
                                                     <i></i>
-                                                    <input id="{{ shape_id }}ColorInputField" type="text"
+                                                    <input id="colorInputField{{ shape_id }}" type="text"
                                                            class="form-control input-lg"
                                                            hidden onchange="changeShapeColor('{{ shape_id }}')">
                                                 </span>
@@ -313,36 +313,36 @@
                                 </div>
                                 <script>
                                     $(function () {
-                                        $('#{{ shape_id }}ColorPicker').colorpicker({"color": "{{ color }}",
+                                        $('#colorPicker{{ shape_id }}').colorpicker({"color": "{{ color }}",
                                                                                     useAlpha: false});
                                         deactivateShapeEditMode(jQuery, '{{ shape_id }}');
                                     });
                                 </script>
                                 <span class="slice-column right">
                                     <span class="slice-column left">
-                                        <select id="{{ shape_id }}SelectHydrus" class="custom-select"
+                                        <select id="selectHydrus{{ shape_id }}" class="custom-select"
                                                 onclick="setSelectOptions('{{ shape_id }}')"
                                                 onchange="checkForManualOption('{{ shape_id }}')" disabled>
                                             <script>
                                                 setSelectOptions('{{ shape_id }}');
                                             </script>
                                         </select>
-                                        <input id="{{ shape_id }}ManualValue" value="0" type="number"
+                                        <input id="manualValue{{ shape_id }}" value="0" type="number"
                                                class="form-control input-lg" hidden disabled>
                                     </span>
 
-                                    <button id="{{ shape_id }}RemoveShapeButton" type="button"
+                                    <button id="removeShapeButton{{ shape_id }}" type="button"
                                             class="btn btn-danger right"
                                             onClick="deleteShape('{{ metadata.project_id }}', '{{ shape_id }}')">Remove</button>
-                                    <button id="{{ shape_id }}EditShapeButton" type="button"
+                                    <button id="editShapeButton{{ shape_id }}" type="button"
                                             class="btn btn-secondary right"
                                             onClick="activateShapeEditMode(jQuery, '{{ shape_id }}')">Edit</button>
-                                    <button id="{{ shape_id }}CancelShapeEditButton" hidden type="button"
+                                    <button id="cancelShapeEditButton{{ shape_id }}" hidden type="button"
                                             class="btn btn-danger right"
                                             onclick="deactivateShapeEditMode(jQuery, '{{ shape_id }}', true)">
                                         Cancel
                                     </button>
-                                    <button id="{{ shape_id }}SubmitShapeEditButton" hidden type="button"
+                                    <button id="submitShapeEditButton{{ shape_id }}" hidden type="button"
                                             class="btn btn-success right"
                                             onclick="sendShape('{{ metadata.project_id }}', '{{ shape_id }}')">
                                         Submit
@@ -435,17 +435,17 @@
                         <div class="row justify-content-center text-secondary" hidden id="{{ stage_id }}">
                             <div class="col-7-auto">
                                 {{ stage_name }}
-                                <div class="spinner-border" id="{{ stage_id }}Spinner" role="status">
+                                <div class="spinner-border" id="spinner{{ stage_id }}" role="status">
                                     <span class="sr-only">Loading...</span>
                                 </div>
-                                <svg xmlns="http://www.w3.org/2000/svg" hidden id="{{ stage_id }}Tick" width="25"
+                                <svg xmlns="http://www.w3.org/2000/svg" hidden id="tick{{ stage_id }}" width="25"
                                      height="25"
                                      fill="currentColor"
                                      class="bi bi-check"
                                      viewBox="0 0 16 16">
                                     <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
                                 </svg>
-                                <svg height="25" width="25" id="{{ stage_id }}X" hidden>
+                                <svg height="25" width="25" id="X{{ stage_id }}" hidden>
                                     <line x1="7" y1="7" x2="18" y2="18"
                                           style="stroke:rgb(255,0,0); stroke-width:2"/>
                                     <line x1="18" y1="7" x2="7" y2="18"

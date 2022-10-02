@@ -200,11 +200,11 @@ function createCssClassForShape(shapeId, color) {
 }
 
 function getCssClassNameForShape(shapeId) {
-    return `${shapeId}ColorCls`
+    return `colorCls${shapeId}`
 }
 
 function getShapeColorPickerName(shapeId) {
-    return `${shapeId}ColorPicker`;
+    return `colorPicker${shapeId}`;
 }
 
 
@@ -213,35 +213,35 @@ function getListEntryName(shapeId) {
 }
 
 function getCancelButtonName(shapeId) {
-    return `${shapeId}CancelShapeEditButton`;
+    return `cancelShapeEditButton${shapeId}`;
 }
 
 function getSubmitButtonName(shapeId) {
-    return `${shapeId}SubmitShapeEditButton`;
+    return `submitShapeEditButton${shapeId}`;
 }
 
 function getEditButtonName(shapeId) {
-    return `${shapeId}EditShapeButton`;
+    return `editShapeButton${shapeId}`;
 }
 
 function getRemoveButtonName(shapeId) {
-    return `${shapeId}RemoveShapeButton`;
+    return `removeShapeButton${shapeId}`;
 }
 
 function getNameDivId(shapeId) {
-    return `${shapeId}ShapeName`;
+    return `shapeName${shapeId}`;
 }
 
 function getHydrusSelectId(shapeId) {
-    return `${shapeId}SelectHydrus`;
+    return `selectHydrus${shapeId}`;
 }
 
 function getManualInputId(shapeId) {
-    return `${shapeId}ManualValue`;
+    return `manualValue${shapeId}`;
 }
 
 function getColorInputFieldId(shapeId) {
-    return `${shapeId}ColorInputField`;
+    return `colorInputField${shapeId}`;
 }
 
 function removeEditModeForOtherShapes() {
