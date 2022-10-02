@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<title>HMSE | Simulation Test project merged</title>
+<title>HMSE | Simulation {{ metadata.project_name }}</title>
 <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.2.0/css/bootstrap-colorpicker.min.css"/>
 <link rel="stylesheet" href="/static/css/currentProject.css">
@@ -84,14 +84,15 @@
                                 {{ 'hidden' if not metadata.modflow_metadata }}>
                                 <span class="slice-column left">Grid size</span>
                                 <span id="modflowModelGridSizeContent" class="slice-column right">
-                                    {{ modflow_model_width }} x {{ modflow_model_height }}
+                                    {{ modflow_model_height }} {{ metadata.modflow_metadata.grid_unit }} x
+                                    {{ modflow_model_width }} {{ metadata.modflow_metadata.grid_unit }}
                                 </span>
                             </li>
-                            <li id="modflowModelGridUnit" class="list-group-item" {{
+                            <li id="modflowModelGridCells" class="list-group-item" {{
                             'hidden' if not metadata.modflow_metadata }}>
-                                <span class="slice-column left">Grid length unit</span>
-                                <span id="modflowModelGridUnitContent" class="slice-column right">
-                                    {{ metadata.modflow_metadata.grid_unit if metadata.modflow_metadata }}
+                                <span class="slice-column left">Grid cells</span>
+                                <span id="modflowModelGridCellsContent" class="slice-column right">
+                                    {{ metadata.modflow_metadata.rows }} cells x {{ metadata.modflow_metadata.cols }} cells
                                 </span>
                             </li>
                             <li id="modflowModelDuration" class="list-group-item" {{
