@@ -2,6 +2,7 @@ function initializeArray(rows, cols) {
     return Array(rows).fill(0).map(() => Array(cols).fill(0));
 }
 
+// FIXME: init grid runs even after modflow shape is deleted
 function initGrid() {
     rows_all =  document.getElementsByClassName("cell-row");
     rows_total = rows_all.length;
@@ -38,6 +39,17 @@ function getRowColFromId(cellId) {
     return {"row": parseInt(cell[1]), "col": parseInt(cell[2])}
 }
 
+function updateCursorCoords(cellId) {
+    const currentCords = getRowColFromId(cellId);
+    const row = currentCords.row;
+    const col = currentCords.col;
+    document.getElementById("cursorGridCoords").textContent = `Cursor coordinates: (${row}, ${col})`;
+}
+
+function unsetCursorCoords() {
+    document.getElementById("cursorGridCoords").textContent = `Cursor outside the grid`;
+}
+
 function onMouseOver(id, isHighlighted, shapeClass) {
     const currentCords = getRowColFromId(id);
     const row = currentCords.row;
@@ -61,12 +73,6 @@ function onMouseOver(id, isHighlighted, shapeClass) {
 let prevCells = [];
 let isHighlighted = false;
 
-//function removePreviousTrail(id) {
-//    const grid = getRowColFromId(id);
-//    const row = grid.row;
-//    const col = grid.col;
-//    prevCellsCleanup();
-//}
 
 function cancelGridModification(prevMask, cls) {
     removeClassFromGrid(cls);
@@ -83,7 +89,7 @@ function prevCellsCleanup() {
 
 function hasColor(gridElement, skipColor = null) {
     for (const cls of gridElement.classList) {
-        if (cls.includes("ColorCls") && cls !== skipColor) {
+        if (cls.includes("colorCls") && cls !== skipColor) {
             return true;
         }
     }
@@ -109,7 +115,7 @@ function previewPaintedCells(id, shapeClass) {
 
             if (willErase) {
                 elem.classList.toggle("bg-secondary", true);
-            } else if (!hasColor(elem)) {
+            } else if (!hasColor(elem, shapeClass)) {
                 elem.classList.toggle("bg-light", true);
             }
 
@@ -129,6 +135,7 @@ function setupGridSettings($, shapeClass) {
         .unbind('mouseup')
         .unbind('mouseleave')
         .mousedown(function () {
+            updateCursorCoords(this.id);
             if (editMode) {
                 isMouseDown = true;
                 isHighlighted = !$(this).hasClass(shapeClass);
@@ -137,6 +144,7 @@ function setupGridSettings($, shapeClass) {
             return false; // prevent text selection
         })
         .mouseover(function () {
+            updateCursorCoords(this.id);
             if (editMode) {
                 if (isMouseDown) {
                     onMouseOver(this.id, isHighlighted, shapeClass);
@@ -158,6 +166,9 @@ function setupGridSettings($, shapeClass) {
         .bind("selectstart", function () {
             return false;
         })
+
+        $("#modelGridTable").unbind('mouseleave')
+            .mouseleave(() => unsetCursorCoords());
 }
 
 function removeClassFromGrid(cls) {

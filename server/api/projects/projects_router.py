@@ -8,7 +8,6 @@ from werkzeug.utils import redirect
 
 from hmse_simulations.hmse_projects import project_service
 from hmse_simulations.hmse_projects.hmse_hydrological_models.modflow import modflow_utils
-from hmse_simulations.hmse_projects.hmse_hydrological_models.modflow.modflow_metadata import ModflowMetadata
 from hmse_simulations.hmse_projects.project_metadata import ProjectMetadata
 from hmse_simulations.simulation.simulation import Simulation
 from server import endpoints, cookie_utils, path_checker, template, naming_utils
@@ -21,7 +20,12 @@ def edit_project(project_id: str):
     check_previous_steps = path_checker.path_check_simulate_access(request.cookies.get(cookie_utils.COOKIE_NAME))
     if check_previous_steps:
         return check_previous_steps
-    return render_template(template.EDIT_PROJECT, metadata=project_service.get(project_id),
+
+    metadata = project_service.get(project_id)
+    width, height, metadata.modflow_metadata = modflow_utils.adapt_model_to_display(metadata.modflow_metadata)
+    return render_template(template.EDIT_PROJECT, metadata=metadata,
+                           modflow_model_width=width, modflow_model_height=height,
+                           end_date=metadata.calculate_end_date(),
                            simulation_stages=[stage.to_id_and_name() for stage in Simulation.all_stages()])
 
 
@@ -60,31 +64,16 @@ def project(project_id: str):
 
     if request.method == 'GET':
         metadata = project_service.get(project_id)
-        metadata.modflow_metadata = modflow_utils.adapt_model_to_display(metadata.modflow_metadata)
-        return render_template(template.PROJECT, metadata=metadata)
+        return jsonify(metadata.to_json_response())
     elif request.method == 'PATCH':
         metadata = project_service.get(project_id)
         patch = request.json
         metadata.project_name = patch['projectName']
-        metadata.start_date = patch['startDate']
-        metadata.end_date = patch['endDate']
-        metadata.lat = patch['lat']
-        metadata.long = patch['long']
-        metadata.spin_up = int(patch['spinUp'])
         project_service.save_or_update_metadata(metadata)
         return flask.Response(status=HTTPStatus.OK)
     else:
         project_service.delete(project_id)
         return flask.Response(status=HTTPStatus.OK)
-
-
-@projects.route(endpoints.PROJECT_METADATA)
-def project_metadata(project_id: str):
-    check_previous_steps = path_checker.path_check_simulate_access(request.cookies.get(cookie_utils.COOKIE_NAME))
-    if check_previous_steps:
-        return check_previous_steps
-    metadata = project_service.get(project_id)
-    return jsonify(metadata.to_json_response())
 
 
 @projects.route(endpoints.CREATE_PROJECT, methods=['POST'])
@@ -127,17 +116,29 @@ def project_download(project_id: str):
     return send_file(project_service.download_project(project_id), as_attachment=True)
 
 
-@projects.route(endpoints.PROJECT_MANAGE_MODFLOW, methods=['PUT', 'DELETE'])
-def upload_modflow(project_id: str):
+@projects.route(endpoints.PROJECT_MANAGE_MODFLOW, methods=['PUT', 'DELETE', 'PATCH'])
+def manage_modflow(project_id: str):
     cookie = request.cookies.get(cookie_utils.COOKIE_NAME)
     check_previous_steps = path_checker.path_check_for_accessing_selected_project(cookie, project_id)
     if check_previous_steps:
         return check_previous_steps
 
-    if request.method == 'PUT' and request.files:
+    if request.method == 'PATCH':
+        metadata = project_service.get(project_id)
+        patch = request.json
+        metadata.start_date = patch['startDate']
+        metadata.lat = patch['lat']
+        metadata.long = patch['long']
+        patch['endDate'] = metadata.calculate_end_date()
+        project_service.save_or_update_metadata(metadata)
+        return patch
+    elif request.method == 'PUT' and request.files:
         model = request.files['modelArchive']
         modflow_metadata = project_service.set_modflow_model(project_id, model)
-        return jsonify(modflow_metadata)
+        total_width, total_height, _ = modflow_utils.adapt_model_to_display(modflow_metadata)
+        end_date = project_service.get(project_id).calculate_end_date()
+        return jsonify(total_width=total_width, total_height=total_height, end_date=end_date,
+                       **modflow_metadata.to_json())
     elif request.method == 'DELETE':
         project_service.delete_modflow_model(project_id)
         return flask.Response(status=HTTPStatus.OK)
@@ -164,14 +165,20 @@ def upload_weather_file(project_id: str):
         abort(400)
 
 
-@projects.route(endpoints.PROJECT_MANAGE_HYDRUS, methods=['PUT', 'DELETE'])
+@projects.route(endpoints.PROJECT_MANAGE_HYDRUS, methods=['PUT', 'DELETE', 'PATCH'])
 def manage_hydrus(project_id: str):
     cookie = request.cookies.get(cookie_utils.COOKIE_NAME)
     check_previous_steps = path_checker.path_check_for_accessing_selected_project(cookie, project_id)
     if check_previous_steps:
         return check_previous_steps
 
-    if request.method == 'PUT' and request.files:
+    if request.method == 'PATCH':
+        metadata = project_service.get(project_id)
+        patch = request.json
+        metadata.spin_up = int(patch['spinUp'])
+        project_service.save_or_update_metadata(metadata)
+        return flask.Response(status=HTTPStatus.OK)
+    elif request.method == 'PUT' and request.files:
         archive = request.files['modelArchive']
         hydrus_id = project_service.add_hydrus_model(project_id, archive)
         return jsonify(hydrus_id=hydrus_id)

@@ -1,5 +1,5 @@
 function getWeatherListEntryId(weatherId) {
-    return `weather_${weatherId}`
+    return `weather${weatherId}`
 }
 
 function addWeatherEntryToSimulation(projectId, weatherId) {
@@ -66,11 +66,6 @@ async function sendWeatherFileAfterSelected(projectId) {
             });
         }
     });
-}
-
-
-function getWeatherSelectId(hydrusId) {
-    return `${hydrusId}SelectWeather`;
 }
 
 

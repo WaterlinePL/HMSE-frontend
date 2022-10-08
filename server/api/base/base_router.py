@@ -21,19 +21,14 @@ def start():
     return res
 
 
-@base.route(endpoints.HELP, methods=['GET'])
-def home():
-    return render_template(template.HELP)
-
-
 @base.route(endpoints.CONFIGURATION, methods=['GET', 'PUT'])
 def configuration():
     check_previous_steps = path_checker.path_check_cookie(request.cookies.get(cookie_utils.COOKIE_NAME))
     if check_previous_steps:
         return check_previous_steps
     if request.method == 'PUT':
-        app_config.app_config = AppConfig(**request.json)
-        app_config.app_config.save()
+        config = AppConfig(**request.json)
+        app_config.update_config(config)
         return flask.Response(status=HTTPStatus.OK)
 
-    return render_template(template.CONFIGURATION, app_config=app_config.app_config)
+    return render_template(template.CONFIGURATION, app_config=app_config.get_config())  
