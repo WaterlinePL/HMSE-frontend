@@ -23,7 +23,7 @@
 <div style="min-height:100vh">
     <nav class="navbar navbar-expand-md navbar-dark bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{{ url_for('base.home') }}">HM Synergy Engine 2.0 alpha</a>
+            <a class="navbar-brand" href="{{ url_for('projects.project_list') }}">HM Synergy Engine 2.0 alpha</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler"
                     aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -35,9 +35,6 @@
                     </li>
                     <li class="nav-item {% block configuration_active %} {% endblock %}">
                         <a class="nav-link" href="{{ url_for('base.configuration') }}">Configure</a>
-                    </li>
-                    <li class='nav-item {% block home_active %} {% endblock %}'>
-                        <a class="nav-link" href="{{ url_for('base.home') }}">Help <span class="sr-only">(current)</span></a>
                     </li>
                 </ul>
             </div>
@@ -53,13 +50,12 @@
         {% include "toast.html" %}
     </div>
 </div>
-<footer class="footer bg-primary text-white">
+<footer class="footer bg-primary text-white navbar-fixed-bottom">
     <div class="container" id="footer-content">
         <div class="row justify-content-md-center">
             <div class="col-lg-9">
                 <div class="text-center">
                     <h6>@ 2021-2022 All rights reserved @ AGH University of Science and Technology</h6>
-<!--                    test it-->
                     <p>This application uses cookies to identify users</p>
                 </div>
             </div>
@@ -67,9 +63,6 @@
     </div>
 </footer>
 
-<!--<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"-->
-<!--        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"-->
-<!--        crossorigin="anonymous"></script>-->
 
 </body>
 </html>

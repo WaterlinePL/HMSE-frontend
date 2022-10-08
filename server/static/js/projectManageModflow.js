@@ -9,7 +9,14 @@ async function deleteModflowModel(projectId) {
             document.getElementById('modflowUploadBtn').textContent = "Upload";
             document.getElementById('modflowModelId').textContent = "None";
             document.getElementById('modflowModelGridSize').hidden = true;
-            document.getElementById('modflowModelGridUnit').hidden = true;
+            document.getElementById('modflowModelGridCells').hidden = true;
+            document.getElementById('modflowModelDuration').hidden = true;
+            document.getElementById('modflowModelDuration').hidden = true;
+            document.getElementById('metadataEndDate').textContent = "None";
+
+            // TODO: update all the fields
+            setTimeout(() => location.reload(), 500);
+
             showSuccessToast(jQuery, "Modflow model successfully deleted");
         } else {
             response.json().then(data => {
@@ -22,6 +29,11 @@ async function deleteModflowModel(projectId) {
 async function openModflowDialog() {
     const input = document.getElementById('modflowUploadInput');
     input.click();
+}
+
+
+function isModflowPresent() {
+    return !document.getElementById("modflowModelGridSize").hidden;
 }
 
 async function sendModflowModelAfterSelected(projectId) {
@@ -45,10 +57,19 @@ async function sendModflowModelAfterSelected(projectId) {
                 document.getElementById('modflowUploadBtn').textContent = "Change";
                 document.getElementById('modflowModelId').textContent = data['modflow_id'];
                 document.getElementById('modflowModelGridSize').hidden = false;
-                document.getElementById('modflowModelGridSizeContent').textContent = `${data['rows']} cells x ${data['cols']} cells`
-                document.getElementById('modflowModelGridUnit').hidden = false;
-                document.getElementById('modflowModelGridUnitContent').textContent = data['grid_unit'];
-                // TODO: prepare grid
+                document.getElementById('modflowModelGridSizeContent').textContent = `${data['total_width']} ${data['grid_unit']} x ${data['total_height']} ${data['grid_unit']}`
+                document.getElementById('modflowModelGridCells').hidden = false;
+                document.getElementById('modflowModelGridCellsContent').textContent = `${data['rows']} cells x ${data['cols']} cells`;
+                document.getElementById('modflowModelDuration').hidden = false;
+                document.getElementById('modflowModelDurationContent').textContent = data['duration'];
+
+                if (document.getElementById('metadataStartDate').textContent !== "None") {
+                    document.getElementById('metadataEndDate').textContent = data['end_date'];
+                }
+
+                // TODO: prepare grid - workaround
+                setTimeout(() => location.reload(), 500);
+
                 showSuccessToast(jQuery, "Modflow model successfully uploaded");
             });
         } else {
