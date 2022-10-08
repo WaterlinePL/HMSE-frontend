@@ -27,8 +27,8 @@ def configuration():
     if check_previous_steps:
         return check_previous_steps
     if request.method == 'PUT':
-        app_config.app_config = AppConfig(**request.json)
-        app_config.app_config.save()
+        config = AppConfig(**request.json)
+        app_config.update_config(config)
         return flask.Response(status=HTTPStatus.OK)
 
-    return render_template(template.CONFIGURATION, app_config=app_config.app_config)
+    return render_template(template.CONFIGURATION, app_config=app_config.get_config())  
