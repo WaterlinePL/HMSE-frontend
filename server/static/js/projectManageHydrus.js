@@ -1,9 +1,9 @@
 function getHydrusListEntryId(hydrusId) {
-    return `hydrus_${hydrusId}`
+    return `hydrus${hydrusId}`
 }
 
 function getWeatherSelectId(hydrusId) {
-    return `${hydrusId}SelectWeather`;
+    return `selectWeather${hydrusId}`;
 }
 
 function addHydrusEntryToSimulation(projectId, hydrusId) {

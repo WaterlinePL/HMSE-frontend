@@ -2,6 +2,7 @@ function initializeArray(rows, cols) {
     return Array(rows).fill(0).map(() => Array(cols).fill(0));
 }
 
+// FIXME: init grid runs even after modflow shape is deleted
 function initGrid() {
     rows_all =  document.getElementsByClassName("cell-row");
     rows_total = rows_all.length;
@@ -88,7 +89,7 @@ function prevCellsCleanup() {
 
 function hasColor(gridElement, skipColor = null) {
     for (const cls of gridElement.classList) {
-        if (cls.includes("ColorCls") && cls !== skipColor) {
+        if (cls.includes("colorCls") && cls !== skipColor) {
             return true;
         }
     }
@@ -114,7 +115,7 @@ function previewPaintedCells(id, shapeClass) {
 
             if (willErase) {
                 elem.classList.toggle("bg-secondary", true);
-            } else if (!hasColor(elem)) {
+            } else if (!hasColor(elem, shapeClass)) {
                 elem.classList.toggle("bg-light", true);
             }
 
