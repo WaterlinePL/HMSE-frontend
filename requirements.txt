@@ -8,3 +8,4 @@ scipy==1.9.0
 StrEnum==0.4.8
 Werkzeug==2.2.0
 zipp==3.8.1
+minio==7.1.12
