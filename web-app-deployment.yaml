@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hmse-k8s-frontend
+  namespace: hydrological-apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hmse-k8s-frontend
+  template:
+    metadata:
+      labels:
+        app: hmse-k8s-frontend
+    spec:
+      containers:
+      - name: hmse-k8s-frontend
+        image: watermodelling/hmse-k8s:0.0.1-alpha
+        ports:
+        - containerPort: 8080
+        env:
+        - name: MINIO_REGION
+          value: us-east-1
+        - name: HMSE_MINIO_ROOT_BUCKET
+          value: hmse-k8s-test  # alpha testing
+        - name: MINIO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: minio-secret
+              key: secret_key
+              optional: false
+        - name: MINIO_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: minio-secret
+              key: access_key
+              optional: false
+        - name: MINIO_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name: minio-secret
+              key: endpoint
+              optional: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hmse-k8s-frontend-service
+  namespace: hydrological-apps
+spec:
+  selector:
+    app: hmse-k8s-frontend
+  ports:
+  - name: hmse-k8s-frontend
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+
