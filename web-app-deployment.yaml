@@ -19,6 +19,8 @@ spec:
         ports:
         - containerPort: 8080
         env:
+        - name: HMSE_URL_PREFIX
+          value: /hmse
         - name: MINIO_REGION
           value: us-east-1
         - name: HMSE_MINIO_ROOT_BUCKET
