@@ -89,7 +89,7 @@ def create_project():
     project_id = naming_utils.validate_id(request.json['projectId'])
     project_name = request.json['projectName']
     project_service.save_or_update_metadata(ProjectMetadata(project_id, project_name))
-    return redirect(url_for("projects.edit_project").replace('<project_id>', project_id))
+    return redirect(url_for("projects.edit_project", project_id=project_id))
 
 
 # API
