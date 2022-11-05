@@ -1,4 +1,5 @@
 import json
+import os
 
 from flask import Flask
 from werkzeug.exceptions import HTTPException
@@ -7,10 +8,12 @@ from server.api.base.base_router import base
 from server.api.projects.projects_router import projects
 from server.api.simulation.simulation_router import simulations
 
+URL_PREFIX = os.environ.get("HMSE_URL_PREFIX", "")
+
 app = Flask("App")
-app.register_blueprint(base)
-app.register_blueprint(projects)
-app.register_blueprint(simulations)
+app.register_blueprint(base, url_prefix=URL_PREFIX)
+app.register_blueprint(projects, url_prefix=URL_PREFIX)
+app.register_blueprint(simulations, url_prefix=URL_PREFIX)
 
 
 @app.errorhandler(HTTPException)
