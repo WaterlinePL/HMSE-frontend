@@ -2,7 +2,7 @@ import uuid
 from http import HTTPStatus
 
 import flask
-from flask import make_response, render_template, request, Blueprint
+from flask import make_response, render_template, request, Blueprint, url_for
 from werkzeug.utils import redirect
 
 from config import app_config
@@ -14,7 +14,7 @@ base = Blueprint('base', __name__)
 
 @base.route('/')
 def start():
-    res = make_response(redirect(endpoints.PROJECT_LIST))
+    res = make_response(redirect(url_for("project.project_list")))
     if not request.cookies.get(cookie_utils.COOKIE_NAME):
         cookie = str(uuid.uuid4())
         res.set_cookie(cookie_utils.COOKIE_NAME, cookie, max_age=cookie_utils.COOKIE_AGE)

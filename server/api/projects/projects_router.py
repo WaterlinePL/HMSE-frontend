@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
 import flask
-from flask import request, render_template, jsonify, Blueprint, send_file
+from flask import request, render_template, jsonify, Blueprint, send_file, url_for
 from flask_paginate import get_page_args, Pagination
 from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
@@ -85,7 +85,7 @@ def create_project():
     project_id = naming_utils.validate_id(request.json['projectId'])
     project_name = request.json['projectName']
     project_service.save_or_update_metadata(ProjectMetadata(project_id, project_name))
-    return redirect(endpoints.EDIT_PROJECT.replace('<project_id>', project_id))
+    return redirect(url_for("project.edit_project").replace('<project_id>', project_id))
 
 
 # API
