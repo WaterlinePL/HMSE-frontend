@@ -1,0 +1,6 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: hydrological-apps
+  labels:
+    name: hydrological-apps
