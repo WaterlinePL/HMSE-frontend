@@ -26,7 +26,3 @@ MAP_WEATHER_FILE_TO_HYDRUS = '/project/<project_id>/map-weather'
 
 # Simulation
 SIMULATION = '/simulation/<project_id>'
-
-
-def edit_project_endpoint(project_id: ProjectID):
-    return EDIT_PROJECT.replace("<project_id>", project_id)
