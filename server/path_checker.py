@@ -44,8 +44,8 @@ def path_check_for_accessing_selected_project(cookie: UserID, project_id: Projec
     if cookie_utils.is_project_in_use(project_id) and true_user_project_id != project_id:
         # TODO: message that project is used by someone else?
         if true_user_project_id is not None:
-            return redirect(url_for("project.edit_project").replace("<project_id>", project_id))
-        return redirect(url_for("project.project_list"))
+            return redirect(url_for("projects.edit_project").replace("<project_id>", project_id))
+        return redirect(url_for("projects.project_list"))
 
     return None
 
