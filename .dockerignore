@@ -1,0 +1,10 @@
+.gitattributes
+.gitmodules
+.git
+hmse.spec
+Dockerfile
+hydros-apps-ns.yaml
+README.md
+web-app-deployment.yaml
+venv/
+.idea/
