@@ -15,7 +15,8 @@ spec:
     spec:
       containers:
       - name: hmse-k8s-frontend
-        image: watermodelling/hmse-k8s:0.0.1-alpha
+        image: watermodelling/hmse-k8s:0.0.2
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         env:
@@ -43,6 +44,22 @@ spec:
               name: minio-secret
               key: endpoint
               optional: false
+        - name: AIRFLOW_USER
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secret
+              key: airflow_user
+              optional: false
+        - name: AIRFLOW_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secret
+              key: airflow_password
+              optional: false
+        - name: AIRFLOW_API_ENDPOINT
+          value: "149.156.182.201.nip.io/airflow/api/v1"
+        - name: AIRFLOW_SIMULATION_DAG
+          value: hmse_simulation
 ---
 apiVersion: v1
 kind: Service

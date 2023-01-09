@@ -1,9 +1,7 @@
-FROM python:3.10-slim-buster
+FROM python:3.8-slim-buster
 COPY requirements.txt requirements.txt
 RUN python3 -m pip install -r requirements.txt
-COPY config config
-COPY hmse_simulations hmse_simulations
-COPY server server
+COPY . .
 EXPOSE 8080
 WORKDIR /server
 ENV PYTHONPATH /
