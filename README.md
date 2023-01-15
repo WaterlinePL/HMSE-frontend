@@ -2,8 +2,8 @@
 
 This is the main branch of Hydrus-Modflow-Synergy-Engine frontend. It contains common compontents shared between all the deployments:
 * desktop deployment (branch [`desktop`](https://github.com/WaterlinePL/HMSE-frontend/tree/desktop))
-* docker deployment (branch [`docker`](https://github.com/WaterlinePL/HMSE-frontend/tree/docker)) - work in progress
-* Kubernetes deployment (branch `k8s`) - TODO
+* docker deployment (branch [`docker`](https://github.com/WaterlinePL/HMSE-frontend/tree/docker))
+* Kubernetes deployment (branch [`k8s`](https://github.com/WaterlinePL/HMSE-frontend/tree/k8s))
 
 In order to maintain more easily the code, frontend uses submodules that are dedicated for each deployment. 
 Currently used submodules:
