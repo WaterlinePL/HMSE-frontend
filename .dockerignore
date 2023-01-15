@@ -1,0 +1,9 @@
+.gitattributes
+.gitmodules
+.git
+hmse.spec
+Dockerfile
+README.md
+*.yaml
+venv/
+.idea/
