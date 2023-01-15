@@ -5,6 +5,7 @@ from dataclasses import dataclass
 CONFIG_FILENAME = "config.json"
 URL_PREFIX = os.environ.get("HMSE_URL_PREFIX", "")
 
+
 @dataclass
 class AppConfig:
     ...

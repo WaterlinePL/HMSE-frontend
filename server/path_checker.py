@@ -4,8 +4,9 @@ from flask import Response, redirect, url_for
 
 from hmse_simulations.hmse_projects.project_dao import project_dao
 from hmse_simulations.hmse_projects.project_exceptions import UnsetModflowModelError
-from server import endpoints, cookie_utils
-from server.typing_help import UserID, ProjectID
+from hmse_simulations.hmse_projects.typing_help import ProjectID
+from server import cookie_utils
+from server.typing_help import UserID
 
 
 def path_check_cookie(cookie: UserID) -> Optional[Response]:
