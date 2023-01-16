@@ -3,7 +3,8 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import Dict, Optional
 
-from server.typing_help import ProjectID, UserID
+from hmse_simulations.hmse_projects.typing_help import ProjectID
+from server.typing_help import UserID
 
 COOKIE_NAME = 'user_id'
 COOKIE_AGE = 60 * 60 * 24 * 365
