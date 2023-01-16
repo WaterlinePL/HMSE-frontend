@@ -1,11 +1,12 @@
 from http import HTTPStatus
 
 import flask
-from flask import request, render_template, jsonify, Blueprint, send_file
+from flask import request, render_template, jsonify, Blueprint, send_file, url_for
 from flask_paginate import get_page_args, Pagination
 from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
 
+from config.app_config import URL_PREFIX
 from hmse_simulations.hmse_projects import project_service
 from hmse_simulations.hmse_projects.hmse_hydrological_models.modflow import modflow_utils
 from hmse_simulations.hmse_projects.project_metadata import ProjectMetadata
@@ -23,7 +24,9 @@ def edit_project(project_id: str):
 
     metadata = project_service.get(project_id)
     width, height, metadata.modflow_metadata = modflow_utils.adapt_model_to_display(metadata.modflow_metadata)
-    return render_template(template.EDIT_PROJECT, metadata=metadata,
+    return render_template(template.EDIT_PROJECT,
+                           endpoint_prefix=URL_PREFIX,
+                           metadata=metadata,
                            modflow_model_width=width, modflow_model_height=height,
                            end_date=metadata.calculate_end_date(),
                            simulation_stages=[stage.to_id_and_name() for stage in Simulation.all_stages()])
@@ -49,6 +52,7 @@ def project_list(search):
                             css_framework='bootstrap4')
 
     return render_template(template.PROJECT_LIST,
+                           endpoint_prefix=URL_PREFIX,
                            search_value=search,
                            projects=pagination_projects,
                            page=page,
@@ -85,7 +89,7 @@ def create_project():
     project_id = naming_utils.validate_id(request.json['projectId'])
     project_name = request.json['projectName']
     project_service.save_or_update_metadata(ProjectMetadata(project_id, project_name))
-    return redirect(endpoints.EDIT_PROJECT.replace('<project_id>', project_id))
+    return redirect(url_for("projects.edit_project", project_id=project_id))
 
 
 # API

@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 CONFIG_FILENAME = "config.json"
+URL_PREFIX = os.environ.get("HMSE_URL_PREFIX", "")
 
 
 @dataclass

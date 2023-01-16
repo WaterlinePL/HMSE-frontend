@@ -1,12 +1,13 @@
 from typing import Optional
 
-from flask import Response, redirect
+from flask import Response, redirect, url_for
 
 import config.app_config as app_config
 from hmse_simulations.hmse_projects.project_dao import project_dao
 from hmse_simulations.hmse_projects.project_exceptions import UnsetModflowModelError
-from server import endpoints, cookie_utils
-from server.typing_help import UserID, ProjectID
+from hmse_simulations.hmse_projects.typing_help import ProjectID
+from server import cookie_utils
+from server.typing_help import UserID
 
 
 def path_check_cookie(cookie: UserID) -> Optional[Response]:
@@ -16,7 +17,7 @@ def path_check_cookie(cookie: UserID) -> Optional[Response]:
     """
 
     if cookie is None:
-        return redirect('/')
+        return redirect(url_for("base.start"))
     return None
 
 
@@ -46,8 +47,8 @@ def path_check_for_accessing_selected_project(cookie: UserID, project_id: Projec
     if cookie_utils.is_project_in_use(project_id) and true_user_project_id != project_id:
         # TODO: message that project is used by someone else?
         if true_user_project_id is not None:
-            return redirect(endpoints.edit_project_endpoint(project_id))
-        return redirect(endpoints.PROJECT_LIST)
+            return redirect(url_for("projects.edit_project", project_id=project_id))
+        return redirect(url_for("projects.project_list"))
 
     return None
 
