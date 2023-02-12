@@ -28,8 +28,7 @@ def edit_project(project_id: str):
                            endpoint_prefix=URL_PREFIX,
                            metadata=metadata,
                            modflow_model_width=width, modflow_model_height=height,
-                           end_date=metadata.calculate_end_date(),
-                           simulation_stages=[stage.to_id_and_name() for stage in Simulation.all_stages()])
+                           end_date=metadata.calculate_end_date())
 
 
 @projects.route(endpoints.PROJECT_LIST, methods=['GET'], defaults={'search': None})

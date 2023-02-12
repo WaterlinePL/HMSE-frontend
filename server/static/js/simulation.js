@@ -48,23 +48,15 @@ function showRunningStep(elemId) {
     document.getElementById(getSpinnerName(elemId)).hidden = false;
 }
 
-function updateStatus(statusResponse) {
-    var isFinished = true;
-    for (const [stepId, status] of Object.entries(statusResponse)) {
-        if (status === "PENDING") {
-            showStep(stepId);
-            isFinished = false;
-        } else if (status === "RUNNING") {
-            showRunningStep(stepId);
-            isFinished = false;
-        } else if (status === "SUCCESS") {
-            markStepSuccess(stepId);
-        } else if (status === "ERROR") {
-            markStepFailed(stepId);
-            return true;
+function updateStatus(allChaptersInfo) {
+    let i = 1;
+    for (const chapterEntry of allChaptersInfo) {
+        const chapterId = chapterEntry["chapter_id"];
+        if (isRenderNeeded(chapterId)) {
+            prepareSimulationChapter(chapterEntry, i++, allChaptersInfo.length);
         }
+        updateSimulationChapter(chapterEntry);
     }
-    return isFinished;
 }
 
 async function getSimulationStatus(projectId) {
