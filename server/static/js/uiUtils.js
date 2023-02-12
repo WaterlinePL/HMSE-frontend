@@ -60,6 +60,15 @@ function createElement(element, classes, id = null) {
     return div;
 }
 
+function createSVGElem(element, classes, id = null) {
+    const svgElem = document.createElementNS("http://www.w3.org/2000/svg", element);
+    classes.forEach(cls => svgElem.classList.add(cls));
+    if (id) {
+        svgElem.id = id;
+    }
+    return svgElem;
+}
+
 function createOption(text, selected = false) {
     const option = document.createElement("option");
     option.value = text;
