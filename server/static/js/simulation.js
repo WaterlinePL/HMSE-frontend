@@ -53,7 +53,7 @@ function updateStatus(allChaptersInfo) {
     for (const chapterEntry of allChaptersInfo) {
         const chapterId = chapterEntry["chapter_id"];
         if (isRenderNeeded(chapterId)) {
-            prepareSimulationChapter(chapterEntry, i++, allChaptersInfo.length);
+            prepareSimulationChapter(chapterEntry, i++);
         }
         updateSimulationChapter(chapterEntry);
     }
