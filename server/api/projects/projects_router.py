@@ -246,6 +246,17 @@ def map_shape_to_hydrus(project_id: str):
         return flask.Response(status=HTTPStatus.OK)
 
 
+@projects.route(endpoints.SIMULATION_MODE, methods=['PATCH'])
+def select_simulation_mode(project_id: str):
+    cookie = request.cookies.get(cookie_utils.COOKIE_NAME)
+    check_previous_steps = path_checker.path_check_for_modflow_model(cookie, project_id)
+    if check_previous_steps:
+        return check_previous_steps
+
+    project_service.update_simulation_mode(project_id, mode=request.json['simulationMode'])
+    return flask.Response(status=HTTPStatus.OK)
+
+
 @projects.route(endpoints.MAP_WEATHER_FILE_TO_HYDRUS, methods=['PUT'])
 def map_weather_to_hydrus(project_id: str):
     cookie = request.cookies.get(cookie_utils.COOKIE_NAME)

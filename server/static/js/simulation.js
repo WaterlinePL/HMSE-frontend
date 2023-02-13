@@ -102,5 +102,23 @@ async function runSimulation(projectId) {
     });
 }
 
+async function updateSimulationMode(projectId) {
+    const url = getEndpointForProjectId(Config.simulationMode, projectId);
+    await fetch(url, {
+        method: "PATCH",
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            simulationMode: document.getElementById("simulationMode").value
+        })
+    }).then(response => {
+        if (response.status === 200) {
+            showSuccessToast(jQuery, "Simulation mode updated");
+        } else {
+            response.json().then(data => {
+                showErrorToast(jQuery, `Error: ${data.description}`);
+            });
+        }
+    });
+}
 
 const AllStagesInSimulation = [];   // Set by Jinja2

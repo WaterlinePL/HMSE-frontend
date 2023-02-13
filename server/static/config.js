@@ -14,6 +14,7 @@ const __config = {
     "mapShapeRecharge": "/project/<project_id>/map-shape-to-hydrus",
     "mapWeatherFile": "/project/<project_id>/map-weather",
     "configuration": "/configuration",
+    "simulationMode": "/project/<project_id>/simulation-mode",
 
      // Unused
     "defineMethod": "/define-method",
