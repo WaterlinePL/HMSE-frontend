@@ -1,11 +1,10 @@
-function prepareSimulationChapter(chapterEntry, chapterNum, totalChapters) {
+function prepareSimulationChapter(chapterEntry, chapterNum) {
     const chapterId = chapterEntry["chapter_id"];
     const chapterName = chapterEntry["chapter_name"];
     const stageStatuses = chapterEntry["stage_statuses"];
 
     const chapterDiv = createElement("div", ["row", "justify-content-center", "text-primary"], chapterId);
-    chapterDiv.innerHTML = totalChapters === 1 ?
-        `<h3>${chapterName}</h3>` : `<h3>Step ${chapterNum}: ${chapterName}</h3>`;
+    chapterDiv.innerHTML = `<h3>Step ${chapterNum}: ${chapterName}</h3>`;
 
     const simInfoDiv = document.getElementById("simulationInfo");
     simInfoDiv.appendChild(chapterDiv);
