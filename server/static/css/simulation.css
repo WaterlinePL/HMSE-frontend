@@ -12,6 +12,10 @@
 	color: white;
 }
 
+.small-select {
+	width: 30%
+}
+
 .tab-simulation>tbody>tr:nth-child(10n), table>tbody>tr:last-child {
 	border-bottom: 2px solid darkgray !important;
 }

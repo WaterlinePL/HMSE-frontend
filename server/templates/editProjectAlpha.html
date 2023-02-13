@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="{{ endpoint_prefix }}/static/css/uploadModflow.css">
 <link rel="stylesheet" href="{{ endpoint_prefix }}/static/css/uploadHydrus.css">
 <link rel="stylesheet" href="{{ endpoint_prefix }}/static/css/projectDetails.css">
+<link rel="stylesheet" href="{{ endpoint_prefix }}/static/css/simulation.css">
 {% endblock %}
 
 {% block scripts %}
@@ -426,6 +427,14 @@
                         <div class="text-center justify-content-center">
                             <p class="lead">Click "Run simulation" once you're ready to start it.</p>
                         </div>
+                    </div>
+                    <div class="container my-5 justify-content-center text-center">
+                        <h4>Select simulation mode</h4>
+                        <select id="simulationMode" class="custom-select container my-6 small-select"
+                                onchange="updateSimulationMode('{{ metadata.project_id }}')">
+                            <option selected value="SIMPLE_COUPLING">Simple coupling (no feedback loop)</option>
+                            <option value="WITH_FEEDBACK">Feedback loop</option>
+                        </select>
                     </div>
                     <div class="row justify-content-center">
                         <button type="submit" id="start-simulation" class="btn btn-primary right"
