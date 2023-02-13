@@ -28,8 +28,7 @@ def edit_project(project_id: str):
                            endpoint_prefix=URL_PREFIX,
                            metadata=metadata,
                            modflow_model_width=width, modflow_model_height=height,
-                           end_date=metadata.calculate_end_date(),
-                           simulation_stages=[stage.to_id_and_name() for stage in Simulation.all_stages()])
+                           end_date=metadata.calculate_end_date())
 
 
 @projects.route(endpoints.PROJECT_LIST, methods=['GET'], defaults={'search': None})
@@ -244,6 +243,17 @@ def map_shape_to_hydrus(project_id: str):
     else:
         project_service.remove_shape_mapping(project_id, shape_id)
         return flask.Response(status=HTTPStatus.OK)
+
+
+@projects.route(endpoints.SIMULATION_MODE, methods=['PATCH'])
+def select_simulation_mode(project_id: str):
+    cookie = request.cookies.get(cookie_utils.COOKIE_NAME)
+    check_previous_steps = path_checker.path_check_for_modflow_model(cookie, project_id)
+    if check_previous_steps:
+        return check_previous_steps
+
+    project_service.update_simulation_mode(project_id, mode=request.json['simulationMode'])
+    return flask.Response(status=HTTPStatus.OK)
 
 
 @projects.route(endpoints.MAP_WEATHER_FILE_TO_HYDRUS, methods=['PUT'])
