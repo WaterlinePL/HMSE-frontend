@@ -224,6 +224,16 @@ def rch_shapes(project_id: str):
     return project_service.add_rch_shapes(project_id)
 
 
+@projects.route(endpoints.ZB_SHAPES, methods=['PUT'])
+def zb_shapes(project_id: str):
+    cookie = request.cookies.get(cookie_utils.COOKIE_NAME)
+    check_previous_steps = path_checker.path_check_for_modflow_model(cookie, project_id)
+    if check_previous_steps:
+        return check_previous_steps
+    zb_file = request.files['zbZones']
+    return project_service.add_zb_shapes(project_id, zb_file)
+
+
 @projects.route(endpoints.MAP_SHAPE_RECHARGE, methods=['PUT'])
 def map_shape_to_hydrus(project_id: str):
     cookie = request.cookies.get(cookie_utils.COOKIE_NAME)

@@ -1,14 +1,3 @@
-function resetStep(elemId) {
-    document.getElementById(elemId).hidden = true;
-    document.getElementById(getSpinnerName(elemId)).hidden = false;
-    document.getElementById(getSuccessfulTickName(elemId)).setAttribute("hidden", "hidden");
-    document.getElementById(getFailedXMarkName(elemId)).setAttribute("hidden", "hidden");
-}
-
-function resetSimulationSteps() {
-    AllStagesInSimulation.forEach(stepId => resetStep(stepId));
-}
-
 function getSpinnerName(stageId) {
     return `spinner${stageId}`;
 }
@@ -48,14 +37,63 @@ function showRunningStep(elemId) {
     document.getElementById(getSpinnerName(elemId)).hidden = false;
 }
 
+function countAllFeedbackIterations(allChaptersInfo) {
+    let allIterCounter = 0;
+    for (const chapterEntry of allChaptersInfo) {
+        if (chapterEntry["chapter_name"].includes("Feedback Iteration")) {
+            ++allIterCounter;
+        }
+    }
+    return allIterCounter;
+}
+
+function shouldShowIteration(stageStatuses) {
+    for (const status of stageStatuses) {
+        const stageStatus = status["status"];
+        if (["RUNNING", "SUCCESS", "ERROR"].includes(stageStatus)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function showOnlyLatestIteration(allChaptersInfo) {
+    let prevIterationChapterId = null, iterCounter = 0;
+    for (const chapterEntry of allChaptersInfo) {
+        if (chapterEntry["chapter_name"].includes("Feedback Iteration")) {
+            ++iterCounter;
+            const chapterId = chapterEntry["chapter_id"];
+            if (shouldShowIteration(chapterEntry["stage_statuses"]) || iterCounter === 1) {
+                document.getElementById(chapterId).removeAttribute("hidden");
+            } else {
+                return;
+            }
+            if (prevIterationChapterId !== null) {
+                document.getElementById(prevIterationChapterId).setAttribute("hidden", "hidden");
+            }
+            prevIterationChapterId = chapterId;
+        }
+    }
+}
+
 function updateStatus(allChaptersInfo) {
-    let i = 1;
+    let feedbackIterCounter = 0;
+    const allFeedbackIterations = countAllFeedbackIterations(allChaptersInfo);
+
     for (const chapterEntry of allChaptersInfo) {
         const chapterId = chapterEntry["chapter_id"];
+        if (chapterEntry["chapter_name"].includes("Feedback Iteration")) {
+            ++feedbackIterCounter;
+        }
+
         if (isRenderNeeded(chapterId)) {
-            prepareSimulationChapter(chapterEntry, i++, allChaptersInfo.length);
+            prepareSimulationChapter(chapterEntry, feedbackIterCounter, allFeedbackIterations);
         }
         updateSimulationChapter(chapterEntry);
+    }
+
+    if (allFeedbackIterations > 0) {
+        showOnlyLatestIteration(allChaptersInfo);
     }
 }
 
@@ -93,7 +131,7 @@ async function runSimulation(projectId) {
     }).then(response => {
         if (response.status === 200) {
             showSuccessToast(jQuery, "Simulation started");
-            resetSimulationSteps();
+            // resetSimulationSteps();
             setTimeout(() => monitorStatus(projectId), 2000);   // Avoid race condition
         } else {
             response.json().then(data => {
@@ -122,4 +160,4 @@ async function updateSimulationMode(projectId) {
     });
 }
 
-const AllStagesInSimulation = [];   // Set by Jinja2
+// const AllStagesInSimulation = [];   // Set by Jinja2
