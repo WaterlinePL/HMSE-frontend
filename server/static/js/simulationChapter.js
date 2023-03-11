@@ -1,10 +1,16 @@
-function prepareSimulationChapter(chapterEntry, chapterNum) {
+function prepareSimulationChapter(chapterEntry, iterationCounter, totalIterations) {
     const chapterId = chapterEntry["chapter_id"];
     const chapterName = chapterEntry["chapter_name"];
     const stageStatuses = chapterEntry["stage_statuses"];
 
-    const chapterDiv = createElement("div", ["row", "justify-content-center", "text-primary"], chapterId);
-    chapterDiv.innerHTML = `<h3>Step ${chapterNum}: ${chapterName}</h3>`;
+    const chapterDiv = createElement("div", ["col", "justify-content-center", "text-primary"], chapterId);
+
+    let chapterDescription = `<h3>${chapterName}</h3>`
+    if (chapterName.includes("Feedback Iteration")) {
+        chapterDescription = `<h3>${chapterName} (${iterationCounter}/${totalIterations})</h3>`;
+        chapterDiv.setAttribute("hidden", "hidden");
+    }
+    chapterDiv.innerHTML = `<div class="row justify-content-center col-7-auto">${chapterDescription}</div>`;
 
     const simInfoDiv = document.getElementById("simulationInfo");
     simInfoDiv.appendChild(chapterDiv);
@@ -14,7 +20,7 @@ function prepareSimulationChapter(chapterEntry, chapterNum) {
         const stageName = status["name"];
 
         const stageDiv = prepareSingleStage(chapterId, plainStageId, stageName);
-        simInfoDiv.appendChild(stageDiv);
+        chapterDiv.appendChild(stageDiv);
     }
 }
 

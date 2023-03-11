@@ -33,7 +33,7 @@ async function sendShape(projectId, shapeId) {
 
 // COLOR ACCESS:
 // document.getElementById("shape1ColorPicker").children[0].children[0].children[0].style.background
-
+// TODO: handle multi shape change
 var oldShapeId = null, oldShapeColor = null;
 var oldMask = null, oldMapping = [];
 
