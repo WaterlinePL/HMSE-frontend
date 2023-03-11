@@ -29,11 +29,9 @@
 <script src="{{ endpoint_prefix }}/static/js/projectMetadata.js"></script>
 <script src="{{ endpoint_prefix }}/static/js/simulationChapter.js"></script>
 <script src="{{ endpoint_prefix }}/static/js/simulationStage.js"></script>
+<script src="{{ endpoint_prefix }}/static/js/zbShapes.js"></script>
 <script type="text/javascript">
     fillProjectConfig('{{ metadata.project_id }}');
-    {% for stage_id, _ in simulation_stages %}
-    AllStagesInSimulation.push('{{ stage_id }}');
-    {% endfor %}
 </script>
 {% endblock %}
 
@@ -364,6 +362,12 @@
                                             onclick="requestRechargeShapes('{{ metadata.project_id }}')">
                                         Generate RCH shapes
                                     </button>
+                                    <button id="uploadZbShapes" type="button" class="btn btn-info right"
+                                            onclick="openZbShapesUploadDialog()">
+                                        Upload ZoneBudget shapes
+                                    </button>
+                                    <input type="file" id="zbZonesInput" accept=".zb,.zb_zones" hidden
+                                       onchange="sendZbZonesAfterSelected('{{ metadata.project_id }}')">
                                 </div>
                             </li>
                         </ul>
@@ -432,8 +436,10 @@
                         <h4>Select simulation mode</h4>
                         <select id="simulationMode" class="custom-select container my-6 small-select"
                                 onchange="updateSimulationMode('{{ metadata.project_id }}')">
-                            <option selected value="SIMPLE_COUPLING">Simple coupling (no feedback loop)</option>
-                            <option value="WITH_FEEDBACK">Feedback loop</option>
+                            <option {% if metadata.simulation_mode == 'SIMPLE_COUPLING' %} selected {% endif %}
+                                value="SIMPLE_COUPLING">Simple coupling (no feedback loop)</option>
+                            <option {% if metadata.simulation_mode == 'WITH_FEEDBACK' %} selected {% endif %}
+                                value="WITH_FEEDBACK">Feedback loop</option>
                         </select>
                     </div>
                     <div class="row justify-content-center">
@@ -453,6 +459,7 @@
                            href="{{ url_for('projects.project_download', project_id=metadata.project_id) }}">Download
                             Results</a>
                     </div>
+                    <div style="height: 200px"></div>
                 </div>
             </div>
         </div>

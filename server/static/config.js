@@ -9,6 +9,7 @@ const __config = {
     "projectManageWeatherFile": "/project/<project_id>/weather",
     "projectFinished": "/project/<project_id>/is-finished",
     "rchShapes": "/project/<project_id>/rch-shape",
+    "zbShapes": "/project/<project_id>/zb-shape",
     "manualShapes": "/project/<project_id>/manual-shape",
     "simulation": "/simulation/<project_id>",
     "mapShapeRecharge": "/project/<project_id>/map-shape-to-hydrus",

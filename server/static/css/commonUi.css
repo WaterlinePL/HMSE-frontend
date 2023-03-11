@@ -11,9 +11,16 @@
 }
 
 .row-entries {
-    vertical-align: middle; TODO
+    vertical-align: middle;
 }
 
 .toast-exit {
     padding: 5px;
+}
+
+.hmse-footer {
+	position: fixed;
+	right: 0;
+	left: 0;
+   	bottom: 0;
 }

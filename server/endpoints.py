@@ -20,6 +20,7 @@ PROJECT_MANAGE_MODFLOW = '/project/<project_id>/modflow'
 PROJECT_MANAGE_WEATHER_FILE = '/project/<project_id>/weather'
 MANUAL_SHAPE = '/project/<project_id>/manual-shape'
 RCH_SHAPES = '/project/<project_id>/rch-shape'
+ZB_SHAPES = '/project/<project_id>/zb-shape'
 SIMULATION_MODE = '/project/<project_id>/simulation-mode'
 
 MAP_SHAPE_RECHARGE = '/project/<project_id>/map-shape-to-hydrus'
