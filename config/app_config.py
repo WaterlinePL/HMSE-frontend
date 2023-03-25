@@ -8,7 +8,8 @@ URL_PREFIX = os.environ.get("HMSE_URL_PREFIX", "")
 
 @dataclass
 class AppConfig:
-    ...
+    grid_width: int = 600
+    grid_height: int = 600
 
     def to_json(self):
         return self.__dict__

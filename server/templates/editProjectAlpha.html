@@ -30,6 +30,7 @@
 <script src="{{ endpoint_prefix }}/static/js/simulationChapter.js"></script>
 <script src="{{ endpoint_prefix }}/static/js/simulationStage.js"></script>
 <script src="{{ endpoint_prefix }}/static/js/zbShapes.js"></script>
+<script src="{{ endpoint_prefix }}/static/js/shapeGrid.js"></script>
 <script type="text/javascript">
     fillProjectConfig('{{ metadata.project_id }}');
 </script>
@@ -294,9 +295,6 @@
                         </div>
                         <ul class="list-group list-group-flush" id="shapeList">
                             {% for shape_id, color in metadata.shapes.items() %}
-                            <script type="text/javascript">
-                                createCssClassForShape('{{ shape_id }}', '{{ color }}');
-                            </script>
                             <li class="list-group-item" id="shape{{ shape_id }}">
                                 <div class="slice-column left">
                                     <div class="slice-column left" id="shapeName{{ shape_id }}">{{ shape_id }}</div>
@@ -354,10 +352,6 @@
                             {% endfor %}
                             <li class="list-group-item" id="newShape">
                                 <div class="button-spacing">
-                                    <button id="newShapeButton" type="button" class="btn btn-success right"
-                                            onclick="addNewListEntry(jQuery, '{{ metadata.project_id }}')">
-                                        New shape
-                                    </button>
                                     <button id="genRchShapes" type="button" class="btn btn-primary right"
                                             onclick="requestRechargeShapes('{{ metadata.project_id }}')">
                                         Generate RCH shapes
@@ -383,45 +377,13 @@
                                     </svg>
                                 </button>
                             </div>
-                            <div class="row justify-content-center my-4">
-                                <div class="col-2-auto mx-2"><h4>Brush Size</h4></div>
-                                <div class="col-2-auto">
-                                    <select id="brush-size" class="form-control form-control-sm">
-                                        <option selected value="0">1x1</option>
-                                        <option value="1">3x3</option>
-                                        <option value="2">5x5</option>
-                                        <option value="3">7x7</option>
-                                        <option value="4">9x9</option>
-                                    </select>
-                                </div>
-                            </div>
+                            <h3 style="text-align: center">Grid</h3>
                         </div>
                         <div class="shape-container-2">
-                            <table class="shape-grid" id="modelGridTable">
-                                <tbody>
-                                {% if metadata.modflow_metadata %}
-                                {% for row in range(metadata.modflow_metadata.rows) %}
-                                <tr class="cell-row"
-                                    style="height: {{ metadata.modflow_metadata.row_cells[row] }}vw !important; padding:0 !important;">
-                                    {% for col in range(metadata.modflow_metadata.cols) %}
-                                    <td class="cell border border-1"
-                                        id="{{ 'cell_' + row|string + '_' + col|string }}"
-                                        style="width: {{ metadata.modflow_metadata.col_cells[col] }}vw !important; padding:0 !important;">
-                                    </td>
-                                    {% endfor %}
-                                </tr>
-                                {% endfor %}
-                                <script>
-                                        initCurrentShapes('{{ metadata.project_id }}');
-                                </script>
-                                {% endif %}
-                                </tbody>
-                            </table>
-                            <div class="text-center" id="cursorGridCoords">
-                                Cursor outside the grid
-                            </div>
+                            <canvas id="shape-grid" class="canvas" width="600" height="600"></canvas>
                             <script>
-                                setupGridSettings(jQuery, null);
+                                prepareCanvas();
+                                initCurrentShapes('{{ metadata.project_id }}');
                             </script>
                         </div>
                     </div>
@@ -448,11 +410,7 @@
                             Run simulation
                         </button>
                     </div>
-                    <div class="container my-5 justify-content-center" id="simulationInfo">
-                        <script>
-                            initGrid();
-                        </script>
-                    </div>
+                    <div class="container my-5 justify-content-center" id="simulationInfo"></div>
                     <div class="row justify-content-center">
                         <a type="button" id="downloadProjectBtn" class="btn btn-success mx-5 my-2"
                            {% if not metadata.finished %} hidden {% endif %}
