@@ -80,6 +80,7 @@ function updateStatus(allChaptersInfo) {
     let feedbackIterCounter = 0;
     const allFeedbackIterations = countAllFeedbackIterations(allChaptersInfo);
 
+    let isFinished = true;
     for (const chapterEntry of allChaptersInfo) {
         const chapterId = chapterEntry["chapter_id"];
         if (chapterEntry["chapter_name"].includes("Feedback Iteration")) {
@@ -89,12 +90,14 @@ function updateStatus(allChaptersInfo) {
         if (isRenderNeeded(chapterId)) {
             prepareSimulationChapter(chapterEntry, feedbackIterCounter, allFeedbackIterations);
         }
-        updateSimulationChapter(chapterEntry);
+        const isChapterFinished = updateSimulationChapter(chapterEntry);
+        isFinished = isFinished && isChapterFinished;
     }
 
     if (allFeedbackIterations > 0) {
         showOnlyLatestIteration(allChaptersInfo);
     }
+    return isFinished
 }
 
 async function getSimulationStatus(projectId) {

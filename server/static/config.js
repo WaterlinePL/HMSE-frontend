@@ -10,7 +10,7 @@ const __config = {
     "projectFinished": "/project/<project_id>/is-finished",
     "rchShapes": "/project/<project_id>/rch-shape",
     "zbShapes": "/project/<project_id>/zb-shape",
-    "manualShapes": "/project/<project_id>/manual-shape",
+    "editShapes": "/project/<project_id>/edit-shape",
     "simulation": "/simulation/<project_id>",
     "mapShapeRecharge": "/project/<project_id>/map-shape-to-hydrus",
     "mapWeatherFile": "/project/<project_id>/map-weather",
