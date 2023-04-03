@@ -22,10 +22,10 @@ async function createHydrusShapeMapping(projectId, shapeId, hydrusId = null, rec
             });
         }
     });
-};
+}
 
 async function createWeatherMapping(projectId, hydrusId, weatherId) {
-    var url = getEndpointForProjectId(Config.mapWeatherFile, projectId);
+    const url = getEndpointForProjectId(Config.mapWeatherFile, projectId);
     await fetch(url, {
         method: "PUT",
         headers: {'Content-Type': 'application/json'},
@@ -47,32 +47,31 @@ async function createWeatherMapping(projectId, hydrusId, weatherId) {
 
 async function sendShapeMapping(projectId, shapeId) {
     const selectValue = document.getElementById(getHydrusSelectId(shapeId)).value;
-    var hydrusId = null, rechargeValue = null;
+    let hydrusId = null, rechargeValue = null;
     if (selectValue === MappingsConsts.MANUAL_RECHARGE_VALUE) {
         rechargeValue = document.getElementById(getManualInputId(shapeId)).value;
     } else if (selectValue !== MappingsConsts.NO_RECHARGE_VALUE) {
         hydrusId = selectValue;
     }
-    createHydrusShapeMapping(projectId, shapeId, hydrusId, rechargeValue);
+    await createHydrusShapeMapping(projectId, shapeId, hydrusId, rechargeValue);
 }
 
 
 async function sendWeatherMapping(projectId, hydrusId) {
-    var weatherId = document.getElementById(getWeatherSelectId(hydrusId)).value;
+    let weatherId = document.getElementById(getWeatherSelectId(hydrusId)).value;
     if (weatherId === MappingsConsts.NO_WEATHER_FILE) {
         weatherId = null;
     }
-    createWeatherMapping(projectId, hydrusId, weatherId);
+    await createWeatherMapping(projectId, hydrusId, weatherId);
 }
-
 
 function setMappings(mapping, selectFindingFunction, optionSetter) {
     for (const [key, value] of Object.entries(mapping)) {
         optionSetter(key);
-        var select = document.getElementById(selectFindingFunction(key));
+        const select = document.getElementById(selectFindingFunction(key));
         const isNumber = typeof value == 'number';
 
-        for (var option of select.children) {
+        for (const option of select.children) {
             const selectNumber = isNumber && option.value === MappingsConsts.MANUAL_RECHARGE_VALUE;
             if (option.value === value || selectNumber) {
                 option.selected = true;

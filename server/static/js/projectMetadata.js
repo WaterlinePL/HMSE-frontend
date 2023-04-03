@@ -1,4 +1,4 @@
-var ProjectConfig = {
+const ProjectConfig = {
     "projectId": undefined,
     "projectName": undefined,
     "hydrusModels": [],
@@ -6,7 +6,7 @@ var ProjectConfig = {
     "shapes": {},
     "shapesToHydrus": {},
     "hydrusToWeather": {}
-}
+};
 
 function addShapeToHydrusMapping(shapeId, hydrusIdOrRechargeValue) {
     ProjectConfig.shapesToHydrus[shapeId] = hydrusIdOrRechargeValue;
@@ -16,18 +16,18 @@ function addHydrusToWeatherMapping(hydrusId, weatherId) {
     ProjectConfig.hydrusToWeather[hydrusId] = weatherId;
 }
 
-
 function removeShape(shapeId) {
-    removeClassFromGrid(getCssClassNameForShape(shapeId));
+    redrawShape(shapeId, "white", 3);
     document.getElementById(getListEntryName(shapeId)).remove();
     delete ProjectConfig.shapes[shapeId];
     delete ProjectConfig.shapesToHydrus[shapeId];
 }
 
-function addNewShape(projectId, shapeId, color, shapeMask) {
+function addNewShape(projectId, shapeId, color, polygonArr) {
     ProjectConfig.shapes[shapeId] = color;
     addNewListEntry(jQuery, projectId, false, color, shapeId);
-    applyMask(shapeMask, getCssClassNameForShape(shapeId), true);
+    addShapePolygon(shapeId, polygonArr);
+    redrawShape(shapeId, color);
 }
 
 function unselectHydrusModelForAllShapes(hydrusIdToDelete) {
