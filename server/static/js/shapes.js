@@ -1,20 +1,22 @@
-async function manualShape(projectId, shapeId, newShapeId, color, shapeMask) {
-    const url = getEndpointForProjectId(Config.manualShapes, projectId);
+function editCompleteSuccessfully(projectId, newShapeId) {
+    applyNewValues(projectId, newShapeId);
+    deactivateShapeEditMode(jQuery, newShapeId);
+    showSuccessToast(jQuery, "Shape successfully submitted");
+}
+
+async function editShape(projectId, shapeId, newShapeId, color) {
+    const url = getEndpointForProjectId(Config.editShapes, projectId);
     await fetch(url, {
-        method: "PUT",
+        method: "PATCH",
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
             shapeId: oldShapeId,
             newShapeId: newShapeId,
-            color: color,
-            shapeMask: shapeMask
+            color: color
         })
     }).then(response => {
         if (response.status === 200) {
-            // TODO: Extract to another function
-            applyNewValues(projectId, newShapeId);
-            deactivateShapeEditMode(jQuery, newShapeId);
-            showSuccessToast(jQuery, "Shape successfully submitted")
+            editCompleteSuccessfully(projectId, newShapeId);
         } else {
             response.json().then(data => {
                 showErrorToast(jQuery, `Error: ${data.description}`);
@@ -26,53 +28,43 @@ async function manualShape(projectId, shapeId, newShapeId, color, shapeMask) {
 async function sendShape(projectId, shapeId) {
     const newShapeId = document.getElementById(getNameDivId(oldShapeId)).textContent;
     const color = getNewColorForShape(shapeId);
-    const shapeMask = getShapeMask(getCssClassNameForShape(shapeId));
-    await manualShape(projectId, shapeId, newShapeId, color, shapeMask);
-    sendShapeMapping(projectId, newShapeId ? newShapeId : shapeId);     // TODO: edge cases?
+    await editShape(projectId, shapeId, newShapeId, color);
+    await sendShapeMapping(projectId, newShapeId ?? shapeId);     // TODO: edge cases?
 }
 
 // COLOR ACCESS:
 // document.getElementById("shape1ColorPicker").children[0].children[0].children[0].style.background
-
-var oldShapeId = null, oldShapeColor = null;
-var oldMask = null, oldMapping = [];
+let oldShapeId = null;
+let oldShapeColor = null;
+let oldMapping = [];
 
 function applyNewValues(projectId, newShapeId) {
     document.getElementById(getNameDivId(oldShapeId)).id = getNameDivId(newShapeId);
+    document.getElementById(getShapeColorPickerName(oldShapeId)).children[0].children[0].children[0]
+        .style.background = getNewColorForShape(oldShapeId);
 
-    const oldClassName = getCssClassNameForShape(oldShapeId), newClassName = getCssClassNameForShape(newShapeId);
-    var colorClass = document.getElementById(oldClassName);
-    const color = getNewColorForShape(oldShapeId);
-    const oldMask = getShapeMask(oldClassName);
-    applyMask(oldMask, oldClassName, false);
-
-    colorClass.id = newClassName;
-    colorClass.innerHTML = `.${newClassName} { background: ${color}}`
-    document.getElementById(getShapeColorPickerName(oldShapeId)).children[0].children[0].children[0].style.background = color;
-    applyMask(oldMask, newClassName, true);
-
-    var colorInputField = document.getElementById(getColorInputFieldId(oldShapeId));
+    const colorInputField = document.getElementById(getColorInputFieldId(oldShapeId));
     colorInputField.id = getColorInputFieldId(newShapeId);
     colorInputField.setAttribute("onchange", `changeShapeColor('${newShapeId}')`);
 
-    var hydrusSelect = document.getElementById(getHydrusSelectId(oldShapeId));
+    const hydrusSelect = document.getElementById(getHydrusSelectId(oldShapeId));
     hydrusSelect.id = getHydrusSelectId(newShapeId);
     hydrusSelect.onclick = () => setSelectOptions(newShapeId);
     hydrusSelect.onchange = () => checkForManualOption(newShapeId);
 
-    var editButton = document.getElementById(getEditButtonName(oldShapeId));
+    const editButton = document.getElementById(getEditButtonName(oldShapeId));
     editButton.id = getEditButtonName(newShapeId);
     editButton.onclick = () => activateShapeEditMode(jQuery, newShapeId);
 
-    var cancelButton = document.getElementById(getCancelButtonName(oldShapeId));
+    const cancelButton = document.getElementById(getCancelButtonName(oldShapeId));
     cancelButton.id = getCancelButtonName(newShapeId);
     cancelButton.onclick = () => deactivateShapeEditMode(jQuery, newShapeId, true);
 
-    var submitButton = document.getElementById(getSubmitButtonName(oldShapeId));
+    const submitButton = document.getElementById(getSubmitButtonName(oldShapeId));
     submitButton.id = getSubmitButtonName(newShapeId);
     submitButton.onclick = () => sendShape(projectId, newShapeId);
 
-    var removeButton = document.getElementById(getRemoveButtonName(oldShapeId));
+    const removeButton = document.getElementById(getRemoveButtonName(oldShapeId));
     removeButton.id = getRemoveButtonName(newShapeId);
     removeButton.onclick = () => deleteShape(projectId, newShapeId);
 
@@ -85,12 +77,10 @@ function applyNewValues(projectId, newShapeId) {
 }
 
 function resetToOldValues(shapeId) {
-    const shapeClass = getCssClassNameForShape(oldShapeId);
     document.getElementById(getNameDivId(oldShapeId)).textContent = oldShapeId;
     setColorForShape(jQuery, shapeId, oldShapeColor);
 
     restoreOldMapping(oldShapeId);
-    cancelGridModification(oldMask, shapeClass);
 }
 
 function setColorForShape($, shapeId, color) {
@@ -98,17 +88,17 @@ function setColorForShape($, shapeId, color) {
     document.getElementById(getShapeColorPickerName(shapeId)).children[0].children[0].children[0].style.background = color;
 
     // Color on grid
-    document.getElementById(getCssClassNameForShape(shapeId)).innerHTML = `.${getCssClassNameForShape(shapeId)} { background: ${color}}`
+    redrawShape(shapeId, color);
 
     // Color in color picker
-    var colorPicker = $(`#${getShapeColorPickerName(shapeId)}`).colorpicker('colorpicker');
+    const colorPicker = $(`#${getShapeColorPickerName(shapeId)}`).colorpicker('colorpicker');
     colorPicker.setValue(color);
     colorPicker.update();
 }
 
 function getMappingValue(shapeId) {
     const mapping = document.getElementById(getHydrusSelectId(shapeId)).value;
-    var value = null;
+    let value = null;
     if (mapping === MappingsConsts.MANUAL_RECHARGE_VALUE) {
         value = document.getElementById(getManualInputId(shapeId)).value;
     }
@@ -131,23 +121,21 @@ function restoreOldMapping(shapeId) {
 function activateShapeEditMode($, shapeId) {
     oldShapeId = shapeId;
     oldShapeColor = getNewColorForShape(shapeId);
-    oldMask = getShapeMask(getCssClassNameForShape(shapeId));
     oldMapping = getMappingValue(shapeId);
     removeEditModeForOtherShapes();
 
-    var cp = $(`#${getShapeColorPickerName(shapeId)}`).colorpicker('colorpicker');
+    const cp = $(`#${getShapeColorPickerName(shapeId)}`).colorpicker('colorpicker');
     cp.enable();
 
     document.getElementById(getListEntryName(shapeId)).classList.toggle("edited-shape", true);
     document.getElementById(getRemoveButtonName(shapeId)).hidden = true;
     document.getElementById(getSubmitButtonName(shapeId)).hidden = false;
     document.getElementById(getCancelButtonName(shapeId)).hidden = false;
-    document.getElementById(getNameDivId(shapeId)).contentEditable = true;
+    document.getElementById(getNameDivId(shapeId)).contentEditable = "true";
     document.getElementById(getHydrusSelectId(shapeId)).disabled = false;
     document.getElementById(getManualInputId(shapeId)).disabled = false;
 
     setGridEditMode(true);
-    setupGridSettings(jQuery, getCssClassNameForShape(shapeId));
 }
 
 function deactivateShapeEditMode($, shapeId, resetValues = false) {
@@ -156,7 +144,7 @@ function deactivateShapeEditMode($, shapeId, resetValues = false) {
     document.getElementById(getRemoveButtonName(shapeId)).hidden = false;
     document.getElementById(getSubmitButtonName(shapeId)).hidden = true;
     document.getElementById(getCancelButtonName(shapeId)).hidden = true;
-    document.getElementById(getNameDivId(shapeId)).contentEditable = false;
+    document.getElementById(getNameDivId(shapeId)).contentEditable = "false";
     document.getElementById(getHydrusSelectId(shapeId)).disabled = true;
     document.getElementById(getManualInputId(shapeId)).disabled = true;
 
@@ -164,44 +152,29 @@ function deactivateShapeEditMode($, shapeId, resetValues = false) {
         resetToOldValues(shapeId);
     }
 
-    var cp = $(`#${getShapeColorPickerName(shapeId)}`).colorpicker('colorpicker');
+    const cp = $(`#${getShapeColorPickerName(shapeId)}`).colorpicker('colorpicker');
     cp.disable();
 
     oldShapeId = oldShapeColor = null;
-    oldMask = null;
     setGridEditMode(false);
 }
 
 function getNewColorForShape(shapeId) {
     return document.getElementById(getShapeColorPickerName(shapeId))
-                    .children[0].children[0].children[0]
+                    ?.children[0].children[0].children[0]
                     .style.background;
 }
 
 
 async function changeShapeColor(shapeId) {
-    // TODO: This looks terrible, but currently works
     setTimeout(() => {
-        var style = document.getElementById(getCssClassNameForShape(shapeId));
         const color = getNewColorForShape(shapeId);
-        if (color) {
-            style.innerHTML = `.${getCssClassNameForShape(shapeId)} { background: ${color}}`
+        if (color && shapeId in shapeIdsToMasks) {
+            redrawShape(shapeId, color);
         }
     }, 50);
 }
 
-
-function createCssClassForShape(shapeId, color) {
-    var style = document.createElement('style');
-    style.type = 'text/css';
-    style.id = getCssClassNameForShape(shapeId);
-    style.innerHTML = `.${getCssClassNameForShape(shapeId)} { background: ${color}}`
-    document.getElementsByTagName('head')[0].appendChild(style);
-}
-
-function getCssClassNameForShape(shapeId) {
-    return `colorCls${shapeId}`
-}
 
 function getShapeColorPickerName(shapeId) {
     return `colorPicker${shapeId}`;
@@ -248,7 +221,6 @@ function removeEditModeForOtherShapes() {
     for (const shapeId of Object.keys(ProjectConfig.shapes)) {
         document.getElementById(getEditButtonName(shapeId)).hidden = true;
     }
-    document.getElementById("newShape").hidden = true;
 }
 
 function showAllEditButtons() {
@@ -258,15 +230,11 @@ function showAllEditButtons() {
             editButton.hidden = false;
         }
     }
-    const newShapeSection = document.getElementById("newShape");
-    if (newShapeSection) {
-        newShapeSection.hidden = false;
-    }
 }
 
 
 async function deleteShape(projectId, shapeId) {
-    const url = getEndpointForProjectId(Config.manualShapes, projectId);
+    const url = getEndpointForProjectId(Config.editShapes, projectId);
     await fetch(url, {
         method: "DELETE",
         headers: {'Content-Type': 'application/json'},
@@ -285,7 +253,7 @@ async function deleteShape(projectId, shapeId) {
     });
 }
 
-
+// TODO: probably not needed
 function addNewListEntry($, projectId, edit = true, shapeColor = "blue", shapeId = null) {
     if (!shapeId) {
         const enterShapeName = "EnterShapeName";
@@ -322,7 +290,7 @@ function addNewListEntry($, projectId, edit = true, shapeColor = "blue", shapeId
     input.id = getColorInputFieldId(shapeId);
     input.type = "text";
     input.hidden = true;
-    createCssClassForShape(shapeId, shapeColor);
+    // createCssClassForShape(shapeId, shapeColor);
     input.setAttribute("onchange", `changeShapeColor('${shapeId}')`);
     colorPickerInputSpan.appendChild(italic);
     colorPickerInputSpan.appendChild(input);
@@ -392,7 +360,7 @@ function removeTemporaryShape(shapeId) {
 
 function setSelectOptions(shapeId) {
     const hydrusSelect = document.getElementById(getHydrusSelectId(shapeId));
-    var currentOptions = [];
+    const currentOptions = [];
     for (const child of hydrusSelect.children) {
         currentOptions.push(child.value);
     }
@@ -407,22 +375,16 @@ function setSelectOptions(shapeId) {
     options.forEach(opt => htmlOptions.push(createOption(opt)));
     htmlOptions[0].selected = true;
 
-    var child = hydrusSelect.lastElementChild;
+    let child = hydrusSelect.lastElementChild;
     while (child) {
         hydrusSelect.removeChild(child);
         child = hydrusSelect.lastElementChild;
     }
 
     htmlOptions.forEach(opt => hydrusSelect.appendChild(opt));
-    currentOptions = options;
 }
 
 function checkForManualOption(shapeId) {
     const select = document.getElementById(getHydrusSelectId(shapeId));
-
-    if (select.value === MappingsConsts.MANUAL_RECHARGE_VALUE) {
-        document.getElementById(getManualInputId(shapeId)).hidden = false;
-    } else {
-        document.getElementById(getManualInputId(shapeId)).hidden = true;
-    }
+    document.getElementById(getManualInputId(shapeId)).hidden = select.value !== MappingsConsts.MANUAL_RECHARGE_VALUE;
 }

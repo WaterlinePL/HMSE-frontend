@@ -6,7 +6,7 @@ import config.app_config as app_config
 from hmse_simulations.hmse_projects.project_dao import project_dao
 from hmse_simulations.hmse_projects.project_exceptions import UnsetModflowModelError
 from hmse_simulations.hmse_projects.typing_help import ProjectID
-from server import cookie_utils
+from server import cookie_utils, endpoints
 from server.typing_help import UserID
 
 
