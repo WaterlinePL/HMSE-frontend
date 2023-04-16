@@ -14,6 +14,8 @@ function prepareCanvas() {
     context.lineTo(0, 0);
     context.closePath();
     context.lineWidth = 1;
+    context.fillStyle = "white";
+    context.fill();
     context.strokeStyle = "black";
     context.stroke();
 }
@@ -43,7 +45,17 @@ function drawShape(shapeArr, color, lineWidth) {
 function redrawShape(shapeId, color, lineWidth = 1) {
     const shape = shapeIdsToMasks[shapeId];
     drawShape(shape, color, lineWidth);
+}
+
+function redrawGrid() {
     prepareCanvas();
+    const inactiveShapeId = "inactive_modflow_cells";
+    redrawShape(inactiveShapeId, ProjectConfig.shapes[inactiveShapeId]);
+    for (const [shapeId, color] of Object.entries(ProjectConfig.shapes)) {
+        if (shapeId !== inactiveShapeId) {
+            redrawShape(shapeId, color);
+        }
+    }
 }
 
 function addShapePolygon(shapeId, polygonArr) {

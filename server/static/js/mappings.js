@@ -22,7 +22,7 @@ async function createHydrusShapeMapping(projectId, shapeId, hydrusId = null, rec
             });
         }
     });
-};
+}
 
 async function createWeatherMapping(projectId, hydrusId, weatherId) {
     const url = getEndpointForProjectId(Config.mapWeatherFile, projectId);
