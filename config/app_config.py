@@ -10,6 +10,8 @@ URL_PREFIX = os.environ.get("HMSE_URL_PREFIX", "")
 class AppConfig:
     # modflow_program_path: Optional[str] = None
     # hydrus_program_path: Optional[str] = None
+    grid_width: int = 600
+    grid_height: int = 600
 
     def to_json(self):
         return self.__dict__
