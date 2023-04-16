@@ -295,9 +295,9 @@
                         </div>
                         <ul class="list-group list-group-flush" id="shapeList">
                             {% for shape_id, color in metadata.shapes.items() %}
-                            <li class="list-group-item" id="shape{{ shape_id }}">
+                            <li class="list-group-item" id="shape{{ shape_id }}" {% if shape_id == 'inactive_modflow_cells' %} disabled {% endif %}>
                                 <div class="slice-column left">
-                                    <div class="slice-column left" id="shapeName{{ shape_id }}">{{ shape_id }}</div>
+                                    <div class="slice-column left" id="shapeName{{ shape_id }}">{{ shape_id if shape_id != 'inactive_modflow_cells' else 'Inactive cells' }}</div>
                                     <div class="slice-column left">
                                         <div id="colorPicker{{ shape_id }}" class="slice-column left">
                                             <span class="input-group-append">
@@ -315,9 +315,12 @@
                                     $(function () {
                                         $('#colorPicker{{ shape_id }}').colorpicker({"color": "{{ color }}",
                                                                                     useAlpha: false});
+                                        {% if shape_id != 'inactive_modflow_cells' %}
                                         deactivateShapeEditMode(jQuery, '{{ shape_id }}');
+                                        {% endif %}
                                     });
                                 </script>
+                                {% if shape_id != 'inactive_modflow_cells' %}
                                 <span class="slice-column right">
                                     <span class="slice-column left">
                                         <select id="selectHydrus{{ shape_id }}" class="custom-select"
@@ -348,6 +351,7 @@
                                         Submit
                                     </button>
                                 </span>
+                                {% endif %}
                             </li>
                             {% endfor %}
                             <li class="list-group-item" id="newShape">
@@ -383,7 +387,9 @@
                             <canvas id="shape-grid" class="canvas" width="600" height="600"></canvas>
                             <script>
                                 prepareCanvas();
-                                initCurrentShapes('{{ metadata.project_id }}');
+                                {% if metadata.modflow_metadata %}
+                                    initCurrentShapes('{{ metadata.project_id }}');
+                                {% endif %}
                             </script>
                         </div>
                     </div>

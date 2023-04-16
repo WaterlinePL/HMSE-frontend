@@ -92,7 +92,3 @@ function unselectDeletedOption(selectElement, optToRemove, defaultOptIndex) {
         }
     }
 }
-
-function testPing() {
-    console.log("Ping!");
-}
