@@ -17,10 +17,10 @@ function addHydrusToWeatherMapping(hydrusId, weatherId) {
 }
 
 function removeShape(shapeId) {
-    redrawShape(shapeId, "white", 3);
     document.getElementById(getListEntryName(shapeId)).remove();
     delete ProjectConfig.shapes[shapeId];
     delete ProjectConfig.shapesToHydrus[shapeId];
+    redrawGrid();
 }
 
 function addNewShape(projectId, shapeId, color, polygonArr) {

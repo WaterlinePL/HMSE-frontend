@@ -30,8 +30,8 @@ async function initCurrentShapes(projectId) {
                     // const cls = getCssClassNameForShape(shapeId);
                     // applyMask(shapeMask, cls, true);
                     addShapePolygon(shapeId, polygonArr);
-                    redrawShape(shapeId, ProjectConfig.shapes[shapeId]);
                 }
+                redrawGrid();
             });
         } else {
             response.json().then(data => {
