@@ -126,6 +126,10 @@ async function monitorStatus(projectId) {
     }
 }
 
+function resetSimulationSteps() {
+    document.getElementById("simulationInfo").innerHTML = '';
+}
+
 async function runSimulation(projectId) {
     const url = getEndpointForProjectId(Config.simulation, projectId);
     await fetch(url, {
@@ -133,7 +137,7 @@ async function runSimulation(projectId) {
     }).then(response => {
         if (response.status === 200) {
             showSuccessToast(jQuery, "Simulation started");
-            // resetSimulationSteps();
+            resetSimulationSteps();
             setTimeout(() => monitorStatus(projectId), 2000);   // Avoid race condition
         } else {
             response.json().then(data => {

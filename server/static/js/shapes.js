@@ -219,12 +219,18 @@ function getColorInputFieldId(shapeId) {
 
 function removeEditModeForOtherShapes() {
     for (const shapeId of Object.keys(ProjectConfig.shapes)) {
+        if (shapeId === inactiveShapeId) {
+            continue;
+        }
         document.getElementById(getEditButtonName(shapeId)).hidden = true;
     }
 }
 
 function showAllEditButtons() {
     for (const shapeId of Object.keys(ProjectConfig.shapes)) {
+        if (shapeId === inactiveShapeId) {
+            continue;
+        }
         const editButton = document.getElementById(getEditButtonName(shapeId));
         if (editButton) {
             editButton.hidden = false;
