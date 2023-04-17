@@ -1,9 +1,7 @@
 FROM ubuntu:20.04
 RUN apt-get dist-upgrade
 RUN apt-get update
-RUN apt-get install gcc-7 g++-7 -y
-RUN apt-get install gfortran-7 gfortran -y
-RUN apt-get install python3 python3-pip -y
+RUN DEBIAN_FRONTEND=noninteractive apt install gcc-7 g++-7 ffmpeg libsm6 libxext6 gfortran-7 gfortran python3 python3-pip -y
 RUN DEBIAN_FRONTEND=noninteractive apt install apt-transport-https ca-certificates curl software-properties-common -y
 RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 RUN add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
