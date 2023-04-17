@@ -49,7 +49,6 @@ function redrawShape(shapeId, color, lineWidth = 1) {
 
 function redrawGrid() {
     prepareCanvas();
-    const inactiveShapeId = "inactive_modflow_cells";
     redrawShape(inactiveShapeId, ProjectConfig.shapes[inactiveShapeId]);
     for (const [shapeId, color] of Object.entries(ProjectConfig.shapes)) {
         if (shapeId !== inactiveShapeId) {

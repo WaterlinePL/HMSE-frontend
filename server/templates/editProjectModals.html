@@ -136,10 +136,7 @@
                 </ul>
 
 
-                <p>&emsp;Currently only SWAT format Weather files are supported.&emsp;Files following this format can be downloaded for free from <a href="https://globalweather.tamu.edu/">
-                this site</a>, courtesy of the <em>Texas Agricultural and Mechanical University</em>. Use these files
-                to modify your models or for reference while preparing your own data. (TODO: should this stay?)
-                </p>
+                <p>&emsp;Currently only SWAT format Weather files are supported.</p>
 
             </div>
             <div class="modal-footer">
@@ -161,17 +158,18 @@
             </div>
             <div class="modal-body">
                 <strong>Generate RCH shapes</strong> - add to the model shapes based on .rch file in Modflow model (all fields with equal adjacent recharge value are grouped into shapes)<br>
-                <strong>New shape</strong> - manually create a new shape
-                <br><br>
+                <strong>Upload ZoneBudget shapes</strong> - add to the model shapes created with ZoneBudget (.zb_zones)<br>
+                <br>
                 <p>
                     &emsp;Shapes are used to apply Hydrus models' recharge values to the selected part of Modflow model grid.
                     Shapes must have their names unique in the project.
-                    In order to edit a shape, one must click on the "Edit" button - this activates the Edit mode.
+                    In order to edit a shape, one must click on the "Edit" button - this activates the Edit mode. When the Modflow model is present,
+                    one shape is added by default to show inactive cells (based on IBOUND array from .bas package).
                 </p>
 
-                <p>&emsp;In the edit mode user may change the color of the shape, assign a Hydrus model to it
-                (or enter manually the recharge value that should be applied on this shape) and change the shape itself
-                    by drawing on the grid. While editing one shape, user cannot draw on other shapes.</p>
+                <p>&emsp;In the edit mode user may change the color of the shape or assign a Hydrus model to it
+                (or enter manually the recharge value that should be applied on this shape). The shapes should be mutually exclusive.
+                    Currently there is no possibility to manually draw shapes in the application.</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
@@ -191,18 +189,44 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p>&emsp;The grid is visible after uploading Modflow model. It is used to preview and change shapes used in
-                the project. Outside the shape's Edit mode the grid is inactive.
+                <p>&emsp;The grid is used to preview and change shapes used in the project.</p>
+                <p>&emsp;The shapes shown on the grid may be a little distorted due to approximation while drawing in order to speed up the process in the browsers.
+                    The main purpose of this preview is to provide user with orientation while configuring the Hydrus models and their shapes before starting the simulation.
                 </p>
-                <p>&emsp;In the edit mode user may draw on the grid to assign cells to the shape. The brush size can be changed
-                using the dropdown.</p>
-                There are 4 rules applicable while drawing:
-                <ul>
-                    <li>Only one shape can be edited at the time - thus user can draw only in one color</li>
-                    <li>User cannot draw on the other shapes than the edited one</li>
-                    <li>Starting on a blank cell - brush applies the color</li>
-                    <li>Starting on a colored cell (belonging to edited shape) - brush erases the color</li>
-                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalHelpSimulation" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Simulation section</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>&emsp;There are two possible simulation modes:</p>
+                    <ul>
+                       <li><strong>Simple coupling (no feedback loop)</strong> - default simulation mode, where Hydrus models
+                           are simulated first and then the recharge is transferred to the Modflow model. Then the Modflow simulation occurs.</li>
+                        <li><strong>Feedback loop</strong> - simulation mode, where for each step in the Modflow model a
+                            custom Hydrus simulation is carried out. During the process feedback is performed as follows:
+                            <ul>
+                                <li>transferring recharge from the Hydrus models to the Modflow model</li>
+                                <li>transferring water depth from the Modflow model to the Hydrus models as average terrain height minus average water level (for each shape) </li>
+                            </ul>
+                        </li>
+                    </ul>
+
+
+                <p>&emsp;The simulation steps will be shown as soon as the simulation is started by pressing the button.</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
