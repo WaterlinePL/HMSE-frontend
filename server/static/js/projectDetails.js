@@ -153,7 +153,7 @@ function enterEditMode(configElementIdMapping, oldValuesContainer, hideBtnIds, s
     this.hidden = true;
     Object.entries(configElementIdMapping).forEach(mapping => {
         [fieldName, elementId] = mapping;
-        var element = document.getElementById(elementId);
+        const element = document.getElementById(elementId);
         if (fieldName !== "endDate") {
             oldValuesContainer[fieldName] = element.value;
         } else {
