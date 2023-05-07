@@ -5,7 +5,7 @@ from flask import Response, redirect, url_for
 from hmse_simulations.hmse_projects.project_dao import project_dao
 from hmse_simulations.hmse_projects.project_exceptions import UnsetModflowModelError
 from hmse_simulations.hmse_projects.typing_help import ProjectID
-from server import cookie_utils
+from server import cookie_utils, endpoints
 from server.typing_help import UserID
 
 

@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
 import flask
-from flask import request, Blueprint
+from flask import request, Blueprint, jsonify
 from werkzeug.exceptions import abort
 
 from hmse_simulations.hmse_projects import project_service
@@ -19,10 +19,10 @@ def simulation(project_id: str):
         return prev_check_failed
 
     if request.method == 'GET':
-        status = simulation_service.check_simulation_status(project_id)
-        if status is None:
+        all_chapters_statuses = simulation_service.check_simulation_status(project_id)
+        if all_chapters_statuses is None:
             abort(404)
-        return status.to_json()
+        return jsonify([chapter.to_json(i) for i, chapter in enumerate(all_chapters_statuses)])
     else:
         metadata = project_service.get(project_id)
         simulation_service.run_simulation(metadata)
