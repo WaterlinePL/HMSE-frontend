@@ -113,13 +113,15 @@ async function getSimulationStatus(projectId) {
             response.json().then(data => {
                 showErrorToast(jQuery, `Error: ${data.description}`);
             });
+            return null;
         }
     });
 }
 
 async function monitorStatus(projectId) {
     const isFinished = await getSimulationStatus(projectId);
-    if (!isFinished) {
+    if (isFinished == null) {}
+    else if (!isFinished) {
         setTimeout(() => monitorStatus(projectId), 2000);
     } else {
         document.getElementById("downloadProjectBtn").hidden = false;
