@@ -5,6 +5,8 @@ This is the main branch of Hydrus-Modflow-Synergy-Engine frontend. It contains c
 * docker deployment (branch [`docker`](https://github.com/WaterlinePL/HMSE-frontend/tree/docker))
 * Kubernetes deployment (branch [`k8s`](https://github.com/WaterlinePL/HMSE-frontend/tree/k8s))
 
+The installation manual can be found in the README on each of the deployments' branches.
+
 In order to maintain more easily the code, frontend uses submodules that are dedicated for each deployment. 
 Currently used submodules:
 * [`hmse_simulations`](https://github.com/WaterlinePL/hmse_simulations/tree/main)
