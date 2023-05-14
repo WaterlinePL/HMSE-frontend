@@ -2,6 +2,23 @@
 
 This is the branch of Hydrus-Modflow-Synergy-Engine frontend related to the desktop deployment.
 
+## Installation
+This deployment is dedidcated for the Windows 10 OS, as it requires hydrological software to be already installed and HYDRUS-1D is distributed by default only under Windows OS.
+  1. Find latest version of desktop version in the Github tags (hmse-desktop-<version>)
+  2. Download the .zip archive
+  3. Unpack .zip archive
+  4. Lanuch `hmse.exe`
+  5. Complete configuration from the next section
+
+### Running the application
+In order to run a simulation in the application, the user must download following two programs:
+* [MODFLOW-2005](https://www.usgs.gov/software/modflow-2005-usgs-three-dimensional-finite-difference-ground-water-model)
+* [HYDRUS-1D](https://www.pc-progress.com/en/Default.aspx?H1d-downloads) (requires registration)
+
+When accessing simulation, the application will redirect to the configuration page and will prompt for the paths to 
+executables for the programs metioned above. Currently there is no other way of providing the path to executables due 
+to local storage access policy of web browsers (web browser cannot access local file system).
+
 ### Creating build using PyInstaller
 Require software for building:
 * Python 3.8
@@ -19,11 +36,4 @@ pyinstaller.exe --onedir -n hmse --paths ".\server" \
 
 After creating a build with PyInstaller, the executable is located in the `dist` folder (`hmse.exe`).
 
-### Running the application
-In order to run a simulation in the application, the user must download following two programs:
-* [MODFLOW-2005](https://www.usgs.gov/software/modflow-2005-usgs-three-dimensional-finite-difference-ground-water-model)
-* [HYDRUS-1D](https://www.pc-progress.com/en/Default.aspx?H1d-downloads) (requires registration)
 
-When accessing simulation, the application will redirect to the configuration page and will prompt for the paths to 
-executables for the programs metioned above. Currently there is no other way of providing the path to executables due 
-to local storage access policy of web browsers (web browser cannot access local file system).
