@@ -7,7 +7,7 @@ This is the Kubernetes branch of Hydrus-Modflow-Synergy-Engine frontend.
 docker build -t watermodelling/hmse-k8s:<tag> .
 ```
 
-## Deploying HMSE
+## Installation/Deploying HMSE
 In order to deploy the Kubernetes deployment of HMSE:
 1. Deploy MinIO in the cluster
 2. Deploy Airflow in the cluster
