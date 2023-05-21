@@ -1,0 +1,28 @@
+image: watermodelling/hmse-k8s:0.0.3
+httpPort: 8080
+
+
+## Simulation PVC config
+simulationPvc:
+  name: simulation-pvc
+  size: 2Gi
+
+## S3 config
+##  required fields in the secret:
+##   - access_key (S3 access key)
+##   - secret_key (S3 secret key)
+##   - endpoint (S3 compatible endpoint, e.g. MinIO url)
+s3:
+  secretName: s3-secret
+  region: us-east-1
+  bucket: "hmse-k8s-test"  # FILL IN
+
+ingress:
+  # Add if using ingress with prefix for exposing the webserver
+  prefix: ""
+
+## Airflow secret which allows to authenticate to the Airflow API calls
+##  required fields in the secret:
+##   - airflow_user (airflow login username to account with API calls privilages)
+##   - airflow_password (airflow login password for that account)
+airflowSecretName: airflow-secret

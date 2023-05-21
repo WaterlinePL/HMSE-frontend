@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hmse-k8s-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hmse-k8s-frontend
+  template:
+    metadata:
+      labels:
+        app: hmse-k8s-frontend
+    spec:
+      containers:
+      - name: hmse-k8s-frontend
+        image: {{ .Values.image }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+        - name: HMSE_URL_PREFIX
+          value: {{ .Values.ingress.prefix }}
+        - name: MINIO_REGION
+          value: {{ .Values.s3.region }}
+        - name: HMSE_MINIO_ROOT_BUCKET
+          value: {{ .Values.s3.bucket }}
+        - name: MINIO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.s3.secretName }}
+              key: secret_key
+              optional: false
+        - name: MINIO_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.s3.secretName }}
+              key: access_key
+              optional: false
+        - name: MINIO_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.s3.secretName }}
+              key: endpoint
+              optional: false
+        - name: AIRFLOW_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.airflowSecretName }}
+              key: airflow_user
+              optional: false
+        - name: AIRFLOW_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.airflowSecretName }}
+              key: airflow_password
+              optional: false
+        - name: AIRFLOW_API_ENDPOINT
+          value: {{ printf "http://%s-web.%s.svc.cluster.local:8080" (.Release.Name) (.Release.Namespace) }}/airflow/api/v1
+        - name: AIRFLOW_SIMULATION_DAG # FIXME: hardcode?
+          value: hmse_simulation

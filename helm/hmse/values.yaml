@@ -1,0 +1,55 @@
+# Airflow image with DAGS
+airflow-image-repo: &airflow-image-repo watermodelling/airflow
+airflow-image-tag: &airflow-image-tag 2.5.0-v0.0.3
+airflow-service-user: &airflow-service-user hmse-user-test
+
+# Change these to run a different workflow
+hmse-webserver-image: &hmse-webserver-image watermodelling/hmse-k8s:0.0.3
+
+
+######################################################
+####   Airflow config  ####
+######################################################
+airflow:
+  airflow:
+    image:
+      repository: *airflow-image-repo
+      tag: *airflow-image-tag
+  #  webserverSecretKeySecretName: airflow-webserver-secret
+    # ingress:
+    #   web:
+    #     enabled: true
+    #     hosts: ["149.156.182.201.nip.io"]
+    #     ingressClassName: nginx
+    #     path: "/airflow"
+    config:
+      # webserver:
+      #   web_server_url_prefix: "/airflow"
+      #   base_url: "https://149.156.182.201.nip.io/airflow"
+      # cli:
+      #   endpoint_url: "https://149.156.182.201.nip.io/airflow"
+      api:
+        auth_backends: "airflow.api.auth.backend.basic_auth"
+    users:
+    - username: *airflow-service-user
+      password: 123
+      role: Admin
+      email: admin@example.com
+      firstName: admin
+      lastName: admin
+  #  usersTemplates:
+  #    AIRFLOW_USER_PASSWORD:
+  #        kind: secret    # TODO
+  #        name: my-secret # TODO
+  #        key: password   # TODO
+    variables:
+      - key: simulation_pvc
+        value: simulation-pvc
+      - key: simulation_minio_secret
+        value: s3-secret
+
+
+hmse-webserver:
+  image: *hmse-webserver-image
+  ingress:
+    prefix: ""
