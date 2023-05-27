@@ -7,3 +7,7 @@ README.md
 *.yaml
 venv/
 .idea/
+helm/
+**/*.zip
+**/workspace/
+**/config.json
