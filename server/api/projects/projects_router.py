@@ -8,9 +8,8 @@ from werkzeug.utils import redirect
 
 from config.app_config import URL_PREFIX
 from hmse_simulations.hmse_projects import project_service
-from hmse_simulations.hmse_projects.hmse_hydrological_models.modflow import modflow_utils
+from hmse_simulations.hmse_projects.hmse_hydrological_models.processing.modflow import modflow_utils
 from hmse_simulations.hmse_projects.project_metadata import ProjectMetadata
-from hmse_simulations.simulation.simulation import Simulation
 from server import endpoints, cookie_utils, path_checker, template, naming_utils
 
 projects = Blueprint('projects', __name__)
