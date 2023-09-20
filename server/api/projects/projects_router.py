@@ -116,7 +116,7 @@ def project_download(project_id: str):
     if check_previous_steps:
         return check_previous_steps
     return send_file(project_service.download_project(project_id), as_attachment=True,
-                     attachment_filename=f"{project_id}.zip")
+                     download_name=f"{project_id}.zip")
 
 
 @projects.route(endpoints.PROJECT_MANAGE_MODFLOW, methods=['PUT', 'DELETE', 'PATCH'])
