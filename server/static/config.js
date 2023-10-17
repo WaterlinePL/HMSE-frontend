@@ -1,4 +1,4 @@
-const URL_PREFIX = "/hmse";
+const URL_PREFIX = "";
 
 const __config = {
     // Used
@@ -9,11 +9,13 @@ const __config = {
     "projectManageWeatherFile": "/project/<project_id>/weather",
     "projectFinished": "/project/<project_id>/is-finished",
     "rchShapes": "/project/<project_id>/rch-shape",
-    "manualShapes": "/project/<project_id>/manual-shape",
+    "zbShapes": "/project/<project_id>/zb-shape",
+    "editShapes": "/project/<project_id>/edit-shape",
     "simulation": "/simulation/<project_id>",
     "mapShapeRecharge": "/project/<project_id>/map-shape-to-hydrus",
     "mapWeatherFile": "/project/<project_id>/map-weather",
     "configuration": "/configuration",
+    "simulationMode": "/project/<project_id>/simulation-mode",
 
      // Unused
     "defineMethod": "/define-method",

@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="{{ endpoint_prefix }}/static/css/uploadModflow.css">
 <link rel="stylesheet" href="{{ endpoint_prefix }}/static/css/uploadHydrus.css">
 <link rel="stylesheet" href="{{ endpoint_prefix }}/static/css/projectDetails.css">
+<link rel="stylesheet" href="{{ endpoint_prefix }}/static/css/simulation.css">
 {% endblock %}
 
 {% block scripts %}
@@ -26,11 +27,12 @@
 <script src="{{ endpoint_prefix }}/static/js/projectDetails.js"></script>
 <script src="{{ endpoint_prefix }}/static/js/uiUtils.js"></script>
 <script src="{{ endpoint_prefix }}/static/js/projectMetadata.js"></script>
+<script src="{{ endpoint_prefix }}/static/js/simulationChapter.js"></script>
+<script src="{{ endpoint_prefix }}/static/js/simulationStage.js"></script>
+<script src="{{ endpoint_prefix }}/static/js/zbShapes.js"></script>
+<script src="{{ endpoint_prefix }}/static/js/shapeGrid.js"></script>
 <script type="text/javascript">
     fillProjectConfig('{{ metadata.project_id }}');
-    {% for stage_id, _ in simulation_stages %}
-    AllStagesInSimulation.push('{{ stage_id }}');
-    {% endfor %}
 </script>
 {% endblock %}
 
@@ -99,7 +101,7 @@
                             'hidden' if not metadata.modflow_metadata }}>
                                 <span class="slice-column left">Model duration</span>
                                 <span id="modflowModelDurationContent" class="slice-column right">
-                                    {{ metadata.modflow_metadata.duration|string + ' days' if metadata.modflow_metadata }}
+                                    {{ metadata.modflow_metadata.get_duration()|string + ' days' if metadata.modflow_metadata }}
                                 </span>
                             </li>
 
@@ -293,12 +295,9 @@
                         </div>
                         <ul class="list-group list-group-flush" id="shapeList">
                             {% for shape_id, color in metadata.shapes.items() %}
-                            <script type="text/javascript">
-                                createCssClassForShape('{{ shape_id }}', '{{ color }}');
-                            </script>
-                            <li class="list-group-item" id="shape{{ shape_id }}">
+                            <li class="list-group-item" id="shape{{ shape_id }}" {% if shape_id == 'inactive_modflow_cells' %} disabled {% endif %}>
                                 <div class="slice-column left">
-                                    <div class="slice-column left" id="shapeName{{ shape_id }}">{{ shape_id }}</div>
+                                    <div class="slice-column left" id="shapeName{{ shape_id }}">{{ shape_id if shape_id != 'inactive_modflow_cells' else 'Inactive cells' }}</div>
                                     <div class="slice-column left">
                                         <div id="colorPicker{{ shape_id }}" class="slice-column left">
                                             <span class="input-group-append">
@@ -316,9 +315,12 @@
                                     $(function () {
                                         $('#colorPicker{{ shape_id }}').colorpicker({"color": "{{ color }}",
                                                                                     useAlpha: false});
+                                        {% if shape_id != 'inactive_modflow_cells' %}
                                         deactivateShapeEditMode(jQuery, '{{ shape_id }}');
+                                        {% endif %}
                                     });
                                 </script>
+                                {% if shape_id != 'inactive_modflow_cells' %}
                                 <span class="slice-column right">
                                     <span class="slice-column left">
                                         <select id="selectHydrus{{ shape_id }}" class="custom-select"
@@ -349,18 +351,21 @@
                                         Submit
                                     </button>
                                 </span>
+                                {% endif %}
                             </li>
                             {% endfor %}
                             <li class="list-group-item" id="newShape">
                                 <div class="button-spacing">
-                                    <button id="newShapeButton" type="button" class="btn btn-success right"
-                                            onclick="addNewListEntry(jQuery, '{{ metadata.project_id }}')">
-                                        New shape
-                                    </button>
                                     <button id="genRchShapes" type="button" class="btn btn-primary right"
                                             onclick="requestRechargeShapes('{{ metadata.project_id }}')">
                                         Generate RCH shapes
                                     </button>
+                                    <button id="uploadZbShapes" type="button" class="btn btn-info right"
+                                            onclick="openZbShapesUploadDialog()">
+                                        Upload ZoneBudget shapes
+                                    </button>
+                                    <input type="file" id="zbZonesInput" accept=".zb,.zb_zones" hidden
+                                       onchange="sendZbZonesAfterSelected('{{ metadata.project_id }}')">
                                 </div>
                             </li>
                         </ul>
@@ -376,54 +381,43 @@
                                     </svg>
                                 </button>
                             </div>
-                            <div class="row justify-content-center my-4">
-                                <div class="col-2-auto mx-2"><h4>Brush Size</h4></div>
-                                <div class="col-2-auto">
-                                    <select id="brush-size" class="form-control form-control-sm">
-                                        <option selected value="0">1x1</option>
-                                        <option value="1">3x3</option>
-                                        <option value="2">5x5</option>
-                                        <option value="3">7x7</option>
-                                        <option value="4">9x9</option>
-                                    </select>
-                                </div>
-                            </div>
+                            <h3 style="text-align: center">Grid</h3>
                         </div>
                         <div class="shape-container-2">
-                            <table class="shape-grid" id="modelGridTable">
-                                <tbody>
-                                {% if metadata.modflow_metadata %}
-                                {% for row in range(metadata.modflow_metadata.rows) %}
-                                <tr class="cell-row"
-                                    style="height: {{ metadata.modflow_metadata.row_cells[row] }}vw !important; padding:0 !important;">
-                                    {% for col in range(metadata.modflow_metadata.cols) %}
-                                    <td class="cell border border-1"
-                                        id="{{ 'cell_' + row|string + '_' + col|string }}"
-                                        style="width: {{ metadata.modflow_metadata.col_cells[col] }}vw !important; padding:0 !important;">
-                                    </td>
-                                    {% endfor %}
-                                </tr>
-                                {% endfor %}
-                                <script>
-                                        initCurrentShapes('{{ metadata.project_id }}');
-                                </script>
-                                {% endif %}
-                                </tbody>
-                            </table>
-                            <div class="text-center" id="cursorGridCoords">
-                                Cursor outside the grid
-                            </div>
+                            <canvas id="shape-grid" class="canvas" width="600" height="600"></canvas>
                             <script>
-                                setupGridSettings(jQuery, null);
+                                prepareCanvas();
+                                {% if metadata.modflow_metadata %}
+                                    initCurrentShapes('{{ metadata.project_id }}');
+                                {% endif %}
                             </script>
                         </div>
                     </div>
                 </div>
                 <div class="simulation-section">
                     <div class="container my-5 justify-content-center">
+                        <div style="justify-content: begin; padding-left: 25%;">
+                            <button type="button" class="btn btn-outline-secondary"
+                                data-toggle="modal" data-target="#modalHelpSimulation">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                    <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+                                </svg>
+                            </button>
+                        </div>
                         <div class="text-center justify-content-center">
                             <p class="lead">Click "Run simulation" once you're ready to start it.</p>
                         </div>
+                    </div>
+                    <div class="container my-5 justify-content-center text-center">
+                        <h4>Select simulation mode</h4>
+                        <select id="simulationMode" class="custom-select container my-6 small-select"
+                                onchange="updateSimulationMode('{{ metadata.project_id }}')">
+                            <option {% if metadata.simulation_mode == 'SIMPLE_COUPLING' %} selected {% endif %}
+                                value="SIMPLE_COUPLING">Simple coupling (no feedback loop)</option>
+                            <option {% if metadata.simulation_mode == 'WITH_FEEDBACK' %} selected {% endif %}
+                                value="WITH_FEEDBACK">Feedback loop</option>
+                        </select>
                     </div>
                     <div class="row justify-content-center">
                         <button type="submit" id="start-simulation" class="btn btn-primary right"
@@ -431,40 +425,14 @@
                             Run simulation
                         </button>
                     </div>
-                    <div class="container my-5 justify-content-center">
-                        {% for stage_id, stage_name in simulation_stages %}
-                        <div class="row justify-content-center text-secondary" hidden id="{{ stage_id }}">
-                            <div class="col-7-auto">
-                                {{ stage_name }}
-                                <div class="spinner-border" id="spinner{{ stage_id }}" role="status">
-                                    <span class="sr-only">Loading...</span>
-                                </div>
-                                <svg xmlns="http://www.w3.org/2000/svg" hidden id="tick{{ stage_id }}" width="25"
-                                     height="25"
-                                     fill="currentColor"
-                                     class="bi bi-check"
-                                     viewBox="0 0 16 16">
-                                    <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
-                                </svg>
-                                <svg height="25" width="25" id="X{{ stage_id }}" hidden>
-                                    <line x1="7" y1="7" x2="18" y2="18"
-                                          style="stroke:rgb(255,0,0); stroke-width:2"/>
-                                    <line x1="18" y1="7" x2="7" y2="18"
-                                          style="stroke:rgb(255,0,0); stroke-width:2"/>
-                                </svg>
-                            </div>
-                        </div>
-                        {% endfor %}
-                        <script>
-                            initGrid();
-                        </script>
-                    </div>
+                    <div class="container my-5 justify-content-center" id="simulationInfo"></div>
                     <div class="row justify-content-center">
                         <a type="button" id="downloadProjectBtn" class="btn btn-success mx-5 my-2"
                            {% if not metadata.finished %} hidden {% endif %}
                            href="{{ url_for('projects.project_download', project_id=metadata.project_id) }}">Download
                             Results</a>
                     </div>
+                    <div style="height: 200px"></div>
                 </div>
             </div>
         </div>

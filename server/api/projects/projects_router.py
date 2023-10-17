@@ -8,9 +8,8 @@ from werkzeug.utils import redirect
 
 from config.app_config import URL_PREFIX
 from hmse_simulations.hmse_projects import project_service
-from hmse_simulations.hmse_projects.hmse_hydrological_models.modflow import modflow_utils
+from hmse_simulations.hmse_projects.hmse_hydrological_models.processing.modflow import modflow_utils
 from hmse_simulations.hmse_projects.project_metadata import ProjectMetadata
-from hmse_simulations.simulation.simulation import Simulation
 from server import endpoints, cookie_utils, path_checker, template, naming_utils
 
 projects = Blueprint('projects', __name__)
@@ -28,8 +27,7 @@ def edit_project(project_id: str):
                            endpoint_prefix=URL_PREFIX,
                            metadata=metadata,
                            modflow_model_width=width, modflow_model_height=height,
-                           end_date=metadata.calculate_end_date(),
-                           simulation_stages=[stage.to_id_and_name() for stage in Simulation.all_stages()])
+                           end_date=metadata.calculate_end_date())
 
 
 @projects.route(endpoints.PROJECT_LIST, methods=['GET'], defaults={'search': None})
@@ -118,7 +116,7 @@ def project_download(project_id: str):
     if check_previous_steps:
         return check_previous_steps
     return send_file(project_service.download_project(project_id), as_attachment=True,
-                     attachment_filename=f"{project_id}.zip")
+                     download_name=f"{project_id}.zip")
 
 
 @projects.route(endpoints.PROJECT_MANAGE_MODFLOW, methods=['PUT', 'DELETE', 'PATCH'])
@@ -195,19 +193,18 @@ def manage_hydrus(project_id: str):
         abort(400)
 
 
-@projects.route(endpoints.MANUAL_SHAPE, methods=['GET', 'PUT', 'DELETE'])
+@projects.route(endpoints.EDIT_SHAPE, methods=['GET', 'PATCH', 'DELETE'])
 def manual_shapes(project_id: str):
     cookie = request.cookies.get(cookie_utils.COOKIE_NAME)
     check_previous_steps = path_checker.path_check_for_modflow_model(cookie, project_id)
     if check_previous_steps:
         return check_previous_steps
 
-    if request.method == 'PUT':
+    if request.method == 'PATCH':
         shape_id = request.json['shapeId']
         new_shape_id = request.json.get('newShapeId') or shape_id
-        shape_mask = request.json.get('shapeMask')
         color = request.json.get('color')
-        project_service.save_or_update_shape(project_id, shape_id, shape_mask, color, new_shape_id)
+        project_service.save_or_update_shape(project_id, shape_id, color, new_shape_id)
         return flask.Response(status=HTTPStatus.OK)
     elif request.method == 'GET':
         return project_service.get_all_shapes(project_id)
@@ -224,6 +221,16 @@ def rch_shapes(project_id: str):
     if check_previous_steps:
         return check_previous_steps
     return project_service.add_rch_shapes(project_id)
+
+
+@projects.route(endpoints.ZB_SHAPES, methods=['PUT'])
+def zb_shapes(project_id: str):
+    cookie = request.cookies.get(cookie_utils.COOKIE_NAME)
+    check_previous_steps = path_checker.path_check_for_modflow_model(cookie, project_id)
+    if check_previous_steps:
+        return check_previous_steps
+    zb_file = request.files['zbZones']
+    return project_service.add_zb_shapes(project_id, zb_file)
 
 
 @projects.route(endpoints.MAP_SHAPE_RECHARGE, methods=['PUT'])
@@ -245,6 +252,17 @@ def map_shape_to_hydrus(project_id: str):
     else:
         project_service.remove_shape_mapping(project_id, shape_id)
         return flask.Response(status=HTTPStatus.OK)
+
+
+@projects.route(endpoints.SIMULATION_MODE, methods=['PATCH'])
+def select_simulation_mode(project_id: str):
+    cookie = request.cookies.get(cookie_utils.COOKIE_NAME)
+    check_previous_steps = path_checker.path_check_for_modflow_model(cookie, project_id)
+    if check_previous_steps:
+        return check_previous_steps
+
+    project_service.update_simulation_mode(project_id, mode=request.json['simulationMode'])
+    return flask.Response(status=HTTPStatus.OK)
 
 
 @projects.route(endpoints.MAP_WEATHER_FILE_TO_HYDRUS, methods=['PUT'])
