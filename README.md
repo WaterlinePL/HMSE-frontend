@@ -4,8 +4,8 @@
 ## Installation/deployment
 Each deployment has its own installation guide in the README on the deployment-related branch:
 * [desktop version installation guide](https://github.com/WaterlinePL/HMSE-frontend/tree/desktop#installation)
-* [docker version installation guide](https://github.com/WaterlinePL/HMSE-frontend/tree/docker#installation)
-* [Kubernetes version installation guide](https://github.com/WaterlinePL/HMSE-frontend/tree/k8s#deployment)
+* [docker version installation guide](https://github.com/WaterlinePL/HMSE-frontend/tree/docker#installationrunning-image)
+* [Kubernetes version installation guide](https://github.com/WaterlinePL/HMSE-frontend/tree/k8s#installationdeploying-hmse)
 
 ## Repository structure
 This is the main branch of Hydrus-Modflow-Synergy-Engine frontend. It contains common components shared between all the deployments:
