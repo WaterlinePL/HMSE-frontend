@@ -21,6 +21,7 @@ When accessing simulation, the application will redirect to the configuration pa
 executables for the programs mentioned above. Currently, there is no other way of providing the path to executables due 
 to local storage access policy of web browsers (web browser cannot access local file system).
 
+## Development
 ### Creating build using PyInstaller
 Require software for building:
 * Python 3.8
