@@ -1,6 +1,14 @@
 # HMSE-frontend
 
-This is the main branch of Hydrus-Modflow-Synergy-Engine frontend. It contains common compontents shared between all the deployments:
+
+## Installation/deployment
+Each deployment has its own installation guide in the README on the deployment-related branch:
+* [desktop version installation guide](https://github.com/WaterlinePL/HMSE-frontend/tree/desktop#installation)
+* [docker version installation guide](https://github.com/WaterlinePL/HMSE-frontend/tree/docker#installation)
+* [Kubernetes version installation guide](https://github.com/WaterlinePL/HMSE-frontend/tree/k8s#deployment)
+
+## Repository structure
+This is the main branch of Hydrus-Modflow-Synergy-Engine frontend. It contains common components shared between all the deployments:
 * desktop deployment (branch [`desktop`](https://github.com/WaterlinePL/HMSE-frontend/tree/desktop))
 * docker deployment (branch [`docker`](https://github.com/WaterlinePL/HMSE-frontend/tree/docker))
 * Kubernetes deployment (branch [`k8s`](https://github.com/WaterlinePL/HMSE-frontend/tree/k8s))
@@ -15,12 +23,7 @@ Currently used submodules:
 
 Each submodule is checked-out on the latest branch related to the deployment branch.
 
-
-### Deploying
-Each deployment has its own README on the related branch that describes how to launch particular 
-version of the application.
-
-### Development
+## Development
 Features that should be applied to all the deployments are developed on the `main` branch. 
 After merging the pull request, synchronizing the deployment branches is carried out by creating branch 
 `sync/<desktop|docker|k8s>` from the deployment branch and performing there merge with the `main` branch. 
