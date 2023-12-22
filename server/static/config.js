@@ -1,4 +1,4 @@
-const URL_PREFIX = "";
+const URL_PREFIX = "/hmse";
 
 const __config = {
     // Used
