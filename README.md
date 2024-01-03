@@ -15,8 +15,8 @@ This is the main branch of Hydrus-Modflow-Synergy-Engine frontend. It contains c
 
 The installation manual can be found in the README on each of the deployments' branches.
 
-In order to maintain more easily the code, frontend uses submodules that are dedicated for each deployment. 
-Currently used submodules:
+In order to facilitate code maintenance, the frontend uses submodules that are dedicated for each deployment. 
+Currently used submodules are as follows:
 * [`hmse_simulations`](https://github.com/WaterlinePL/hmse_simulations/tree/main)
 * [`hmse_projects`](https://github.com/WaterlinePL/hmse_projects/tree/main)
 * [`hmse_hydrological_models`](https://github.com/WaterlinePL/hmse_hydrological_models/tree/main)
