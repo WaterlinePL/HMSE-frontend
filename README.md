@@ -10,16 +10,16 @@ Currently, the newest software release is version [1.0.0](https://github.com/Wat
   2. Download the .zip archive `hmse-desktop-<version>.zip` (available [here](https://github.com/WaterlinePL/HMSE-frontend/releases/download/desktop-1.0.0/hmse-desktop-1.0.0.zip))
   3. Unpack .zip archive
   4. Launch `hmse.exe` (in archive: `hmse/hmse.exe`)
-  5. Complete configuration from the next section
+  5. Complete application configuration described below
 
 ### Application configuration
 In order to run a simulation in the application, the user must download following two programs:
 * [MODFLOW-2005](https://www.usgs.gov/software/modflow-2005-usgs-three-dimensional-finite-difference-ground-water-model)
 * [HYDRUS-1D](https://www.pc-progress.com/en/Default.aspx?H1d-downloads) (requires registration)
 
-When accessing simulation, the application will redirect to the configuration page and will prompt for the paths to 
+When accessing the simulation, the application will redirect to the configuration page and will prompt for the paths to 
 executables for the programs mentioned above. Currently, there is no other way of providing the path to executables due 
-to local storage access policy of web browsers (web browser cannot access local file system).
+to local storage access policy of web browsers (web browser cannot access the local file system).
 
 ## Development
 ### Creating build using PyInstaller
@@ -28,7 +28,7 @@ Require software for building:
 * pip
 * pyinstaller
 
-In order to create an executable from sources perform following commands in the root of the repository (on Windows OS):
+To generate an executable from the source code, follow these steps in the root directory of the repository (on a Windows OS):
 ```commandline
 pip install -r requirements.txt
 pyinstaller.exe --onedir -n hmse --paths ".\server" \
