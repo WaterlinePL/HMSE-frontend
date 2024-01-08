@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: hmse-k8s-frontend
-        image: watermodelling/hmse-k8s:0.0.2
+        image: watermodelling/hmse-k8s:1.0.0
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
